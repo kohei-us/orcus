@@ -27,6 +27,8 @@ namespace orcus {
 
 namespace {
 
+constexpr std::uint32_t zip64_size_marker = 0xFFFFFFFFu;
+
 struct zip_file_param
 {
     enum compress_method_type { stored = 0, deflated = 8 };
@@ -368,6 +370,11 @@ void zip_archive::impl::read_file_entries()
         param.file_attributes_internal = central_dir.read_2bytes();
         param.file_attributes_external = central_dir.read_4bytes();
         param.offset_file_header = central_dir.read_4bytes();
+
+        // ZIP64 isn't supported (yet)
+        if (param.size_compressed == zip64_size_marker ||
+            param.size_uncompressed == zip64_size_marker)
+            throw zip_error("ZIP64 size field encountered; ZIP64 is not supported");
 
         if (param.filename_length)
             param.filename = central_dir.read_string(param.filename_length, m_pool);
