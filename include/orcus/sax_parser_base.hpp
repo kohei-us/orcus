@@ -172,7 +172,7 @@ protected:
 
     cell_buffer& get_cell_buffer();
 
-    void comment();
+    std::string_view comment();
 
     void expects_next(const char* p, size_t n);
 

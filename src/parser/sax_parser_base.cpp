@@ -133,24 +133,29 @@ cell_buffer& parser_base::get_cell_buffer()
     return *mp_impl->m_cell_buffers[m_buffer_pos];
 }
 
-void parser_base::comment()
+std::string_view parser_base::comment()
 {
     // Parse until we reach '-->'.
-    size_t len = available_size();
+    std::size_t len = available_size();
     assert(len > 3);
+    const char* p_start = mp_char;
+    const char* p_end = p_start;
     char c = cur_char();
-    size_t i = 0;
+    std::size_t i = 0;
     bool hyphen = false;
     for (; i < len; ++i, c = next_and_char())
     {
         if (c == '-')
         {
             if (!hyphen)
-                // first hyphen.
+                // first hyphen
                 hyphen = true;
             else
-                // second hyphen.
+            {
+                // second hyphen - end of comment
+                p_end = mp_char - 1;
                 break;
+            }
         }
         else
             hyphen = false;
@@ -161,6 +166,7 @@ void parser_base::comment()
             "'--' should not occur in comment other than in the closing tag.", offset());
 
     next();
+    return {p_start, static_cast<std::size_t>(p_end - p_start)};
 }
 
 void parser_base::expects_next(const char* p, size_t n)
