@@ -190,6 +190,21 @@ protected:
             write_content_encoded(m_os, c.value, xml_encode_context_t::text);
     }
 
+    void on_comment(const detail::comment& c, std::size_t depth) override
+    {
+        // follow the same indent logic as in on_content()
+        if (m_indent && c.parent && has_element_children(*c.parent))
+        {
+            write_indent(m_os, depth);
+            m_os << "<!--" << c.value << "-->";
+            m_os << '\n';
+        }
+        else
+        {
+            m_os << "<!--" << c.value << "-->";
+        }
+    }
+
     void on_document_exit() override
     {
         assert(m_alias_elems.empty());

@@ -52,7 +52,7 @@ struct ns_declaration
     ns_declaration(std::string_view _alias, xmlns_id_t _name);
 };
 
-enum class node_type { element, content };
+enum class node_type { element, content, comment };
 
 struct element;
 
@@ -87,6 +87,14 @@ struct content : public node
 
     content(std::string_view _value);
     virtual ~content();
+};
+
+struct comment : public node
+{
+    std::string_view value;
+
+    comment(std::string_view _value);
+    virtual ~comment();
 };
 
 void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt);
@@ -131,6 +139,7 @@ struct document_tree::impl : public sax_ns_handler
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);
     void characters(std::string_view val, bool transient);
+    void comment(std::string_view val);
     void doctype(const sax::doctype_declaration& dtd);
 
     void attribute(std::string_view name, std::string_view val)
@@ -174,6 +183,7 @@ protected:
     virtual void on_element_enter(const detail::element&, std::size_t) {}
     virtual void on_element_exit(const detail::element&, std::size_t) {}
     virtual void on_content(const detail::content&, std::size_t) {}
+    virtual void on_comment(const detail::comment&, std::size_t) {}
     virtual void on_document_exit() {}
 };
 

@@ -93,8 +93,10 @@ element::element(xmlns_id_t _ns, std::string_view _name) :
 element::~element() = default;
 
 content::content(std::string_view _value) : node(node_type::content), value(_value) {}
-
 content::~content() = default;
+
+comment::comment(std::string_view _value) : node(node_type::comment), value(_value) {}
+comment::~comment() = default;
 
 void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 {
@@ -205,6 +207,19 @@ void document_tree::impl::characters(std::string_view val, bool /*transient*/)
     p->child_nodes.push_back(std::move(child));
 }
 
+void document_tree::impl::comment(std::string_view val)
+{
+    if (m_elem_stack.empty())
+        // document-level comment (outside the root element) - ignored for now
+        return;
+
+    detail::element* p = m_elem_stack.back();
+    val = m_pool.intern(val).first; // Make sure the string is persistent.
+    auto child = std::make_unique<detail::comment>(val);
+    child->parent = p;
+    p->child_nodes.push_back(std::move(child));
+}
+
 void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
 {
     m_doctype = std::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
@@ -263,6 +278,13 @@ void tree_walker::run()
         {
             const auto* cnt = static_cast<const detail::content*>(this_node);
             on_content(*cnt, cur_scope.depth);
+            continue;
+        }
+
+        if (this_node->type == detail::node_type::comment)
+        {
+            const auto* cm = static_cast<const detail::comment*>(this_node);
+            on_comment(*cm, cur_scope.depth);
             continue;
         }
 
