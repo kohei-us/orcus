@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 using namespace orcus;
 
-class sax_handler_encoded_attrs
+class sax_handler_encoded_attrs : public sax_handler
 {
     std::vector<sax::parser_attribute> m_attrs;
 

@@ -204,6 +204,18 @@ public:
         (void)alias;
         (void)ns_id;
     }
+
+    /**
+     * Called when a comment &lt;!-- ... --&gt; is encountered.  The text
+     * between the comment delimiters is passed verbatim, with no whitespace
+     * trimming or entity decoding.
+     *
+     * @param val Text content of the comment.
+     */
+    void comment(std::string_view val)
+    {
+        (void)val;
+    }
 };
 
 /**
@@ -317,6 +329,11 @@ private:
         void characters(std::string_view val, bool transient)
         {
             m_handler.characters(val, transient);
+        }
+
+        void comment(std::string_view val)
+        {
+            m_handler.comment(val);
         }
 
         void attribute(const sax::parser_attribute& attr)

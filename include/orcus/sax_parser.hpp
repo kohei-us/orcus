@@ -110,6 +110,18 @@ public:
     {
         (void)attr;
     }
+
+    /**
+     * Called when a comment &lt;!-- ... --&gt; is encountered.  The text
+     * between the comment delimiters is passed verbatim, with no whitespace
+     * trimming or entity decoding.
+     *
+     * @param val Text content of the comment.
+     */
+    void comment(std::string_view val)
+    {
+        (void)val;
+    }
 };
 
 /**
@@ -336,7 +348,7 @@ void sax_parser<HandlerT,ConfigT>::special_tag()
                 throw malformed_xml_error("malformed comment.", offset());
 
             next();
-            comment();
+            m_handler.comment(comment());
         }
         break;
         case '[':
