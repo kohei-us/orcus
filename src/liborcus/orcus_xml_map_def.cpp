@@ -29,7 +29,7 @@ namespace {
  */
 struct xml_range_detected {};
 
-class xml_map_sax_handler
+class xml_map_sax_handler : public sax_handler
 {
     struct scope
     {
