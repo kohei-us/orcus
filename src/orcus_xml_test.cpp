@@ -254,6 +254,7 @@ void test_xml_lint()
         SRCDIR"/test/xml-lint/nested",
         SRCDIR"/test/xml-lint/comments-block",
         SRCDIR"/test/xml-lint/comments-inline",
+        SRCDIR"/test/xml-lint/comments-prolog",
     };
 
     orcus::xmlns_repository repo;
