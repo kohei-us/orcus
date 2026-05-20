@@ -9,6 +9,7 @@
 #include <orcus/xml_encode.hpp>
 
 #include <functional>
+#include <ranges>
 #include <sstream>
 #include <unordered_map>
 
@@ -51,10 +52,8 @@ class xml_dumper : public tree_walker
     {
         // recursively search for the matching namespace from the inner element
         // and up
-        auto it = m_alias_elems.rbegin(), it_end = m_alias_elems.rend();
-        for (; it != it_end; ++it)
+        for (const detail::element& elem : m_alias_elems | std::views::reverse)
         {
-            const detail::element& elem = *it;
             assert(!elem.ns_decls.empty());
 
             for (const auto& [alias, ns] : elem.ns_decls)
