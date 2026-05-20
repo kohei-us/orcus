@@ -106,31 +106,41 @@ std::string decode_xml_unicode_char(const char* p, size_t n)
 
 struct parser_base::impl
 {
-    std::vector<std::unique_ptr<cell_buffer>> m_cell_buffers;
+    std::vector<std::unique_ptr<cell_buffer>> cell_buffers;
+    std::size_t cell_buffer_pos = 0;
 };
 
 parser_base::parser_base(const char* content, size_t size) :
     ::orcus::parser_base(content, size),
     mp_impl(std::make_unique<impl>()),
     m_nest_level(0),
-    m_buffer_pos(0),
     m_root_elem_open(true)
 {
-    mp_impl->m_cell_buffers.push_back(std::make_unique<cell_buffer>());
+    mp_impl->cell_buffers.push_back(std::make_unique<cell_buffer>());
 }
 
 parser_base::~parser_base() {}
 
 void parser_base::inc_buffer_pos()
 {
-    ++m_buffer_pos;
-    if (m_buffer_pos == mp_impl->m_cell_buffers.size())
-        mp_impl->m_cell_buffers.push_back(std::make_unique<cell_buffer>());
+    ++mp_impl->cell_buffer_pos;
+    if (mp_impl->cell_buffer_pos == mp_impl->cell_buffers.size())
+        mp_impl->cell_buffers.push_back(std::make_unique<cell_buffer>());
+}
+
+void parser_base::reset_buffer_pos()
+{
+    mp_impl->cell_buffer_pos = 0;
+}
+
+std::size_t parser_base::buffer_pos() const
+{
+    return mp_impl->cell_buffer_pos;
 }
 
 cell_buffer& parser_base::get_cell_buffer()
 {
-    return *mp_impl->m_cell_buffers[m_buffer_pos];
+    return *mp_impl->cell_buffers[mp_impl->cell_buffer_pos];
 }
 
 std::string_view parser_base::comment()

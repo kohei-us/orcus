@@ -189,7 +189,7 @@ void sax_parser<HandlerT,ConfigT>::parse()
     skip_space_and_control();
     body();
 
-    assert(m_buffer_pos == 0);
+    assert(buffer_pos() == 0);
 }
 
 template<typename HandlerT, typename ConfigT>

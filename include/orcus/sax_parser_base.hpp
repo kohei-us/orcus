@@ -113,7 +113,6 @@ class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
     parser_base& operator=(const parser_base&) = delete;
 protected:
     size_t m_nest_level;
-    size_t m_buffer_pos;
     bool m_root_elem_open:1;
 
 protected:
@@ -137,7 +136,8 @@ protected:
     }
 
     void inc_buffer_pos();
-    void reset_buffer_pos() { m_buffer_pos = 0; }
+    void reset_buffer_pos();
+    std::size_t buffer_pos() const;
 
     void has_char_throw(const char* msg) const
     {
