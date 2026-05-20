@@ -252,6 +252,8 @@ void test_xml_lint()
         SRCDIR"/test/xml-lint/namespace-xml-1",
         SRCDIR"/test/xml-lint/attributes",
         SRCDIR"/test/xml-lint/nested",
+        SRCDIR"/test/xml-lint/comments-block",
+        SRCDIR"/test/xml-lint/comments-inline",
     };
 
     orcus::xmlns_repository repo;

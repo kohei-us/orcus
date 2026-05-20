@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<root>
+    <a/>
+    <!-- between a and b -->
+    <b/>
+    <!-- trailing comment with - single hyphen -->
+</root>
