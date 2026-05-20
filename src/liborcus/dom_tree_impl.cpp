@@ -209,12 +209,17 @@ void document_tree::impl::characters(std::string_view val, bool /*transient*/)
 
 void document_tree::impl::comment(std::string_view val)
 {
+    val = m_pool.intern(val).first; // make sure the string is persistent
+
     if (m_elem_stack.empty())
-        // document-level comment (outside the root element) - ignored for now
+    {
+        // outside any element: prolog comment (the SAX parser stops at the
+        // root close so trailing comments never reach this handler)
+        m_prolog_comments.emplace_back(val);
         return;
+    }
 
     detail::element* p = m_elem_stack.back();
-    val = m_pool.intern(val).first; // Make sure the string is persistent.
     auto child = std::make_unique<detail::comment>(val);
     child->parent = p;
     p->child_nodes.push_back(std::move(child));

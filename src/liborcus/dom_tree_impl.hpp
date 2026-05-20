@@ -126,6 +126,7 @@ struct document_tree::impl : public sax_ns_handler
     std::vector<detail::ns_declaration> m_cur_ns_decls;
     element_stack_type m_elem_stack;
     std::unique_ptr<detail::element> m_root;
+    std::vector<detail::comment> m_prolog_comments;
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 

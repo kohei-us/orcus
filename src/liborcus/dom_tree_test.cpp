@@ -116,7 +116,7 @@ void test_comments()
 {
     {
         // block layout - comment between element siblings
-        std::string_view input ="<?xml version=\"1.0\"?><root><a/><!--c--><b/></root>";
+        std::string_view input = R"(<?xml version="1.0"?><root><a/><!--c--><b/></root>)";
         auto dt = load_document_tree(input);
         std::string output = dt->tree.dump(2);
         assert(output.find("<!--c-->") != std::string::npos);
@@ -128,7 +128,7 @@ void test_comments()
 
     {
         // inline layout - comment between text segments
-        std::string_view input ="<?xml version=\"1.0\"?><root>before<!--c-->after</root>";
+        std::string_view input = R"(<?xml version="1.0"?><root>before<!--c-->after</root>)";
         auto dt = load_document_tree(input);
         std::string output = dt->tree.dump(2);
 
@@ -138,13 +138,26 @@ void test_comments()
 
     {
         // sole-child comment
-        std::string_view input ="<?xml version=\"1.0\"?><root><!--only--></root>";
+        std::string_view input = R"(<?xml version="1.0"?><root><!--only--></root>)";
         auto dt = load_document_tree(input);
         std::string output = dt->tree.dump(2);
 
         // like the previous case, the parent has no child elements -> no reformatting
         assert(output.find("<root><!--only--></root>") != std::string::npos);
     }
+
+    {
+        // prolog comment between declaration and root
+        std::string_view input = R"(<?xml version="1.0"?><!--prolog--><root/>)";
+        auto dt = load_document_tree(input);
+        std::string output = dt->tree.dump(2);
+        assert(output.find("<!--prolog-->") != std::string::npos);
+
+        // prolog comment must sit after the <?xml ?> declaration and before <root/>
+        assert(output.find("?>") < output.find("<!--prolog-->"));
+        assert(output.find("<!--prolog-->") < output.find("<root"));
+    }
+
 }
 
 int main()

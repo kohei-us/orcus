@@ -234,6 +234,14 @@ std::string document_tree::dump(std::size_t indent) const
             os << '\n';
     }
 
+    // emit prolog comments between the declarations and the root element
+    for (const detail::comment& cm : mp_impl->m_prolog_comments)
+    {
+        os << "<!--" << cm.value << "-->";
+        if (indent)
+            os << '\n';
+    }
+
     xml_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt, indent);
     walker.run();
 
