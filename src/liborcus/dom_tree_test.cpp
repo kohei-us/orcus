@@ -112,12 +112,48 @@ void test_element_hierarchy()
     }
 }
 
+void test_comments()
+{
+    {
+        // block layout - comment between element siblings
+        std::string_view input ="<?xml version=\"1.0\"?><root><a/><!--c--><b/></root>";
+        auto dt = load_document_tree(input);
+        std::string output = dt->tree.dump(2);
+        assert(output.find("<!--c-->") != std::string::npos);
+
+        // <!--c--> must sit on its own indented line between <a/> and <b/>
+        // because the parent has child elements
+        assert(output.find("  <!--c-->\n") != std::string::npos);
+    }
+
+    {
+        // inline layout - comment between text segments
+        std::string_view input ="<?xml version=\"1.0\"?><root>before<!--c-->after</root>";
+        auto dt = load_document_tree(input);
+        std::string output = dt->tree.dump(2);
+
+        // these parts stay together because the parent has no child elements
+        assert(output.find("before<!--c-->after") != std::string::npos);
+    }
+
+    {
+        // sole-child comment
+        std::string_view input ="<?xml version=\"1.0\"?><root><!--only--></root>";
+        auto dt = load_document_tree(input);
+        std::string output = dt->tree.dump(2);
+
+        // like the previous case, the parent has no child elements -> no reformatting
+        assert(output.find("<root><!--only--></root>") != std::string::npos);
+    }
+}
+
 int main()
 {
     test_encoded_attr();
     test_declaration();
     test_attributes();
     test_element_hierarchy();
+    test_comments();
 
     return EXIT_SUCCESS;
 }
