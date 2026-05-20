@@ -53,11 +53,41 @@ void test_attr_with_encoded_chars_single_quotes()
     parser.parse();
 }
 
+void test_truncated_self_close_does_not_read_past_end()
+{
+    // next_and_char() must not deref past mp_end.  A view that ends
+    // exactly at the '/' of "<r/" is malformed and the parser must not
+    // peek at the byte after the view
+    struct _handler : public orcus::sax_handler
+    {
+        int starts = 0;
+        void start_element(const orcus::sax::parser_element&) { ++starts; }
+    };
+
+    const char* backing = "<r/>";
+    std::string_view truncated(backing, 3);
+
+    _handler hdl;
+    orcus::sax_parser<_handler> parser(truncated, hdl);
+    bool threw = false;
+    try
+    {
+        parser.parse();
+    }
+    catch (const orcus::malformed_xml_error&)
+    {
+        threw = true;
+    }
+    assert(threw);
+    assert(hdl.starts == 0);
+}
+
 int main()
 {
     test_handler();
     test_attr_equal_with_whitespace();
     test_attr_with_encoded_chars_single_quotes();
+    test_truncated_self_close_does_not_read_past_end();
 
     return EXIT_SUCCESS;
 }

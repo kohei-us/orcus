@@ -156,10 +156,8 @@ protected:
     char next_and_char()
     {
         next();
-#if ORCUS_DEBUG_SAX_PARSER
-        if (mp_char >= mp_end)
+        if (!has_char())
             throw malformed_xml_error("xml stream ended prematurely.", offset());
-#endif
         return *mp_char;
     }
 
