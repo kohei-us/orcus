@@ -210,7 +210,7 @@ void csv_parser<_Handler>::quoted_cell()
     }
 
     // Stream ended prematurely.  Handle it gracefully.
-    m_handler.cell({p0, len}, false);
+    m_handler.cell({p0, len - 1}, false);
 }
 
 template<typename _Handler>
