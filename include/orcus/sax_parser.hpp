@@ -281,9 +281,7 @@ void sax_parser<HandlerT,ConfigT>::element_open(std::ptrdiff_t begin_pos)
             m_handler.end_element(elem);
             if (!m_nest_level)
                 m_root_elem_open = false;
-#if ORCUS_DEBUG_SAX_PARSER
-            cout << "element_open: ns='" << elem.ns << "', name='" << elem.name << "' (self-closing)" << endl;
-#endif
+
             return;
         }
         else if (c == '>')
@@ -294,9 +292,6 @@ void sax_parser<HandlerT,ConfigT>::element_open(std::ptrdiff_t begin_pos)
             nest_up();
             m_handler.start_element(elem);
             reset_buffer_pos();
-#if ORCUS_DEBUG_SAX_PARSER
-            cout << "element_open: ns='" << elem.ns << "', name='" << elem.name << "'" << endl;
-#endif
             return;
         }
         else
@@ -319,9 +314,6 @@ void sax_parser<HandlerT,ConfigT>::element_close(std::ptrdiff_t begin_pos)
     elem.end_pos = offset();
 
     m_handler.end_element(elem);
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "element_close: ns='" << elem.ns << "', name='" << elem.name << "'" << endl;
-#endif
     if (!m_nest_level)
         m_root_elem_open = false;
 }
@@ -382,9 +374,6 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
     // Get the declaration name first.
     std::string_view decl_name;
     name(decl_name);
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "sax_parser::declaration: start name='" << decl_name << "'" << endl;
-#endif
 
     if (name_check && decl_name != name_check)
     {
@@ -408,9 +397,6 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
     m_handler.end_declaration(decl_name);
     reset_buffer_pos();
     next();
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "sax_parser::declaration: end name='" << decl_name << "'" << endl;
-#endif
 }
 
 template<typename HandlerT, typename ConfigT>
@@ -491,9 +477,6 @@ void sax_parser<HandlerT,ConfigT>::doctype()
     if (cur_char() == '>')
     {
         // Optional URI not given. Exit.
-#if ORCUS_DEBUG_SAX_PARSER
-        cout << "sax_parser::doctype: root='" << param.root_element << "', fpi='" << param.fpi << "'" << endl;
-#endif
         m_handler.doctype(param);
         next();
         return;
@@ -509,9 +492,6 @@ void sax_parser<HandlerT,ConfigT>::doctype()
     if (cur_char() != '>')
         throw malformed_xml_error("malformed DOCTYPE section - closing '>' expected but not found.", offset());
 
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "sax_parser::doctype: root='" << param.root_element << "', fpi='" << param.fpi << "' uri='" << param.uri << "'" << endl;
-#endif
     m_handler.doctype(param);
     next();
 }
@@ -552,11 +532,6 @@ void sax_parser<HandlerT,ConfigT>::attribute()
 {
     sax::parser_attribute attr;
     attribute_name(attr.ns, attr.name);
-
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "sax_parser::attribute: ns='" << attr.ns << "', name='" << attr.name << "'" << endl;
-#endif
-
     skip_space_and_control();
 
     char c = cur_char_checked();
@@ -574,10 +549,6 @@ void sax_parser<HandlerT,ConfigT>::attribute()
     if (attr.transient)
         // Value is stored in a temporary buffer. Push a new buffer.
         inc_buffer_pos();
-
-#if ORCUS_DEBUG_SAX_PARSER
-    cout << "sax_parser::attribute: value='" << attr.value << "'" << endl;
-#endif
 
     m_handler.attribute(attr);
 }

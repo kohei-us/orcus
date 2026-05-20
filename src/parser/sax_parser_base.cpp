@@ -212,10 +212,6 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
         if (!n)
             throw malformed_xml_error("empty encoded character.", offset());
 
-#if ORCUS_DEBUG_SAX_PARSER
-        cout << "sax_parser::parse_encoded_char: raw='" << std::string(p0, n) << "'" << endl;
-#endif
-
         char c = decode_xml_encoded_char(p0, n);
         if (c)
             buf.append({&c, 1});
@@ -235,9 +231,6 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
 
         if (!c)
         {
-#if ORCUS_DEBUG_SAX_PARSER
-            cout << "sax_parser::parse_encoded_char: not a known encoding name. Use the original." << endl;
-#endif
             // Unexpected encoding name. Use the original text.
             buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
         }
