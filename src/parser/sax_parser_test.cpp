@@ -82,12 +82,44 @@ void test_truncated_self_close_does_not_read_past_end()
     assert(hdl.starts == 0);
 }
 
+void test_decode_xml_unicode_char()
+{
+    // Inputs are the bytes between '&' and ';' as parse_encoded_char passes
+    // them.  Valid code points outside the surrogate range encode to UTF-8;
+    // malformed digits, out-of-range values, and surrogate halves all return
+    // an empty string so the caller's fallback can keep the original text.
+
+    auto decode = [](std::string_view s) {
+        return orcus::sax::decode_xml_unicode_char(s.data(), s.size());
+    };
+
+    assert(decode("#65") == "A");
+    assert(decode("#x41") == "A");
+    assert(decode("#xD7FF") == "\xED\x9F\xBF");
+    assert(decode("#x10FFFF") == "\xF4\x8F\xBF\xBF");
+
+    // Surrogate halves (XML 1.0 forbids these).
+    assert(decode("#xD800").empty());
+    assert(decode("#xDFFF").empty());
+
+    // Above the Unicode range.
+    assert(decode("#x110000").empty());
+
+    // Above uint32_t; std::stoi used to throw out_of_range here.
+    assert(decode("#x100000000").empty());
+
+    // Malformed digits; std::stoi used to throw invalid_argument here.
+    assert(decode("#xZZ").empty());
+    assert(decode("#abc").empty());
+}
+
 int main()
 {
     test_handler();
     test_attr_equal_with_whitespace();
     test_attr_with_encoded_chars_single_quotes();
     test_truncated_self_close_does_not_read_past_end();
+    test_decode_xml_unicode_char();
 
     return EXIT_SUCCESS;
 }

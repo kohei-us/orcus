@@ -9,6 +9,7 @@
 
 #include "utf8.hpp"
 
+#include <charconv>
 #include <format>
 #include <cstring>
 #include <deque>
@@ -56,16 +57,25 @@ std::string decode_xml_unicode_char(const char* p, size_t n)
     if (*p == '#' && n >= 2)
     {
         uint32_t point = 0;
+        const char* digits = p + 1;
+        int base = 10;
         if (p[1] == 'x')
         {
             if (n == 2)
                 throw orcus::xml_structure_error(
                     "invalid number of characters for hexadecimal unicode reference");
 
-            point = std::stoi(std::string(p + 2, n - 2), nullptr, 16);
+            digits = p + 2;
+            base = 16;
         }
-        else
-            point = std::stoi(std::string(p + 1, n - 1), nullptr, 10);
+
+        auto [end, ec] = std::from_chars(digits, p + n, point, base);
+        if (ec != std::errc{} || end != p + n)
+            return std::string();
+
+        // XML 1.0 4.1: surrogate halves and points > U+10FFFF are not legal.
+        if ((point >= 0xD800 && point <= 0xDFFF) || point > 0x10FFFF)
+            return std::string();
 
         if (point < 0x80)
         {
@@ -86,18 +96,13 @@ std::string decode_xml_unicode_char(const char* p, size_t n)
             s += static_cast<char>((point & 0x3F) | 0x80);
             return s;
         }
-        else if (point < 0x110000)
+        else
         {
             std::string s(1, static_cast<char>((point >> 18 & 0x07) | 0xF0));
             s += static_cast<char>((point >> 12 & 0x3F) | 0x80);
             s += static_cast<char>((point >> 6 & 0x3F) | 0x80);
             s += static_cast<char>((point & 0x3F) | 0x80);
             return s;
-        }
-        else
-        {
-            // should not happen as that is not represented by utf-8
-            assert(false);
         }
     }
 
