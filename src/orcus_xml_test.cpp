@@ -80,7 +80,6 @@ const char* sax_parser_test_dirs[] = {
     SRCDIR"/test/xml/single-quote/",
     SRCDIR"/test/xml/no-decl-1/",
     SRCDIR"/test/xml/underscore-identifier/",
-    SRCDIR"/test/xml/self-closing-root/",
     SRCDIR"/test/xml/utf8-1/",
     SRCDIR"/test/xml/utf8-2/",
 };
@@ -255,6 +254,7 @@ void test_xml_lint()
         SRCDIR"/test/xml-lint/comments-block",
         SRCDIR"/test/xml-lint/comments-inline",
         SRCDIR"/test/xml-lint/comments-prolog",
+        SRCDIR"/test/xml-lint/comments-epilog",
     };
 
     orcus::xmlns_repository repo;

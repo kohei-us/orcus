@@ -158,6 +158,16 @@ void test_comments()
         assert(output.find("<!--prolog-->") < output.find("<root"));
     }
 
+    {
+        // epilog comment after root
+        std::string_view input = R"(<?xml version="1.0"?><root/><!--epilog-->)";
+        auto dt = load_document_tree(input);
+        std::string output = dt->tree.dump(2);
+        assert(output.find("<!--epilog-->") != std::string::npos);
+
+        // epilog comment must sit after the root element
+        assert(output.find("<root/>") < output.find("<!--epilog-->"));
+    }
 }
 
 int main()

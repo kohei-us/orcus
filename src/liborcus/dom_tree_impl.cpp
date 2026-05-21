@@ -213,9 +213,13 @@ void document_tree::impl::comment(std::string_view val)
 
     if (m_elem_stack.empty())
     {
-        // outside any element: prolog comment (the SAX parser stops at the
-        // root close so trailing comments never reach this handler)
-        m_prolog_comments.emplace_back(val);
+        // outside any element: prolog if root not yet seen, epilog otherwise
+
+        if (m_root)
+            m_epilog_comments.emplace_back(val);
+        else
+            m_prolog_comments.emplace_back(val);
+
         return;
     }
 

@@ -159,6 +159,7 @@ private:
      */
     void header();
     void body();
+    void trailer();
     void element();
     void element_open(std::ptrdiff_t begin_pos);
     void element_close(std::ptrdiff_t begin_pos);
@@ -188,6 +189,7 @@ void sax_parser<HandlerT,ConfigT>::parse()
     header();
     skip_space_and_control();
     body();
+    trailer();
 
     assert(buffer_pos() == 0);
 }
@@ -234,6 +236,34 @@ void sax_parser<HandlerT,ConfigT>::body()
             characters();
         else
             next();
+    }
+}
+
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::trailer()
+{
+    while (has_char())
+    {
+        skip_space_and_control();
+        if (!has_char())
+            return;
+
+        if (cur_char() != '<')
+            throw malformed_xml_error(
+                "only whitespace and comments are allowed after the root element.",
+                offset());
+
+        if (next_char_checked() != '!')
+            throw malformed_xml_error(
+                "only comments are allowed as markup after the root element.",
+                offset());
+
+        // require '<!--'
+        if (next_char_checked() != '-' || next_char_checked() != '-')
+            throw malformed_xml_error("comment expected.", offset());
+
+        next();
+        m_handler.comment(comment());
     }
 }
 

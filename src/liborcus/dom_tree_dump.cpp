@@ -238,12 +238,31 @@ std::string document_tree::dump(std::size_t indent) const
     for (const detail::comment& cm : mp_impl->m_prolog_comments)
     {
         os << "<!--" << cm.value << "-->";
+
         if (indent)
             os << '\n';
     }
 
     xml_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt, indent);
     walker.run();
+
+    if (indent && !mp_impl->m_epilog_comments.empty())
+    {
+        // ensure that the root ends on its own line before the epilog content
+        // is dumped
+        auto buf = os.view();
+        if (!buf.empty() && buf.back() != '\n')
+            os << '\n';
+    }
+
+    // emit epilog comments after the root element
+    for (const detail::comment& cm : mp_impl->m_epilog_comments)
+    {
+        os << "<!--" << cm.value << "-->";
+
+        if (indent)
+            os << '\n';
+    }
 
     return os.str();
 }

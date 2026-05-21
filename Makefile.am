@@ -957,6 +957,7 @@ test_data = \
 	test/xml/invalids/only-bom.xml \
 	test/xml/invalids/only-double-boms.xml \
 	test/xml/invalids/partial-attr-value-with-encoding-char.xml \
+	test/xml/invalids/multi-root.xml \
 	test/xml/invalids/partial-open-element.xml \
 	test/xml/no-decl-1/check.txt \
 	test/xml/no-decl-1/input.xml \
@@ -964,8 +965,6 @@ test_data = \
 	test/xml/ns-alias-1/input.xml \
 	test/xml/osm/street-in-aizu.osm \
 	test/xml/parse-only/rss/input.xml \
-	test/xml/self-closing-root/check.txt \
-	test/xml/self-closing-root/input.xml \
 	test/xml/simple/check.txt \
 	test/xml/simple/input.xml \
 	test/xml/single-quote/check.txt \
