@@ -254,6 +254,17 @@ void test_builtin_namespace()
     }
 }
 
+void test_unknown_alias_returns_unknown_id()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // Looking up an alias that was never pushed must return
+    // XMLNS_UNKNOWN_ID rather than dereferencing an end iterator.
+    orcus::xmlns_repository repo;
+    auto cxt = repo.create_context();
+    assert(cxt.get("not-a-known-alias") == orcus::XMLNS_UNKNOWN_ID);
+}
+
 } // anonymous namespace
 
 int main()
@@ -265,6 +276,7 @@ int main()
     test_ns_context();
     test_repo_move();
     test_builtin_namespace();
+    test_unknown_alias_returns_unknown_id();
 
     return EXIT_SUCCESS;
 }

@@ -269,6 +269,7 @@ xmlns_id_t xmlns_context::get(std::string_view alias) const
         // check against the builtin alias
         if (alias == XML_BUILTIN_NS_ALIAS)
             return XML_BUILTIN_NS_URI;
+        return XMLNS_UNKNOWN_ID;
     }
 
     return it->second.empty() ? XMLNS_UNKNOWN_ID : it->second.back();
