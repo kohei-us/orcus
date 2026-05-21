@@ -12,6 +12,7 @@
 
 #include <orcus/zip_archive_stream.hpp>
 #include <orcus/zip_archive.hpp>
+#include <orcus/exception.hpp>
 
 #include <filesystem>
 
@@ -88,10 +89,110 @@ void test_zip_archive_file_entry_header()
     }
 }
 
+namespace {
+
+// Build a minimal valid zip blob containing a single zero-byte central
+// directory entry with the given filename.  No local file header is
+// emitted; load() only walks the central directory.
+std::vector<uint8_t> make_zip_with_entry_name(std::string_view name)
+{
+    std::vector<uint8_t> buf;
+
+    auto write_u16 = [&](uint16_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+    };
+    auto write_u32 = [&](uint32_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+        buf.push_back(static_cast<uint8_t>(v >> 16));
+        buf.push_back(static_cast<uint8_t>(v >> 24));
+    };
+
+    uint32_t cd_offset = 0;
+
+    // Central directory entry.
+    write_u32(0x02014b50);  // signature
+    write_u16(0);  // version made by
+    write_u16(0);  // min version needed
+    write_u16(0);  // general purpose flags
+    write_u16(0);  // compression method (stored)
+    write_u16(0);  // last mod time
+    write_u16(0);  // last mod date
+    write_u32(0);  // crc32
+    write_u32(0);  // compressed size
+    write_u32(0);  // uncompressed size
+    write_u16(static_cast<uint16_t>(name.size()));  // filename length
+    write_u16(0);  // extra field length
+    write_u16(0);  // file comment length
+    write_u16(0);  // disk number where file starts
+    write_u16(0);  // internal file attributes
+    write_u32(0);  // external file attributes
+    write_u32(0);  // local header offset
+    buf.insert(buf.end(), name.begin(), name.end());
+
+    uint32_t cd_size = static_cast<uint32_t>(buf.size() - cd_offset);
+
+    // End of central directory.
+    write_u32(0x06054b50);
+    write_u16(0);  // this disk
+    write_u16(0);  // disk where CD starts
+    write_u16(1);  // entries on this disk
+    write_u16(1);  // total entries
+    write_u32(cd_size);
+    write_u32(cd_offset);
+    write_u16(0);  // archive comment length
+
+    return buf;
+}
+
+} // namespace
+
+void test_zip_rejects_unsafe_entry_names()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // Real OOXML / ODF archives never carry these as entry names
+    const std::string_view bad_names[] = {
+        "../etc/anything",
+        "/etc/anything",
+        "foo/../bar",
+        "..",
+        "foo\\bar",
+        std::string_view{"foo\0bar", 7},
+    };
+
+    for (auto name : bad_names)
+    {
+        std::vector<uint8_t> blob = make_zip_with_entry_name(name);
+        zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+        zip_archive archive(&strm);
+        bool threw = false;
+        try
+        {
+            archive.load();
+        }
+        catch (const zip_error&)
+        {
+            threw = true;
+        }
+        assert(threw);
+    }
+
+    // Sanity check: a normal entry name still loads.
+    std::vector<uint8_t> blob = make_zip_with_entry_name("xl/sharedStrings.xml");
+    zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+    zip_archive archive(&strm);
+    archive.load();
+    assert(archive.get_file_entry_count() == 1);
+    assert(archive.get_file_entry_name(0) == "xl/sharedStrings.xml");
+}
+
 int main()
 {
     test_zip_archive_stream_blob();
     test_zip_archive_file_entry_header();
+    test_zip_rejects_unsafe_entry_names();
 
     return EXIT_SUCCESS;
 }

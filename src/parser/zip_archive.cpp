@@ -34,6 +34,32 @@ constexpr std::uint32_t zip64_size_marker = 0xFFFFFFFFu;
 // Round up 1024 and treat anything past that as malformed.
 constexpr std::size_t max_compression_ratio = 1024;
 
+// Reject entry names that an could be mis-interpreted as a traversal
+// or absolute path.
+bool is_unsafe_zip_path(std::string_view name)
+{
+    if (name.empty())
+        return true;
+    if (name.front() == '/')
+        return true;
+    for (char c : name)
+    {
+        if (c == '\\' || c == '\0')
+            return true;
+    }
+    for (std::size_t i = 0; i <= name.size(); )
+    {
+        std::size_t end = name.find('/', i);
+        std::size_t len = (end == std::string_view::npos ? name.size() : end) - i;
+        if (len == 2 && name[i] == '.' && name[i + 1] == '.')
+            return true;
+        if (end == std::string_view::npos)
+            break;
+        i = end + 1;
+    }
+    return false;
+}
+
 struct zip_file_param
 {
     enum compress_method_type { stored = 0, deflated = 8 };
@@ -393,7 +419,11 @@ void zip_archive::impl::read_file_entries()
             throw zip_error("entry compression ratio exceeds the deflate maximum");
 
         if (param.filename_length)
+        {
             param.filename = central_dir.read_string(param.filename_length, m_pool);
+            if (is_unsafe_zip_path(param.filename))
+                throw zip_error(std::format("unsafe zip entry name: '{}'", param.filename));
+        }
 
         if (param.extra_field_length)
             // Ignore extra field for now.
