@@ -188,11 +188,41 @@ void test_zip_rejects_unsafe_entry_names()
     assert(archive.get_file_entry_name(0) == "xl/sharedStrings.xml");
 }
 
+void test_seek_central_dir_window()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // EOCD records can only sit within the last (22 + 0xFFFF) = 65557
+    // bytes of the archive per the ZIP spec.  Put a valid-looking EOCD
+    // signature at byte 1 of a 70000-byte zero blob. That's outside
+    // the last 65557 bytes, so load() should reject the archive
+    // instead of finding the signature there.
+    std::vector<uint8_t> blob(70000, 0);
+    blob[1] = 0x50;
+    blob[2] = 0x4b;
+    blob[3] = 0x05;
+    blob[4] = 0x06;
+
+    zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+    zip_archive archive(&strm);
+    bool threw = false;
+    try
+    {
+        archive.load();
+    }
+    catch (const zip_error&)
+    {
+        threw = true;
+    }
+    assert(threw);
+}
+
 int main()
 {
     test_zip_archive_stream_blob();
     test_zip_archive_file_entry_header();
     test_zip_rejects_unsafe_entry_names();
+    test_seek_central_dir_window();
 
     return EXIT_SUCCESS;
 }

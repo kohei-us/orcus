@@ -550,13 +550,14 @@ size_t zip_archive::impl::seek_central_dir()
     size_t buf_size = 22 + max_comment_size; // central directory size is 22 + n (n maxing at 0xffff).
     std::vector<uint8_t> buf(buf_size);
 
-    // Read stream backward and try to find the magic number.
+    // The EOCD record sits within the last (22 + 0xFFFF) bytes of the
+    // archive per the ZIP spec.  Scanning further back is wrong (and
+    // turns a malformed multi-GiB file into an I/O amplification DoS).
 
     size_t read_end_pos = m_stream_size;
-    while (read_end_pos)
+    if (read_end_pos)
     {
         if (read_end_pos < buf.size())
-            // Last segment to read.
             buf.resize(read_end_pos);
 
         size_t read_pos = read_end_pos - buf.size();
@@ -583,8 +584,6 @@ size_t zip_archive::impl::seek_central_dir()
             else
                 magic_pos = 0;
         }
-
-        read_end_pos -= buf.size();
     }
 
     return 0;
