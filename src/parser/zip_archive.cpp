@@ -34,7 +34,7 @@ constexpr std::uint32_t zip64_size_marker = 0xFFFFFFFFu;
 // Round up 1024 and treat anything past that as malformed.
 constexpr std::size_t max_compression_ratio = 1024;
 
-// Reject entry names that an could be mis-interpreted as a traversal
+// Reject entry names that could be mis-interpreted as a traversal
 // or absolute path.
 bool is_unsafe_zip_path(std::string_view name)
 {
