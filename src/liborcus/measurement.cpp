@@ -39,7 +39,7 @@ std::optional<double> to_double_checked(std::string_view s)
 
 long to_long(std::string_view s, const char** p_parse_ended)
 {
-    long value;
+    long value = 0;
     const char* p_last = parse_integer(s.data(), s.data() + s.size(), value);
     if (p_parse_ended)
         *p_parse_ended = p_last;

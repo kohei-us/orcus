@@ -94,10 +94,48 @@ void test_parse_integers()
     p_last = orcus::parse_integer(p, p_end, value);
     assert(p == p_last);
 
-    // Empty char range
+    // Empty range writes 0.
     p = test_str.data();
     p_end = p;
+    value = 0xdeadbeef;
     p_last = orcus::parse_integer(p, p_end, value);
+    assert(p_last == p);
+    assert(value == 0);
+
+    // Overflow saturates to LONG_MAX and consumes the digits.
+    test_str = "999999999999999999999";
+    p = test_str.data();
+    p_end = p + test_str.size();
+    value = 0;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == std::numeric_limits<long>::max());
+    assert(p_last == p_end);
+
+    // Negative overflow saturates to LONG_MIN.
+    test_str = "-999999999999999999999";
+    p = test_str.data();
+    p_end = p + test_str.size();
+    value = 0;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == std::numeric_limits<long>::min());
+    assert(p_last == p_end);
+
+    // Leading '+' is still accepted.
+    test_str = "+42";
+    p = test_str.data();
+    p_end = p + test_str.size();
+    value = 0;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == 42);
+    assert(p_last == p_end);
+
+    // No digits writes 0 and does not advance.
+    test_str = "abc";
+    p = test_str.data();
+    p_end = p + test_str.size();
+    value = 0xdeadbeef;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == 0);
     assert(p_last == p);
 }
 

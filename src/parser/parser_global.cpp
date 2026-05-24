@@ -13,11 +13,13 @@
 #include "utf8.hpp"
 
 #include <cassert>
+#include <charconv>
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <algorithm>
 #include <cctype>
+#include <system_error>
 
 namespace orcus {
 
@@ -61,43 +63,22 @@ const char* parse_numeric(const char* p, const char* p_end, double& value)
 
 const char* parse_integer(const char* p, const char* p_end, long& value)
 {
+    value = 0;
+
     if (p >= p_end)
         return p;
 
-    long result = 0;
-    bool negative_sign = false;
+    // We want to accept a leading '+' for positive, std::from_chars
+    // doesn't, so do it explicitly.
+    if (*p == '+')
+        ++p;
 
-    // Check for presence of a sign.
-    if (p != p_end)
-    {
-        switch (*p)
-        {
-            case '+':
-                ++p;
-                break;
-            case '-':
-                negative_sign = true;
-                ++p;
-                break;
-            default:
-                ;
-        }
-    }
-
-    for (; p != p_end; ++p)
-    {
-        if (*p < '0' || '9' < *p)
-        {
-            value = negative_sign ? -result : result;
-            return p;
-        }
-
-        result *= 10;
-        result += *p - '0';
-    }
-
-    value = negative_sign ? -result : result;
-    return p;
+    auto [ptr, ec] = std::from_chars(p, p_end, value);
+    if (ec == std::errc::result_out_of_range)
+        value = (p < p_end && *p == '-')
+            ? std::numeric_limits<long>::min()
+            : std::numeric_limits<long>::max();
+    return ptr;
 }
 
 string_escape_char_t get_string_escape_char_type(char c)
