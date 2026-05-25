@@ -158,9 +158,14 @@ double parser_base::parse_percent()
 {
     double v = parse_double_or_throw();
 
-    if (*mp_char != '%')
+    if (!has_char())
+        throw parse_error(
+            "parse_percent: '%' expected after the numeric value, but reached end of input.",
+            offset());
+
+    if (cur_char() != '%')
         parse_error::throw_with(
-            "parse_percent: '%' expected after the numeric value, but '", *mp_char, "' found.", offset());
+            "parse_percent: '%' expected after the numeric value, but '", cur_char(), "' found.", offset());
 
     next(); // skip the '%'.
     return v;
