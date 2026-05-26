@@ -38,6 +38,9 @@ struct entity_name_hash
 using attrs_type = std::vector<attr>;
 using attr_map_type = std::unordered_map<entity_name, std::size_t, entity_name_hash>;
 
+/**
+ * @note Also used to store XML declaration.
+ */
 struct processing_instruction
 {
     attrs_type attrs;
@@ -111,7 +114,8 @@ void escape(std::ostream& os, std::string_view val);
 struct document_tree::impl : public sax_ns_handler
 {
     using element_stack_type = std::vector<detail::element*>;
-    using processing_instructions_type = std::unordered_map<std::string_view, detail::processing_instruction>;
+    using processing_instructions_type =
+        std::unordered_map<std::string_view, detail::processing_instruction>;
 
     xmlns_context& m_ns_cxt;
     string_pool m_pool;

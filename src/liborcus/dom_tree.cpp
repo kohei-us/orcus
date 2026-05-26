@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <variant>
 
 namespace orcus {
 
@@ -35,50 +36,19 @@ std::strong_ordering entity_name::operator<=> (const entity_name& other) const
 
 struct const_node::impl
 {
+    using value_type = std::variant<
+        std::monostate,
+        const detail::processing_instruction*,
+        const detail::element*>;
+
     node_t type;
-
-    union
-    {
-        const detail::processing_instruction* pi;
-        const detail::element* elem;
-
-        struct
-        {
-            const char* p;
-            size_t n;
-
-        } str;
-
-    } value;
+    value_type value;
 
     impl() : type(node_t::unset) {}
 
-    impl(const impl& other) : type(other.type)
-    {
-        switch (type)
-        {
-            case node_t::declaration:
-            case node_t::processing_instruction:
-                value.pi = other.value.pi;
-                break;
-            case node_t::element:
-                value.elem = other.value.elem;
-                break;
-            case node_t::unset:
-            default:
-                ;
-        }
-    }
+    impl(const detail::element* _elem) : type(node_t::element), value(_elem) {}
 
-    impl(const detail::element* _elem) : type(node_t::element)
-    {
-        value.elem = _elem;
-    }
-
-    impl(const detail::processing_instruction* _pi, node_t _type) : type(_type)
-    {
-        value.pi = _pi;
-    }
+    impl(const detail::processing_instruction* _pi, node_t _type) : type(_type), value(_pi) {}
 };
 
 const_node::const_node(std::unique_ptr<impl>&& _impl) : mp_impl(std::move(_impl)) {}
@@ -98,7 +68,7 @@ size_t const_node::child_count() const
     {
         case node_t::element:
         {
-            const detail::element* p = mp_impl->value.elem;
+            const auto* p = std::get<const detail::element*>(mp_impl->value);
             return p->child_elem_positions.size();
         }
         default:
@@ -114,7 +84,7 @@ const_node const_node::child(size_t index) const
     {
         case node_t::element:
         {
-            const detail::element* p = mp_impl->value.elem;
+            const auto* p = std::get<const detail::element*>(mp_impl->value);
 
             size_t elem_pos = p->child_elem_positions.at(index);
             assert(elem_pos < p->child_nodes.size());
@@ -137,7 +107,7 @@ entity_name const_node::name() const
     {
         case node_t::element:
         {
-            const detail::element* p = mp_impl->value.elem;
+            const auto* p = std::get<const detail::element*>(mp_impl->value);
             return p->name;
         }
         default:
@@ -153,7 +123,7 @@ std::string_view const_node::attribute(const entity_name& name) const
     {
         case node_t::element:
         {
-            const detail::element* p = mp_impl->value.elem;
+            const auto* p = std::get<const detail::element*>(mp_impl->value);
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 break;
@@ -176,7 +146,7 @@ std::string_view const_node::attribute(std::string_view name) const
         case node_t::declaration:
         case node_t::processing_instruction:
         {
-            const detail::processing_instruction* p = mp_impl->value.pi;
+            const auto* p = std::get<const detail::processing_instruction*>(mp_impl->value);
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 return std::string_view();
@@ -199,12 +169,12 @@ size_t const_node::attribute_count() const
         case node_t::declaration:
         case node_t::processing_instruction:
         {
-            const detail::processing_instruction* p = mp_impl->value.pi;
+            const auto* p = std::get<const detail::processing_instruction*>(mp_impl->value);
             return p->attrs.size();
         }
         case node_t::element:
         {
-            const detail::element* p = mp_impl->value.elem;
+            const auto* p = std::get<const detail::element*>(mp_impl->value);
             return p->attrs.size();
         }
         default:
@@ -218,7 +188,7 @@ const_node const_node::parent() const
     if (mp_impl->type != node_t::element)
         return const_node();
 
-    const detail::element* p = mp_impl->value.elem->parent;
+    const auto* p = std::get<const detail::element*>(mp_impl->value)->parent;
     if (!p)
         return const_node();
 
@@ -240,23 +210,7 @@ const_node& const_node::operator= (const const_node& other)
 
 bool const_node::operator== (const const_node& other) const
 {
-    if (mp_impl->type != other.mp_impl->type)
-        return false;
-
-    switch (mp_impl->type)
-    {
-        case node_t::unset:
-            return true;
-        case node_t::declaration:
-        case node_t::processing_instruction:
-            return mp_impl->value.pi == other.mp_impl->value.pi;
-        case node_t::element:
-            return mp_impl->value.elem == other.mp_impl->value.elem;
-        default:
-            ;
-    }
-
-    return false;
+    return mp_impl->type == other.mp_impl->type && mp_impl->value == other.mp_impl->value;
 }
 
 bool const_node::operator!= (const const_node& other) const
