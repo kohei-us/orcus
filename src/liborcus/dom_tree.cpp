@@ -39,7 +39,7 @@ struct const_node::impl
 
     union
     {
-        const detail::declaration* decl;
+        const detail::processing_instruction* pi;
         const detail::element* elem;
 
         struct
@@ -58,7 +58,8 @@ struct const_node::impl
         switch (type)
         {
             case node_t::declaration:
-                value.decl = other.value.decl;
+            case node_t::processing_instruction:
+                value.pi = other.value.pi;
                 break;
             case node_t::element:
                 value.elem = other.value.elem;
@@ -74,9 +75,9 @@ struct const_node::impl
         value.elem = _elem;
     }
 
-    impl(const detail::declaration* _decl) : type(node_t::declaration)
+    impl(const detail::processing_instruction* _pi, node_t _type) : type(_type)
     {
-        value.decl = _decl;
+        value.pi = _pi;
     }
 };
 
@@ -173,8 +174,9 @@ std::string_view const_node::attribute(std::string_view name) const
     switch (mp_impl->type)
     {
         case node_t::declaration:
+        case node_t::processing_instruction:
         {
-            const detail::declaration* p = mp_impl->value.decl;
+            const detail::processing_instruction* p = mp_impl->value.pi;
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 return std::string_view();
@@ -195,8 +197,9 @@ size_t const_node::attribute_count() const
     switch (mp_impl->type)
     {
         case node_t::declaration:
+        case node_t::processing_instruction:
         {
-            const detail::declaration* p = mp_impl->value.decl;
+            const detail::processing_instruction* p = mp_impl->value.pi;
             return p->attrs.size();
         }
         case node_t::element:
@@ -245,7 +248,8 @@ bool const_node::operator== (const const_node& other) const
         case node_t::unset:
             return true;
         case node_t::declaration:
-            return mp_impl->value.decl == other.mp_impl->value.decl;
+        case node_t::processing_instruction:
+            return mp_impl->value.pi == other.mp_impl->value.pi;
         case node_t::element:
             return mp_impl->value.elem == other.mp_impl->value.elem;
         default:
@@ -284,14 +288,33 @@ dom::const_node document_tree::root() const
     return dom::const_node(std::move(v));
 }
 
-dom::const_node document_tree::declaration(std::string_view name) const
+dom::const_node document_tree::declaration() const
 {
-    impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
-    if (it == mp_impl->m_decls.end())
+    auto it = mp_impl->m_pis.find("xml");
+    if (it == mp_impl->m_pis.end())
         return dom::const_node();
 
-    const detail::declaration* decl = &it->second;
-    auto v = std::make_unique<dom::const_node::impl>(decl);
+    auto v = std::make_unique<dom::const_node::impl>(&it->second, node_t::declaration);
+    return dom::const_node(std::move(v));
+}
+
+dom::const_node document_tree::processing_instruction(std::string_view target) const
+{
+    auto it = mp_impl->m_pis.find(target);
+    if (it == mp_impl->m_pis.end())
+        return dom::const_node();
+
+    auto v = std::make_unique<dom::const_node::impl>(&it->second, node_t::processing_instruction);
+    return dom::const_node(std::move(v));
+}
+
+dom::const_node document_tree::declaration(std::string_view name) const
+{
+    auto it = mp_impl->m_pis.find(name);
+    if (it == mp_impl->m_pis.end())
+        return dom::const_node();
+
+    auto v = std::make_unique<dom::const_node::impl>(&it->second, node_t::declaration);
     return dom::const_node(std::move(v));
 }
 

@@ -32,6 +32,7 @@ enum class node_t : uint8_t
     unset,
     declaration,
     element,
+    processing_instruction,
 };
 
 struct ORCUS_DLLPUBLIC entity_name
@@ -110,6 +111,11 @@ public:
 
     dom::const_node root() const;
 
+    dom::const_node declaration() const;
+
+    dom::const_node processing_instruction(std::string_view target) const;
+
+    [[deprecated("use processing_instruction(target), or declaration() for the XML declaration")]]
     dom::const_node declaration(std::string_view name) const;
 
     /**

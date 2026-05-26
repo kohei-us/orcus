@@ -38,7 +38,7 @@ struct entity_name_hash
 using attrs_type = std::vector<attr>;
 using attr_map_type = std::unordered_map<entity_name, std::size_t, entity_name_hash>;
 
-struct declaration
+struct processing_instruction
 {
     attrs_type attrs;
     attr_map_type attr_map;
@@ -111,15 +111,15 @@ void escape(std::ostream& os, std::string_view val);
 struct document_tree::impl : public sax_ns_handler
 {
     using element_stack_type = std::vector<detail::element*>;
-    using declarations_type = std::unordered_map<std::string_view, detail::declaration>;
+    using processing_instructions_type = std::unordered_map<std::string_view, detail::processing_instruction>;
 
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
 
     std::unique_ptr<sax::doctype_declaration> m_doctype;
 
-    std::string_view m_cur_decl_name;
-    declarations_type m_decls;
+    std::string_view m_cur_pi_target;
+    processing_instructions_type m_pis;
     detail::attrs_type m_doc_attrs;
     detail::attrs_type m_cur_attrs;
     detail::attr_map_type m_cur_attr_map;
@@ -133,7 +133,7 @@ struct document_tree::impl : public sax_ns_handler
 
     void start_declaration(std::string_view name)
     {
-        m_cur_decl_name = name;
+        m_cur_pi_target = name;
     }
 
     void namespace_declaration(std::string_view alias, xmlns_id_t ns_id);

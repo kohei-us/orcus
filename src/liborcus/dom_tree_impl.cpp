@@ -117,27 +117,13 @@ void document_tree::impl::namespace_declaration(std::string_view alias, xmlns_id
 
 void document_tree::impl::end_declaration(std::string_view name)
 {
-    assert(m_cur_decl_name == name);
+    assert(m_cur_pi_target == name);
 
-    detail::declaration decl;
-    decl.attrs.swap(m_cur_attrs);
-    decl.attr_map.swap(m_cur_attr_map);
+    detail::processing_instruction pi;
+    pi.attrs.swap(m_cur_attrs);
+    pi.attr_map.swap(m_cur_attr_map);
 
-    declarations_type::iterator it = m_decls.find(name);
-    if (it == m_decls.end())
-    {
-        // Insert a new entry for this name.
-        std::pair<declarations_type::iterator,bool> r =
-            m_decls.insert(
-                declarations_type::value_type(
-                    m_pool.intern(name).first, std::move(decl)));
-
-        if (!r.second)
-            // Insertion failed.
-            throw general_error("dom_tree::end_declaration: failed to insert a new declaration entry.");
-    }
-    else
-        it->second = std::move(decl);
+    m_pis.insert_or_assign(m_pool.intern(name).first, std::move(pi));
 }
 
 void document_tree::impl::start_element(const sax_ns_parser_element& elem)

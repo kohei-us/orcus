@@ -326,6 +326,7 @@ void test_orcus_dom_node_t()
     { bool result = verify_stream_value(orcus::dom::node_t::unset, "unset"); assert(result); }
     { bool result = verify_stream_value(orcus::dom::node_t::declaration, "declaration"); assert(result); }
     { bool result = verify_stream_value(orcus::dom::node_t::element, "element"); assert(result); }
+    { bool result = verify_stream_value(orcus::dom::node_t::processing_instruction, "processing-instruction"); assert(result); }
 #endif
 }
 

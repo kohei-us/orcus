@@ -219,11 +219,11 @@ std::string document_tree::dump(std::size_t indent) const
 
     std::ostringstream os;
 
-    // Emit XML declarations
-    for (const auto& [name, decl] : mp_impl->m_decls)
+    // emit the XML declaration and processing instructions
+    for (const auto& [target, pi] : mp_impl->m_pis)
     {
-        os << "<?" << name;
-        for (const detail::attr& a : decl.attrs)
+        os << "<?" << target;
+        for (const detail::attr& a : pi.attrs)
         {
             os << ' ' << a.name.name << "=\"";
             write_content_encoded(os, a.value, xml_encode_context_t::attr_double_quoted);

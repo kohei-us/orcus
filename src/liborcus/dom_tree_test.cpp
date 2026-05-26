@@ -45,7 +45,7 @@ void test_declaration()
 {
     auto doctree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
-    const_node decl = doctree->tree.declaration("xml");
+    const_node decl = doctree->tree.declaration();
     assert(decl.type() == node_t::declaration);
     assert(decl.attribute("version") == "1.0");
     assert(decl.attribute("encoding") == "UTF-8");

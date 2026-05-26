@@ -178,10 +178,10 @@ void test_xml_declarations()
     dom::document_tree dom(cxt);
     parse_file(dom, file_path);
 
-    // Make sure we parse the custom declaration correctly.
-    dom::const_node decl = dom.declaration("mso-application");
-    assert(decl.type() == dom::node_t::declaration);
-    assert(decl.attribute("progid") == "Excel.Sheet");
+    // make sure we parse the custom processing instruction correctly
+    dom::const_node pi = dom.processing_instruction("mso-application");
+    assert(pi.type() == dom::node_t::processing_instruction);
+    assert(pi.attribute("progid") == "Excel.Sheet");
 }
 
 void test_xml_dtd()
