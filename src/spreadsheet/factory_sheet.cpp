@@ -109,41 +109,55 @@ void import_array_formula::set_range(const range_t& range)
 {
     m_range = range;
 
+    const range_size_t sheet_size = m_doc.get_sheet_size();
+
+    if (m_range.first.row < 0 || m_range.first.column < 0 ||
+        m_range.first.row >= sheet_size.rows ||
+        m_range.first.column >= sheet_size.columns ||
+        m_range.last.row < m_range.first.row ||
+        m_range.last.column < m_range.first.column)
+    {
+        m_range.first.row = -1;
+        m_range.first.column = -1;
+        m_range.last = m_range.first;
+        m_result_mtx = ixion::matrix();
+        return;
+    }
+
+    if (m_range.last.row >= sheet_size.rows)
+        m_range.last.row = sheet_size.rows - 1;
+    if (m_range.last.column >= sheet_size.columns)
+        m_range.last.column = sheet_size.columns - 1;
+
+    const size_t rows =
+        static_cast<size_t>(m_range.last.row) - static_cast<size_t>(m_range.first.row) + 1;
+    const size_t cols =
+        static_cast<size_t>(m_range.last.column) - static_cast<size_t>(m_range.first.column) + 1;
+
     // Initialize the result matrix with the missing result value.
     switch (m_missing_formula_result.get_type())
     {
         case ixion::formula_result::result_type::value:
         {
-            ixion::matrix _mtx(
-                m_range.last.row - m_range.first.row + 1,
-                m_range.last.column - m_range.first.column + 1,
-                m_missing_formula_result.get_value());
+            ixion::matrix _mtx(rows, cols, m_missing_formula_result.get_value());
             m_result_mtx.swap(_mtx);
             break;
         }
         case ixion::formula_result::result_type::error:
         {
-            ixion::matrix _mtx(
-                m_range.last.row - m_range.first.row + 1,
-                m_range.last.column - m_range.first.column + 1,
-                m_missing_formula_result.get_error());
+            ixion::matrix _mtx(rows, cols, m_missing_formula_result.get_error());
             m_result_mtx.swap(_mtx);
             break;
         }
         case ixion::formula_result::result_type::string:
         {
-            ixion::matrix _mtx(
-                m_range.last.row - m_range.first.row + 1,
-                m_range.last.column - m_range.first.column + 1,
-                m_missing_formula_result.get_string());
+            ixion::matrix _mtx(rows, cols, m_missing_formula_result.get_string());
             m_result_mtx.swap(_mtx);
             break;
         }
         default:
         {
-            ixion::matrix _mtx(
-                m_range.last.row - m_range.first.row + 1,
-                m_range.last.column - m_range.first.column + 1);
+            ixion::matrix _mtx(rows, cols);
             m_result_mtx.swap(_mtx);
         }
     }
@@ -176,6 +190,8 @@ void import_array_formula::set_formula(formula_grammar_t /*grammar*/, std::strin
 
 void import_array_formula::set_result_value(row_t row, col_t col, double value)
 {
+    if (m_range.first.row < 0)
+        return;
     m_result_mtx.set(row, col, value);
 }
 
@@ -191,11 +207,16 @@ void import_array_formula::set_result_empty(row_t /*row*/, col_t /*col*/)
 
 void import_array_formula::set_result_bool(row_t row, col_t col, bool value)
 {
+    if (m_range.first.row < 0)
+        return;
     m_result_mtx.set(row, col, value);
 }
 
 void import_array_formula::commit()
 {
+    if (m_range.first.row < 0 || m_range.first.column < 0)
+        return;
+
     ixion::formula_result cached_results(std::move(m_result_mtx));
     m_sheet.set_grouped_formula(m_range, std::move(m_tokens), std::move(cached_results));
 }
