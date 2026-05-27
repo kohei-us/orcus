@@ -37,7 +37,6 @@ void test_encoded_attr()
     auto doctree = load_document_tree(content);
     const_node root = doctree->tree.root();
     doctree->tree.dump_compact(std::cout);
-    std::cout << __FILE__ << "#" << __LINE__ << " (:test_encoded_attr): " << root.attribute("attr") << std::endl;
     assert(root.attribute("attr") == "&;");
 }
 
