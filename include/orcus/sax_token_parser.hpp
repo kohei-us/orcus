@@ -133,9 +133,7 @@ private:
 
         void doctype(const sax::doctype_declaration&) {}
 
-        void start_declaration(std::string_view) {}
-
-        void end_declaration(std::string_view)
+        void end_declaration()
         {
             m_handler.declaration(m_declaration);
             m_elem.attrs.clear();

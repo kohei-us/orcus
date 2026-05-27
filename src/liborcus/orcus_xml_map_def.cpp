@@ -48,9 +48,13 @@ public:
     xml_map_sax_handler(orcus_xml& app) : m_app(app) {}
 
     void doctype(const sax::doctype_declaration&) {}
-    void start_declaration(std::string_view /*name*/) {}
 
-    void end_declaration(std::string_view /*name*/)
+    void end_declaration()
+    {
+        m_attrs.clear();
+    }
+
+    void end_processing_instruction(std::string_view /*target*/)
     {
         m_attrs.clear();
     }

@@ -244,11 +244,10 @@ dom::const_node document_tree::root() const
 
 dom::const_node document_tree::declaration() const
 {
-    auto it = mp_impl->m_pis.find("xml");
-    if (it == mp_impl->m_pis.end())
+    if (!mp_impl->m_xml_decl)
         return dom::const_node();
 
-    auto v = std::make_unique<dom::const_node::impl>(&it->second, node_t::declaration);
+    auto v = std::make_unique<dom::const_node::impl>(&*mp_impl->m_xml_decl, node_t::declaration);
     return dom::const_node(std::move(v));
 }
 
@@ -264,6 +263,9 @@ dom::const_node document_tree::processing_instruction(std::string_view target) c
 
 dom::const_node document_tree::declaration(std::string_view name) const
 {
+    if (name == "xml")
+        return declaration();
+
     auto it = mp_impl->m_pis.find(name);
     if (it == mp_impl->m_pis.end())
         return dom::const_node();

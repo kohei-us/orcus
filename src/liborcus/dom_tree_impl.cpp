@@ -115,15 +115,26 @@ void document_tree::impl::namespace_declaration(std::string_view alias, xmlns_id
     m_cur_ns_decls.emplace_back(alias_safe, ns_id);
 }
 
-void document_tree::impl::end_declaration(std::string_view name)
+void document_tree::impl::end_declaration()
 {
-    assert(m_cur_pi_target == name);
+    assert(m_cur_pi_target == "xml");
+
+    detail::processing_instruction decl;
+    decl.attrs.swap(m_cur_attrs);
+    decl.attr_map.swap(m_cur_attr_map);
+
+    m_xml_decl = std::move(decl);
+}
+
+void document_tree::impl::end_processing_instruction(std::string_view target)
+{
+    assert(m_cur_pi_target == target);
 
     detail::processing_instruction pi;
     pi.attrs.swap(m_cur_attrs);
     pi.attr_map.swap(m_cur_attr_map);
 
-    m_pis.insert_or_assign(m_pool.intern(name).first, std::move(pi));
+    m_pis.insert_or_assign(m_pool.intern(target).first, std::move(pi));
 }
 
 void document_tree::impl::start_element(const sax_ns_parser_element& elem)

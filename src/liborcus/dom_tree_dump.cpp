@@ -219,9 +219,7 @@ std::string document_tree::dump(std::size_t indent) const
 
     std::ostringstream os;
 
-    // emit the XML declaration and processing instructions
-    for (const auto& [target, pi] : mp_impl->m_pis)
-    {
+    auto write_pi = [&](std::string_view target, const detail::processing_instruction& pi) {
         os << "<?" << target;
         for (const detail::attr& a : pi.attrs)
         {
@@ -232,7 +230,14 @@ std::string document_tree::dump(std::size_t indent) const
         os << "?>";
         if (indent)
             os << '\n';
-    }
+    };
+
+    // emit the XML declaration first, then any processing instructions
+    if (mp_impl->m_xml_decl)
+        write_pi("xml", *mp_impl->m_xml_decl);
+
+    for (const auto& [target, pi] : mp_impl->m_pis)
+        write_pi(target, pi);
 
     // emit prolog comments between the declarations and the root element
     for (const detail::comment& cm : mp_impl->m_prolog_comments)

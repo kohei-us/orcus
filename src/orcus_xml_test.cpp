@@ -28,9 +28,12 @@ class sax_handler_encoded_attrs : public sax_handler
 public:
     void doctype(const sax::doctype_declaration&) {}
 
-    void start_declaration(std::string_view) {}
+    void end_declaration()
+    {
+        m_attrs.clear();
+    }
 
-    void end_declaration(std::string_view)
+    void end_processing_instruction(std::string_view /*target*/)
     {
         m_attrs.clear();
     }
@@ -182,6 +185,19 @@ void test_xml_declarations()
     dom::const_node pi = dom.processing_instruction("mso-application");
     assert(pi.type() == dom::node_t::processing_instruction);
     assert(pi.attribute("progid") == "Excel.Sheet");
+
+    // the XML declaration is retrieved via declaration(), not as a PI
+    dom::const_node decl = dom.declaration();
+    assert(decl.type() == dom::node_t::declaration);
+    assert(decl.attribute("version") == "1.0");
+    assert(decl.attribute("encoding") == "UTF-8");
+
+    // the "xml" target is reserved for the XML declaration and must not be
+    // retrievable through the processing-instruction accessor
+    assert(dom.processing_instruction("xml").type() == dom::node_t::unset);
+
+    // conversely, declaration() does not pick up a non-xml target
+    assert(dom.processing_instruction("mso-application").type() != dom::node_t::declaration);
 }
 
 void test_xml_dtd()

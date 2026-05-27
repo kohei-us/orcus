@@ -38,25 +38,41 @@ public:
     }
 
     /**
-     * Called when &lt;?... is encountered, where the '...' may be an
-     * arbitraray dentifier.  One common declaration is &lt;?xml which is
-     * typically given at the start of an XML stream.
-     *
-     * @param decl name of the identifier.
+     * Called when the XML declaration &lt;?xml ... ?&gt; is encountered.  Only
+     * fires for the XML declaration; processing instructions (any other
+     * &lt;?target ... ?&gt;) are reported through @ref start_processing_instruction.
      */
-    void start_declaration(std::string_view decl)
+    void start_declaration()
     {
-        (void)decl;
     }
 
     /**
-     * Called when the closing tag (&gt;) of a &lt;?... ?&gt; is encountered.
-     *
-     * @param decl name of the identifier.
+     * Called when the closing tag (?&gt;) of the XML declaration is encountered.
      */
-    void end_declaration(std::string_view decl)
+    void end_declaration()
     {
-        (void)decl;
+    }
+
+    /**
+     * Called when a processing instruction &lt;?target ... is encountered, where
+     * 'target' is any identifier other than 'xml'.
+     *
+     * @param target target name of the processing instruction.
+     */
+    void start_processing_instruction(std::string_view target)
+    {
+        (void)target;
+    }
+
+    /**
+     * Called when the closing tag (?&gt;) of a processing instruction is
+     * encountered.
+     *
+     * @param target target name of the processing instruction.
+     */
+    void end_processing_instruction(std::string_view target)
+    {
+        (void)target;
     }
 
     /**
@@ -412,7 +428,12 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
         throw malformed_xml_error(os.str(), offset());
     }
 
-    m_handler.start_declaration(decl_name);
+    const bool is_xml_decl = (decl_name == "xml");
+    if (is_xml_decl)
+        m_handler.start_declaration();
+    else
+        m_handler.start_processing_instruction(decl_name);
+
     skip_space_and_control();
 
     // Parse the attributes.
@@ -424,7 +445,11 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
     if (next_char_checked() != '>')
         throw malformed_xml_error("declaration must end with '?>'.", offset());
 
-    m_handler.end_declaration(decl_name);
+    if (is_xml_decl)
+        m_handler.end_declaration();
+    else
+        m_handler.end_processing_instruction(decl_name);
+
     reset_buffer_pos();
     next();
 }

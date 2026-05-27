@@ -146,8 +146,6 @@ class sax_handler : public sax_ns_handler
 public:
     sax_handler(xmlns_context& /*ns_cxt*/) {}
     void doctype(const sax::doctype_declaration&) {}
-    void start_declaration(std::string_view) {}
-    void end_declaration(std::string_view) {}
     void attribute(std::string_view, std::string_view) {}
 
     void attribute(const sax_ns_parser_attribute& attr)

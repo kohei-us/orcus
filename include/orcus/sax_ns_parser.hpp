@@ -101,25 +101,41 @@ public:
     }
 
     /**
-     * Called when &lt;?... is encountered, where the '...' may be an
-     * arbitraray dentifier.  One common declaration is &lt;?xml which is
-     * typically given at the start of an XML stream.
-     *
-     * @param decl name of the identifier.
+     * Called when the XML declaration &lt;?xml ... ?&gt; is encountered.  Only
+     * fires for the XML declaration; processing instructions (any other
+     * &lt;?target ... ?&gt;) are reported through @ref start_processing_instruction.
      */
-    void start_declaration(std::string_view decl)
+    void start_declaration()
     {
-        (void)decl;
     }
 
     /**
-     * Called when the closing tag (&gt;) of a &lt;?... ?&gt; is encountered.
-     *
-     * @param decl name of the identifier.
+     * Called when the closing tag (?&gt;) of the XML declaration is encountered.
      */
-    void end_declaration(std::string_view decl)
+    void end_declaration()
     {
-        (void)decl;
+    }
+
+    /**
+     * Called when a processing instruction &lt;?target ... is encountered, where
+     * 'target' is any identifier other than 'xml'.
+     *
+     * @param target target name of the processing instruction.
+     */
+    void start_processing_instruction(std::string_view target)
+    {
+        (void)target;
+    }
+
+    /**
+     * Called when the closing tag (?&gt;) of a processing instruction is
+     * encountered.
+     *
+     * @param target target name of the processing instruction.
+     */
+    void end_processing_instruction(std::string_view target)
+    {
+        (void)target;
     }
 
     /**
@@ -276,16 +292,28 @@ private:
             m_handler.doctype(dtd);
         }
 
-        void start_declaration(std::string_view name)
+        void start_declaration()
         {
             m_declaration = true;
-            m_handler.start_declaration(name);
+            m_handler.start_declaration();
         }
 
-        void end_declaration(std::string_view name)
+        void end_declaration()
         {
             m_declaration = false;
-            m_handler.end_declaration(name);
+            m_handler.end_declaration();
+        }
+
+        void start_processing_instruction(std::string_view target)
+        {
+            m_declaration = true;
+            m_handler.start_processing_instruction(target);
+        }
+
+        void end_processing_instruction(std::string_view target)
+        {
+            m_declaration = false;
+            m_handler.end_processing_instruction(target);
         }
 
         void start_element(const sax::parser_element& elem)

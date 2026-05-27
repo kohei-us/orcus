@@ -17,6 +17,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <optional>
 
 namespace orcus { namespace dom {
 
@@ -123,6 +124,7 @@ struct document_tree::impl : public sax_ns_handler
     std::unique_ptr<sax::doctype_declaration> m_doctype;
 
     std::string_view m_cur_pi_target;
+    std::optional<detail::processing_instruction> m_xml_decl;
     processing_instructions_type m_pis;
     detail::attrs_type m_doc_attrs;
     detail::attrs_type m_cur_attrs;
@@ -135,13 +137,19 @@ struct document_tree::impl : public sax_ns_handler
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 
-    void start_declaration(std::string_view name)
+    void start_declaration()
     {
-        m_cur_pi_target = name;
+        m_cur_pi_target = "xml";
+    }
+
+    void start_processing_instruction(std::string_view target)
+    {
+        m_cur_pi_target = target;
     }
 
     void namespace_declaration(std::string_view alias, xmlns_id_t ns_id);
-    void end_declaration(std::string_view name);
+    void end_declaration();
+    void end_processing_instruction(std::string_view target);
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);
     void characters(std::string_view val, bool transient);
