@@ -7,6 +7,7 @@
 #
 ########################################################################
 
+import gc
 import sys
 import pytest
 from pathlib import Path
@@ -91,6 +92,34 @@ def test_named_expression_sheet_local():
     assert len(iter) == 1
     tokens = [t for t in iter]
     assert str(tokens[0]) == "$A$4:$B$5"
+
+
+def test_sheets_refcount_balance():
+    # The document's sheets tuple must own exactly one reference per sheet.
+    filepath = TESTDIR / "raw-values-1" / "input.xlsx"
+    with filepath.open("rb") as f:
+        doc = xlsx.read(f)
+
+    # The tuple itself should hold exactly one reference to each sheet.
+    # doc.sheets[0] places one transient reference on the evaluation stack;
+    # getrefcount sees that plus the tuple's owned reference.
+    refs_via_tuple_only = sys.getrefcount(doc.sheets[0])
+    assert refs_via_tuple_only == 2, (
+        f"sheet refcount is {refs_via_tuple_only}; expected 2 "
+        f"(1 owned by the tuple, 1 transient on the eval stack); a "
+        f"larger value indicates store_document leaks a reference")
+
+    sheet = doc.sheets[0]
+    before = sys.getrefcount(sheet)
+
+    del doc
+    gc.collect()
+
+    after = sys.getrefcount(sheet)
+
+    assert before - after == 1, (
+        f"refcount on sheet dropped by {before - after} after destroying "
+        f"doc; expected exactly 1 (the tuple's owned reference)")
 
 
 if __name__ == "__main__":

@@ -48,14 +48,8 @@ void tp_dealloc(pyobj_document* self)
 {
     delete self->data;
 
-    // Destroy all sheet objects.
-    Py_ssize_t n = PyTuple_Size(self->sheets);
-    for (Py_ssize_t i = 0; i < n; ++i)
-    {
-        PyObject* o = PyTuple_GetItem(self->sheets, i);
-        Py_CLEAR(o);
-    }
-    Py_CLEAR(self->sheets);  // and the tuple containing the sheets.
+    // Dropping the tuple releases the sheets via tupledealloc.
+    Py_CLEAR(self->sheets);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -64,6 +58,7 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_document* self = t(type->tp_alloc(type, 0));
     self->data = new document_data;
+    self->sheets = nullptr;
     return reinterpret_cast<PyObject*>(self);
 }
 
@@ -200,7 +195,7 @@ bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
 
         sheet_type->tp_init(pysheet, nullptr, nullptr);
 
-        Py_INCREF(pysheet);
+        // PyTuple_SetItem steals the reference returned by tp_new.
         PyTuple_SetItem(pydoc->sheets, i, pysheet);
 
         if (!store_sheet(pysheet, pydoc_data->m_doc.get(), sheet))
