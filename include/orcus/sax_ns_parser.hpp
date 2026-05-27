@@ -179,9 +179,9 @@ public:
     }
 
     /**
-     * Called upon parsing of an attribute of a declaration.  The value of an
-     * attribute is assumed to be transient thus should be consumed within the
-     * scope of this callback.
+     * Called upon parsing of an attribute of the XML declaration or a
+     * processing instruction.  The value of an attribute is assumed to be
+     * transient thus should be consumed within the scope of this callback.
      *
      * @param name name of an attribute.
      * @param val value of an attribute.
@@ -282,10 +282,10 @@ private:
         xmlns_context& m_ns_cxt;
         handler_type& m_handler;
 
-        bool m_declaration;
+        bool m_in_pi_block;
 
     public:
-        handler_wrapper(xmlns_context& ns_cxt, handler_type& handler) : m_ns_cxt(ns_cxt), m_handler(handler), m_declaration(false) {}
+        handler_wrapper(xmlns_context& ns_cxt, handler_type& handler) : m_ns_cxt(ns_cxt), m_handler(handler), m_in_pi_block(false) {}
 
         void doctype(const sax::doctype_declaration& dtd)
         {
@@ -294,25 +294,25 @@ private:
 
         void start_declaration()
         {
-            m_declaration = true;
+            m_in_pi_block = true;
             m_handler.start_declaration();
         }
 
         void end_declaration()
         {
-            m_declaration = false;
+            m_in_pi_block = false;
             m_handler.end_declaration();
         }
 
         void start_processing_instruction(std::string_view target)
         {
-            m_declaration = true;
+            m_in_pi_block = true;
             m_handler.start_processing_instruction(target);
         }
 
         void end_processing_instruction(std::string_view target)
         {
-            m_declaration = false;
+            m_in_pi_block = false;
             m_handler.end_processing_instruction(target);
         }
 
@@ -366,9 +366,9 @@ private:
 
         void attribute(const sax::parser_attribute& attr)
         {
-            if (m_declaration)
+            if (m_in_pi_block)
             {
-                // XML declaration attribute.  Pass it through to the handler without namespace.
+                // attr of an XML declaration or processing instruction, no namespace processing
                 m_handler.attribute(attr.name, attr.value);
                 return;
             }
