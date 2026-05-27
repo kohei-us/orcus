@@ -24,6 +24,7 @@ protected:
     xml_declaration_t m_declaration;
     xml_token_element_t m_elem;
     const tokens& m_tokens;
+    bool m_in_xml_decl = false;
 
     xml_token_t tokenize(std::string_view name) const;
     void set_element(const sax_ns_parser_element& elem);
@@ -133,8 +134,14 @@ private:
 
         void doctype(const sax::doctype_declaration&) {}
 
+        void start_declaration()
+        {
+            m_in_xml_decl = true;
+        }
+
         void end_declaration()
         {
+            m_in_xml_decl = false;
             m_handler.declaration(m_declaration);
             m_elem.attrs.clear();
         }

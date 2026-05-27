@@ -58,6 +58,10 @@ void sax_token_handler_wrapper_base::set_element(const sax_ns_parser_element& el
 
 void sax_token_handler_wrapper_base::attribute(std::string_view name, std::string_view val)
 {
+    if (!m_in_xml_decl)
+        // ignore attrs of processing instructions (they share the no-namespace attr path)
+        return;
+
     decl_attr_type dat = decl_attr::get().find(name);
 
     switch (dat)
