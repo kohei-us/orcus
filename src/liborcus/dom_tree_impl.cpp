@@ -165,7 +165,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     p->child_elem_positions.push_back(elem_pos);
 
     p->child_nodes.push_back(std::make_unique<detail::element>(ns, name_safe));
-    const detail::element* parent = p;
+    detail::element* parent = p;
     p = static_cast<detail::element*>(p->child_nodes.back().get());
     p->parent = parent;
     p->attrs.swap(m_cur_attrs);

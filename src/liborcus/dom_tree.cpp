@@ -9,7 +9,9 @@
 #include <orcus/exception.hpp>
 
 #include <cassert>
+#include <format>
 #include <algorithm>
+#include <stdexcept>
 #include <variant>
 
 namespace orcus {
@@ -38,17 +40,34 @@ struct const_node::impl
 {
     using value_type = std::variant<
         std::monostate,
-        const detail::processing_instruction*,
-        const detail::element*>;
+        detail::processing_instruction*,
+        detail::element*>;
 
     node_t type;
     value_type value;
+    string_pool* pool; //< non-null only for handles obtained via the mutable API
 
-    impl() : type(node_t::unset) {}
+    impl() : type(node_t::unset), pool(nullptr) {}
 
-    impl(const detail::element* _elem) : type(node_t::element), value(_elem) {}
+    impl(detail::element* _elem) :
+        type(node_t::element), value(_elem), pool(nullptr) {}
 
-    impl(const detail::processing_instruction* _pi, node_t _type) : type(_type), value(_pi) {}
+    impl(detail::processing_instruction* _pi, node_t _type) :
+        type(_type), value(_pi), pool(nullptr) {}
+
+    /**
+     * Ensure this node is an element and return a reference to it as an element
+     * type.
+     *
+     * @param op Name of function where it is needed.
+     */
+    detail::element& require_element(std::string_view op)
+    {
+        if (type != node_t::element)
+            throw std::invalid_argument(std::format("{}: node is not an element", op));
+
+        return *std::get<detail::element*>(value);
+    }
 };
 
 const_node::const_node(std::unique_ptr<impl>&& _impl) : mp_impl(std::move(_impl)) {}
@@ -68,7 +87,7 @@ size_t const_node::child_count() const
     {
         case node_t::element:
         {
-            const auto* p = std::get<const detail::element*>(mp_impl->value);
+            const auto* p = std::get<detail::element*>(mp_impl->value);
             return p->child_elem_positions.size();
         }
         default:
@@ -84,15 +103,15 @@ const_node const_node::child(size_t index) const
     {
         case node_t::element:
         {
-            const auto* p = std::get<const detail::element*>(mp_impl->value);
+            auto* p = std::get<detail::element*>(mp_impl->value);
 
             size_t elem_pos = p->child_elem_positions.at(index);
             assert(elem_pos < p->child_nodes.size());
 
-            const detail::node* child_node = p->child_nodes[elem_pos].get();
+            detail::node* child_node = p->child_nodes[elem_pos].get();
             assert(child_node->type == detail::node_type::element);
 
-            auto v = std::make_unique<impl>(static_cast<const detail::element*>(child_node));
+            auto v = std::make_unique<impl>(static_cast<detail::element*>(child_node));
             return const_node(std::move(v));
         }
         default:
@@ -107,7 +126,7 @@ entity_name const_node::name() const
     {
         case node_t::element:
         {
-            const auto* p = std::get<const detail::element*>(mp_impl->value);
+            const auto* p = std::get<detail::element*>(mp_impl->value);
             return p->name;
         }
         default:
@@ -123,7 +142,7 @@ std::string_view const_node::attribute(const entity_name& name) const
     {
         case node_t::element:
         {
-            const auto* p = std::get<const detail::element*>(mp_impl->value);
+            const auto* p = std::get<detail::element*>(mp_impl->value);
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 break;
@@ -146,7 +165,7 @@ std::string_view const_node::attribute(std::string_view name) const
         case node_t::declaration:
         case node_t::processing_instruction:
         {
-            const auto* p = std::get<const detail::processing_instruction*>(mp_impl->value);
+            const auto* p = std::get<detail::processing_instruction*>(mp_impl->value);
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 return std::string_view();
@@ -169,12 +188,12 @@ size_t const_node::attribute_count() const
         case node_t::declaration:
         case node_t::processing_instruction:
         {
-            const auto* p = std::get<const detail::processing_instruction*>(mp_impl->value);
+            const auto* p = std::get<detail::processing_instruction*>(mp_impl->value);
             return p->attrs.size();
         }
         case node_t::element:
         {
-            const auto* p = std::get<const detail::element*>(mp_impl->value);
+            const auto* p = std::get<detail::element*>(mp_impl->value);
             return p->attrs.size();
         }
         default:
@@ -188,7 +207,7 @@ const_node const_node::parent() const
     if (mp_impl->type != node_t::element)
         return const_node();
 
-    const auto* p = std::get<const detail::element*>(mp_impl->value)->parent;
+    auto* p = std::get<detail::element*>(mp_impl->value)->parent;
     if (!p)
         return const_node();
 
@@ -218,6 +237,131 @@ bool const_node::operator!= (const const_node& other) const
     return !operator==(other);
 }
 
+node::node(std::unique_ptr<impl>&& _impl, string_pool* pool) :
+    const_node(std::move(_impl))
+{
+    mp_impl->pool = pool;
+}
+
+node::node() = default;
+node::node(const node& other) = default;
+node::node(node&& other) = default;
+node::~node() = default;
+
+node& node::operator= (const node& other) = default;
+
+namespace {
+
+void set_attr_on(detail::attrs_type& attrs, detail::attr_map_type& attr_map,
+    entity_name name, std::string_view value)
+{
+    auto it = attr_map.find(name);
+    if (it == attr_map.end())
+    {
+        std::size_t pos = attrs.size();
+        attrs.emplace_back(name.ns, name.name, value);
+        attr_map.emplace(entity_name(name.ns, name.name), pos);
+    }
+    else
+    {
+        attrs[it->second].value = value;
+    }
+}
+
+} // anonymous namespace
+
+node node::append_element(entity_name name)
+{
+    auto& parent_elem = mp_impl->require_element("dom::node::append_element");
+
+    string_pool* pool = mp_impl->pool;
+    name.name = pool->intern(name.name).first;
+
+    std::size_t pos = parent_elem.child_nodes.size();
+    parent_elem.child_elem_positions.push_back(pos);
+    parent_elem.child_nodes.push_back(
+        std::make_unique<detail::element>(name.ns, name.name));
+
+    auto* child = static_cast<detail::element*>(parent_elem.child_nodes.back().get());
+    child->parent = &parent_elem;
+
+    auto v = std::make_unique<const_node::impl>(child);
+    return node(std::move(v), pool);
+}
+
+void node::append_content(std::string_view value)
+{
+    auto& parent_elem = mp_impl->require_element("dom::node::append_content");
+
+    value = mp_impl->pool->intern(value).first;
+    auto child = std::make_unique<detail::content>(value);
+    child->parent = &parent_elem;
+    parent_elem.child_nodes.push_back(std::move(child));
+}
+
+void node::append_comment(std::string_view value)
+{
+    auto& parent_elem = mp_impl->require_element("dom::node::append_comment");
+
+    value = mp_impl->pool->intern(value).first;
+    auto child = std::make_unique<detail::comment>(value);
+    child->parent = &parent_elem;
+    parent_elem.child_nodes.push_back(std::move(child));
+}
+
+void node::set_attribute(entity_name name, std::string_view value)
+{
+    auto& elem = mp_impl->require_element("dom::node::set_attribute");
+
+    name.name = mp_impl->pool->intern(name.name).first;
+    value = mp_impl->pool->intern(value).first;
+    set_attr_on(elem.attrs, elem.attr_map, name, value);
+}
+
+void node::set_attribute(std::string_view name, std::string_view value)
+{
+    name = mp_impl->pool->intern(name).first;
+    value = mp_impl->pool->intern(value).first;
+
+    switch (mp_impl->type)
+    {
+        case node_t::element:
+        {
+            auto& elem = *std::get<detail::element*>(mp_impl->value);
+            set_attr_on(elem.attrs, elem.attr_map,
+                entity_name(XMLNS_UNKNOWN_ID, name), value);
+
+            break;
+        }
+        case node_t::declaration:
+        case node_t::processing_instruction:
+        {
+            auto& pi = *std::get<detail::processing_instruction*>(mp_impl->value);
+            set_attr_on(pi.attrs, pi.attr_map,
+                entity_name(XMLNS_UNKNOWN_ID, name), value);
+
+            break;
+        }
+        default:
+            throw std::invalid_argument(
+                "dom::node::set_attribute: node is unset");
+    }
+}
+
+void node::set_name(entity_name name)
+{
+    auto& elem = mp_impl->require_element("dom::node::set_name");
+    name.name = mp_impl->pool->intern(name.name).first;
+    elem.name = name;
+}
+
+void node::declare_namespace(std::string_view alias, xmlns_id_t ns)
+{
+    auto& elem = mp_impl->require_element("dom::node::declare_namespace");
+    alias = mp_impl->pool->intern(alias).first;
+    elem.ns_decls.emplace_back(alias, ns);
+}
+
 document_tree::document_tree(xmlns_context& cxt) :
     mp_impl(std::make_unique<impl>(cxt)) {}
 
@@ -231,15 +375,39 @@ document_tree::~document_tree() {}
 
 void document_tree::load(std::string_view strm)
 {
+    // discard any prior tree state so the parser builds a fresh document
+    mp_impl->m_doctype.reset();
+    mp_impl->m_cur_pi_target = {};
+    mp_impl->m_xml_decl.reset();
+    mp_impl->m_pis.clear();
+    mp_impl->m_doc_attrs.clear();
+    mp_impl->m_cur_attrs.clear();
+    mp_impl->m_cur_attr_map.clear();
+    mp_impl->m_cur_ns_decls.clear();
+    mp_impl->m_elem_stack.clear();
+    mp_impl->m_root.reset();
+    mp_impl->m_prolog_comments.clear();
+    mp_impl->m_epilog_comments.clear();
+
     sax_ns_parser<impl> parser(strm, mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
 }
 
 dom::const_node document_tree::root() const
 {
-    const detail::element* p = mp_impl->m_root.get();
+    detail::element* p = mp_impl->m_root.get();
     auto v = std::make_unique<const_node::impl>(p);
     return dom::const_node(std::move(v));
+}
+
+dom::node document_tree::set_root(entity_name name)
+{
+    name.name = mp_impl->m_pool.intern(name.name).first;
+    mp_impl->m_root = std::make_unique<detail::element>(name.ns, name.name);
+    mp_impl->m_elem_stack.clear();
+
+    auto v = std::make_unique<const_node::impl>(mp_impl->m_root.get());
+    return dom::node(std::move(v), &mp_impl->m_pool);
 }
 
 dom::const_node document_tree::declaration() const
@@ -251,6 +419,17 @@ dom::const_node document_tree::declaration() const
     return dom::const_node(std::move(v));
 }
 
+dom::node document_tree::set_declaration()
+{
+    if (!mp_impl->m_xml_decl)
+        mp_impl->m_xml_decl.emplace();
+
+    auto v = std::make_unique<dom::const_node::impl>(
+        &*mp_impl->m_xml_decl, node_t::declaration);
+
+    return dom::node(std::move(v), &mp_impl->m_pool);
+}
+
 dom::const_node document_tree::processing_instruction(std::string_view target) const
 {
     auto it = mp_impl->m_pis.find(target);
@@ -259,6 +438,30 @@ dom::const_node document_tree::processing_instruction(std::string_view target) c
 
     auto v = std::make_unique<dom::const_node::impl>(&it->second, node_t::processing_instruction);
     return dom::const_node(std::move(v));
+}
+
+dom::node document_tree::add_processing_instruction(std::string_view target)
+{
+    target = mp_impl->m_pool.intern(target).first;
+    auto [it, inserted] = mp_impl->m_pis.try_emplace(target);
+    (void)inserted;
+
+    auto v = std::make_unique<dom::const_node::impl>(
+        &it->second, node_t::processing_instruction);
+
+    return dom::node(std::move(v), &mp_impl->m_pool);
+}
+
+void document_tree::append_prolog_comment(std::string_view value)
+{
+    value = mp_impl->m_pool.intern(value).first;
+    mp_impl->m_prolog_comments.emplace_back(value);
+}
+
+void document_tree::append_epilog_comment(std::string_view value)
+{
+    value = mp_impl->m_pool.intern(value).first;
+    mp_impl->m_epilog_comments.emplace_back(value);
 }
 
 dom::const_node document_tree::declaration(std::string_view name) const

@@ -62,7 +62,7 @@ struct element;
 
 struct node
 {
-    const element* parent;
+    element* parent;
     node_type type;
 
     node(node_type _type) : parent(nullptr), type(_type) {}
