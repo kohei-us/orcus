@@ -188,6 +188,133 @@ void test_zip_rejects_unsafe_entry_names()
     assert(archive.get_file_entry_name(0) == "xl/sharedStrings.xml");
 }
 
+namespace {
+
+// Offsets within a make_zip_with_entry_name blob. The single central
+// directory entry sits at byte 0; the EOCD follows the entry + the
+// name. Used by the tests to set specific 4-byte fields.
+struct zip_layout
+{
+    std::size_t entry_local_header_offset; // CD entry, byte 42
+    std::size_t eocd_size_central_dir;     // EOCD, byte +12 from sig
+    std::size_t eocd_central_dir_pos;      // EOCD, byte +16 from sig
+    std::size_t eocd_total_entries;        // EOCD, byte +10 from sig
+};
+
+zip_layout zip_layout_for(std::string_view name)
+{
+    const std::size_t cd_entry_size = 46 + name.size();
+    const std::size_t eocd_sig_pos = cd_entry_size;
+    return {
+        /* entry_local_header_offset */ 42,
+        /* eocd_size_central_dir */ eocd_sig_pos + 12,
+        /* eocd_central_dir_pos */ eocd_sig_pos + 16,
+        /* eocd_total_entries */ eocd_sig_pos + 10,
+    };
+}
+
+void poke_u32(std::vector<uint8_t>& buf, std::size_t off, uint32_t v)
+{
+    buf[off] = static_cast<uint8_t>(v);
+    buf[off + 1] = static_cast<uint8_t>(v >> 8);
+    buf[off + 2] = static_cast<uint8_t>(v >> 16);
+    buf[off + 3] = static_cast<uint8_t>(v >> 24);
+}
+
+void poke_u16(std::vector<uint8_t>& buf, std::size_t off, uint16_t v)
+{
+    buf[off] = static_cast<uint8_t>(v);
+    buf[off + 1] = static_cast<uint8_t>(v >> 8);
+}
+
+bool load_throws(const std::vector<uint8_t>& blob)
+{
+    zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+    zip_archive archive(&strm);
+    try
+    {
+        archive.load();
+    }
+    catch (const zip_error&)
+    {
+        return true;
+    }
+    return false;
+}
+
+} // namespace
+
+void test_zip_central_dir_bounds()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const std::string_view name = "a";
+    const zip_layout L = zip_layout_for(name);
+
+    // ZIP64 sentinel in central_dir_pos.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.eocd_central_dir_pos, 0xFFFFFFFFu);
+        assert(load_throws(blob));
+    }
+
+    // ZIP64 sentinel in size_central_dir.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.eocd_size_central_dir, 0xFFFFFFFFu);
+        assert(load_throws(blob));
+    }
+
+    // central_dir_pos points past the end of the archive.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.eocd_central_dir_pos,
+                 static_cast<uint32_t>(blob.size() + 1));
+        assert(load_throws(blob));
+    }
+
+    // size_central_dir overruns the archive when added to central_dir_pos.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.eocd_size_central_dir,
+                 static_cast<uint32_t>(blob.size() + 1));
+        assert(load_throws(blob));
+    }
+
+    // ZIP64 sentinel in a per-entry local-header offset.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.entry_local_header_offset, 0xFFFFFFFFu);
+        assert(load_throws(blob));
+    }
+
+    // Per-entry local-header offset past end of archive.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u32(blob, L.entry_local_header_offset,
+                 static_cast<uint32_t>(blob.size()));
+        assert(load_throws(blob));
+    }
+}
+
+void test_zip_entry_count_cap()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // The CD parsing loop must stop after num_total_entries entries even
+    // if the next 4 bytes happen to form a valid CD signature.  Declare
+    // total_entries=0 and confirm the existing single entry is skipped.
+    const std::string_view name = "a";
+    const zip_layout L = zip_layout_for(name);
+    auto blob = make_zip_with_entry_name(name);
+    poke_u16(blob, L.eocd_total_entries, 0);
+
+    zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+    zip_archive archive(&strm);
+    archive.load();
+    assert(archive.get_file_entry_count() == 0);
+}
+
 void test_seek_central_dir_window()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -222,6 +349,8 @@ int main()
     test_zip_archive_stream_blob();
     test_zip_archive_file_entry_header();
     test_zip_rejects_unsafe_entry_names();
+    test_zip_central_dir_bounds();
+    test_zip_entry_count_cap();
     test_seek_central_dir_window();
 
     return EXIT_SUCCESS;

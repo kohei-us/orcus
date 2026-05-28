@@ -266,6 +266,7 @@ class zip_archive::impl
     zip_archive_stream* m_stream = nullptr;
     off_t m_stream_size = 0;
     size_t m_central_dir_pos = 0;
+    size_t m_num_central_dir_records = 0;
 
     zip_stream_parser m_central_dir_end;
 
@@ -379,7 +380,7 @@ void zip_archive::impl::read_file_entries()
     zip_stream_parser central_dir(m_stream, m_central_dir_pos);
     uint32_t magic_num = central_dir.read_4bytes();
 
-    while (magic_num == 0x02014b50)
+    while (magic_num == 0x02014b50 && m_file_params.size() < m_num_central_dir_records)
     {
         zip_file_param param;
 
@@ -406,10 +407,16 @@ void zip_archive::impl::read_file_entries()
         if (param.size_compressed == zip64_size_marker ||
             param.size_uncompressed == zip64_size_marker)
             throw zip_error("ZIP64 size field encountered; ZIP64 is not supported");
+        if (param.offset_file_header == zip64_size_marker)
+            throw zip_error("ZIP64 local-header offset; ZIP64 is not supported");
 
         // A compressed payload cannot be larger than the archive itself.
         if (param.size_compressed > static_cast<std::size_t>(m_stream_size))
             throw zip_error("entry compressed size exceeds archive size");
+
+        // The local file header has to live inside the archive too.
+        if (param.offset_file_header >= static_cast<std::size_t>(m_stream_size))
+            throw zip_error("entry local-header offset exceeds archive size");
 
         // Refuse impossible deflate ratios so a tiny payload cannot demand a
         // multi-GB output buffer.
@@ -599,7 +606,24 @@ void zip_archive::impl::read_central_dir_end()
     content.num_celtral_dir_records_total = m_central_dir_end.read_2bytes();
     content.size_central_dir = m_central_dir_end.read_4bytes();
     content.central_dir_pos = m_central_dir_end.read_4bytes();
+
+    // orcus does not implement ZIP64, so the 0xFFFFFFFF sentinel here is
+    // not "look in the ZIP64 EOCD record" but an unsupported archive.
+    if (content.size_central_dir == zip64_size_marker)
+        throw zip_error("ZIP64 central directory size; ZIP64 is not supported");
+    if (content.central_dir_pos == zip64_size_marker)
+        throw zip_error("ZIP64 central directory offset; ZIP64 is not supported");
+
+    // The central directory must lie wholly within the archive.  Compute
+    // the bound as (stream_size - central_dir_pos) so the addition cannot
+    // overflow size_t on 32-bit hosts.
+    const auto stream_size = static_cast<std::size_t>(m_stream_size);
+    if (content.central_dir_pos > stream_size ||
+        content.size_central_dir > stream_size - content.central_dir_pos)
+        throw zip_error("central directory extends past end of archive");
+
     m_central_dir_pos = content.central_dir_pos;
+    m_num_central_dir_records = content.num_celtral_dir_records_total;
 
     content.comment_length = m_central_dir_end.read_2bytes();
 
