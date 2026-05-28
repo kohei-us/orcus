@@ -350,12 +350,9 @@ std::vector<xmlns_id_t> xmlns_context::get_all_namespaces() const
 
 void xmlns_context::dump(std::ostream& os) const
 {
-    std::vector<xmlns_id_t> nslist = get_all_namespaces();
-    std::vector<xmlns_id_t>::const_iterator it = nslist.begin(), it_end = nslist.end();
-    for (; it != it_end; ++it)
+    for (xmlns_id_t ns_id : get_all_namespaces())
     {
-        xmlns_id_t ns_id = *it;
-        size_t num_id = get_index(ns_id);
+        std::size_t num_id = get_index(ns_id);
         if (num_id == INDEX_NOT_FOUND)
             continue;
 
