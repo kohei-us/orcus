@@ -195,7 +195,11 @@ namespace {
 // name. Used by the tests to set specific 4-byte fields.
 struct zip_layout
 {
+    std::size_t entry_gp_flags;            // CD entry, byte 8
+    std::size_t entry_disk_id;             // CD entry, byte 34
     std::size_t entry_local_header_offset; // CD entry, byte 42
+    std::size_t eocd_this_disk;            // EOCD, byte +4 from sig
+    std::size_t eocd_central_dir_disk;     // EOCD, byte +6 from sig
     std::size_t eocd_size_central_dir;     // EOCD, byte +12 from sig
     std::size_t eocd_central_dir_pos;      // EOCD, byte +16 from sig
     std::size_t eocd_total_entries;        // EOCD, byte +10 from sig
@@ -206,7 +210,11 @@ zip_layout zip_layout_for(std::string_view name)
     const std::size_t cd_entry_size = 46 + name.size();
     const std::size_t eocd_sig_pos = cd_entry_size;
     return {
+        /* entry_gp_flags */ 8,
+        /* entry_disk_id */ 34,
         /* entry_local_header_offset */ 42,
+        /* eocd_this_disk */ eocd_sig_pos + 4,
+        /* eocd_central_dir_disk */ eocd_sig_pos + 6,
         /* eocd_size_central_dir */ eocd_sig_pos + 12,
         /* eocd_central_dir_pos */ eocd_sig_pos + 16,
         /* eocd_total_entries */ eocd_sig_pos + 10,
@@ -315,6 +323,42 @@ void test_zip_entry_count_cap()
     assert(archive.get_file_entry_count() == 0);
 }
 
+void test_zip_rejects_encrypted_and_multidisk()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const std::string_view name = "a";
+    const zip_layout L = zip_layout_for(name);
+
+    // General-purpose bit 0 set: an encrypted entry orcus cannot decrypt.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u16(blob, L.entry_gp_flags, 0x0001);
+        assert(load_throws(blob));
+    }
+
+    // Per-entry disk id non-zero: payload lives on another volume.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u16(blob, L.entry_disk_id, 1);
+        assert(load_throws(blob));
+    }
+
+    // EOCD "this disk" non-zero: a split archive.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u16(blob, L.eocd_this_disk, 1);
+        assert(load_throws(blob));
+    }
+
+    // EOCD "disk where CD starts" non-zero: a split archive.
+    {
+        auto blob = make_zip_with_entry_name(name);
+        poke_u16(blob, L.eocd_central_dir_disk, 1);
+        assert(load_throws(blob));
+    }
+}
+
 void test_seek_central_dir_window()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -351,6 +395,7 @@ int main()
     test_zip_rejects_unsafe_entry_names();
     test_zip_central_dir_bounds();
     test_zip_entry_count_cap();
+    test_zip_rejects_encrypted_and_multidisk();
     test_seek_central_dir_window();
 
     return EXIT_SUCCESS;

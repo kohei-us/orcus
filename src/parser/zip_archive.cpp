@@ -29,6 +29,9 @@ namespace {
 
 constexpr std::uint32_t zip64_size_marker = 0xFFFFFFFFu;
 
+// APPNOTE.TXT 4.4.4: General-purpose bit flag 0 marks an entry as encrypted
+constexpr std::uint16_t gp_flag_encrypted = 0x0001u;
+
 // Deflate cannot expand by more than 1032:1
 // (https://zlib.net/zlib_tech.html "Maximum Compression Factor")
 // Round up 1024 and treat anything past that as malformed.
@@ -410,6 +413,14 @@ void zip_archive::impl::read_file_entries()
         if (param.offset_file_header == zip64_size_marker)
             throw zip_error("ZIP64 local-header offset; ZIP64 is not supported");
 
+        // orcus doesn't support decryption, so refuse that early.
+        if (param.flags & gp_flag_encrypted)
+            throw zip_error("encrypted zip entry; encryption is not supported");
+
+        // split archives aren't supported, so refuse that early.
+        if (param.disk_id_where_file_starts)
+            throw zip_error("multi-disk zip archive; only single-disk is supported");
+
         // A compressed payload cannot be larger than the archive itself.
         if (param.size_compressed > static_cast<std::size_t>(m_stream_size))
             throw zip_error("entry compressed size exceeds archive size");
@@ -606,6 +617,10 @@ void zip_archive::impl::read_central_dir_end()
     content.num_celtral_dir_records_total = m_central_dir_end.read_2bytes();
     content.size_central_dir = m_central_dir_end.read_4bytes();
     content.central_dir_pos = m_central_dir_end.read_4bytes();
+
+    // orcus does not implement split archives
+    if (content.this_disk_id || content.central_dir_disk_id)
+        throw zip_error("multi-disk zip archive; only single-disk is supported");
 
     // orcus does not implement ZIP64, so the 0xFFFFFFFF sentinel here is
     // not "look in the ZIP64 EOCD record" but an unsupported archive.
