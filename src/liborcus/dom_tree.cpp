@@ -46,14 +46,15 @@ struct const_node::impl
     node_t type;
     value_type value;
     string_pool* pool; //< non-null only for handles obtained via the mutable API
+    xmlns_context* ns_cxt; //< non-null only for handles obtained via the mutable API
 
-    impl() : type(node_t::unset), pool(nullptr) {}
+    impl() : type(node_t::unset), pool(nullptr), ns_cxt(nullptr) {}
 
     impl(detail::element* _elem) :
-        type(node_t::element), value(_elem), pool(nullptr) {}
+        type(node_t::element), value(_elem), pool(nullptr), ns_cxt(nullptr) {}
 
     impl(detail::processing_instruction* _pi, node_t _type) :
-        type(_type), value(_pi), pool(nullptr) {}
+        type(_type), value(_pi), pool(nullptr), ns_cxt(nullptr) {}
 
     /**
      * Ensure this node is an element and return a reference to it as an element
@@ -237,10 +238,11 @@ bool const_node::operator!= (const const_node& other) const
     return !operator==(other);
 }
 
-node::node(std::unique_ptr<impl>&& _impl, string_pool* pool) :
+node::node(std::unique_ptr<impl>&& _impl, string_pool* pool, xmlns_context* ns_cxt) :
     const_node(std::move(_impl))
 {
     mp_impl->pool = pool;
+    mp_impl->ns_cxt = ns_cxt;
 }
 
 node::node() = default;
@@ -286,7 +288,7 @@ node node::append_element(entity_name name)
     child->parent = &parent_elem;
 
     auto v = std::make_unique<const_node::impl>(child);
-    return node(std::move(v), pool);
+    return node(std::move(v), pool, mp_impl->ns_cxt);
 }
 
 void node::append_content(std::string_view value)
@@ -360,15 +362,18 @@ void node::declare_namespace(std::string_view alias, xmlns_id_t ns)
     auto& elem = mp_impl->require_element("dom::node::declare_namespace");
     alias = mp_impl->pool->intern(alias).first;
     elem.ns_decls.emplace_back(alias, ns);
+    // mirror into the tree's internal context so dumps from build-from-scratch
+    // trees can resolve this alias via xml_util::get_alias
+    mp_impl->ns_cxt->push(alias, ns);
 }
 
-document_tree::document_tree(xmlns_context& cxt) :
-    mp_impl(std::make_unique<impl>(cxt)) {}
+document_tree::document_tree(xmlns_repository& repo) :
+    mp_impl(std::make_unique<impl>(repo)) {}
 
 document_tree::document_tree(document_tree&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = std::make_unique<impl>(mp_impl->m_ns_cxt);
+    other.mp_impl = std::make_unique<impl>(mp_impl->m_repo);
 }
 
 document_tree::~document_tree() {}
@@ -388,6 +393,9 @@ void document_tree::load(std::string_view strm)
     mp_impl->m_root.reset();
     mp_impl->m_prolog_comments.clear();
     mp_impl->m_epilog_comments.clear();
+    // start parsing with a fresh namespace context so push/pop residue from a
+    // previous load() doesn't leak into the next parse
+    mp_impl->m_ns_cxt = mp_impl->m_repo.create_context();
 
     sax_ns_parser<impl> parser(strm, mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
@@ -407,7 +415,7 @@ dom::node document_tree::set_root(entity_name name)
     mp_impl->m_elem_stack.clear();
 
     auto v = std::make_unique<const_node::impl>(mp_impl->m_root.get());
-    return dom::node(std::move(v), &mp_impl->m_pool);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
 }
 
 dom::const_node document_tree::declaration() const
@@ -427,7 +435,7 @@ dom::node document_tree::set_declaration()
     auto v = std::make_unique<dom::const_node::impl>(
         &*mp_impl->m_xml_decl, node_t::declaration);
 
-    return dom::node(std::move(v), &mp_impl->m_pool);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
 }
 
 dom::const_node document_tree::processing_instruction(std::string_view target) const
@@ -449,7 +457,7 @@ dom::node document_tree::add_processing_instruction(std::string_view target)
     auto v = std::make_unique<dom::const_node::impl>(
         &it->second, node_t::processing_instruction);
 
-    return dom::node(std::move(v), &mp_impl->m_pool);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
 }
 
 void document_tree::append_prolog_comment(std::string_view value)

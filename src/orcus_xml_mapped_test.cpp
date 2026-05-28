@@ -36,8 +36,7 @@ namespace {
 std::string dump_xml_content(std::string_view content)
 {
     xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    dom::document_tree tree(cxt);
+    dom::document_tree tree(repo);
     tree.load(content);
 
     std::ostringstream os;
@@ -76,9 +75,9 @@ void test_mapped_xml_import()
         { SRCDIR"/test/xml-mapped/nested-repeats-4", false },
     };
 
-    auto dump_xml_structure = [](const file_content& content, xmlns_context& cxt)
+    auto dump_xml_structure = [](const file_content& content, xmlns_repository& repo)
     {
-        dom::document_tree tree(cxt);
+        dom::document_tree tree(repo);
         tree.load(content.str());
         std::ostringstream os;
         tree.dump_compact(os);
@@ -107,7 +106,6 @@ void test_mapped_xml_import()
         spreadsheet::export_factory export_fact(doc);
 
         xmlns_repository repo;
-        xmlns_context cxt = repo.create_context();
 
         // Parse the map file to define map rules, and parse the data file.
         orcus_xml app(repo, &import_fact, &export_fact);
@@ -156,8 +154,8 @@ void test_mapped_xml_import()
             // Hold the stream content in memory while the namespace context is being used.
             file_content strm_data_file(data_file.string());
             file_content strm_out_file(temp_output_xml.string());
-            std::string dump_input = dump_xml_structure(strm_data_file, cxt);
-            std::string dump_output = dump_xml_structure(strm_out_file, cxt);
+            std::string dump_input = dump_xml_structure(strm_data_file, repo);
+            std::string dump_output = dump_xml_structure(strm_out_file, repo);
             assert(!dump_input.empty() && !dump_output.empty());
 
             std::cout << dump_input << std::endl;

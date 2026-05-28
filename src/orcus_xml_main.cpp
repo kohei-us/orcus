@@ -138,8 +138,7 @@ bool parse_and_dump_structure(const file_content& content, const std::string& ou
 void dump_document_structure(const file_content& content, output_stream& os)
 {
     xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    dom::document_tree tree(cxt);
+    dom::document_tree tree(repo);
     tree.load(content.str());
 
     tree.dump_compact(os.get());
@@ -148,8 +147,7 @@ void dump_document_structure(const file_content& content, output_stream& os)
 void dump_document_xml(const file_content& content, output_stream& os, std::size_t indent)
 {
     xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    dom::document_tree tree(cxt);
+    dom::document_tree tree(repo);
     tree.load(content.str());
 
     os.get() << tree.dump(indent);

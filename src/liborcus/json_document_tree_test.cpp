@@ -100,8 +100,7 @@ std::string dump_check_content(const json::document_tree& doc)
     assert(!xml_strm.empty());
 
     xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    dom::document_tree dom(cxt);
+    dom::document_tree dom(repo);
     dom.load(xml_strm);
 
     std::ostringstream os;

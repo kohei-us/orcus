@@ -118,7 +118,8 @@ struct document_tree::impl : public sax_ns_handler
     using processing_instructions_type =
         std::unordered_map<std::string_view, detail::processing_instruction>;
 
-    xmlns_context& m_ns_cxt;
+    xmlns_repository& m_repo;
+    xmlns_context m_ns_cxt;
     string_pool m_pool;
 
     std::unique_ptr<sax::doctype_declaration> m_doctype;
@@ -135,7 +136,7 @@ struct document_tree::impl : public sax_ns_handler
     std::vector<detail::comment> m_prolog_comments;
     std::vector<detail::comment> m_epilog_comments;
 
-    impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
+    impl(xmlns_repository& repo) : m_repo(repo), m_ns_cxt(repo.create_context()) {}
 
     void start_declaration()
     {

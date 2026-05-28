@@ -339,8 +339,7 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
         {
             std::string xml_strm = doc->dump_xml();
             xmlns_repository repo;
-            xmlns_context ns_cxt = repo.create_context();
-            dom::document_tree dom(ns_cxt);
+            dom::document_tree dom(repo);
             dom.load(xml_strm);
 
             dom.dump_compact(os);

@@ -10,10 +10,9 @@ using namespace orcus::dom;
 struct doctree
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt;
     orcus::dom::document_tree tree;
 
-    doctree(std::string_view content) : repo(), cxt(repo.create_context()), tree(cxt)
+    doctree(std::string_view content) : repo(), tree(repo)
     {
         tree.load(content);
     }
@@ -172,8 +171,7 @@ void test_comments()
 void test_mutable_build_from_scratch()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
+    document_tree tree(repo);
 
     auto root = tree.set_root({"book"});
     root.set_attribute("id", "42");
@@ -210,8 +208,7 @@ void test_mutable_build_from_scratch()
 void test_mutable_attribute_insert_update()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
+    document_tree tree(repo);
 
     auto root = tree.set_root({"root"});
     root.set_attribute("a", "1");
@@ -230,8 +227,7 @@ void test_mutable_attribute_insert_update()
 void test_mutable_declaration_pi_and_comments()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
+    document_tree tree(repo);
 
     auto decl = tree.set_declaration();
     decl.set_attribute("version", "1.0");
@@ -268,12 +264,20 @@ void test_mutable_declaration_pi_and_comments()
 void test_mutable_namespaces()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
 
-    orcus::xmlns_id_t ns_p = cxt.push("p", "http://example.com/p");
-    orcus::xmlns_id_t ns_q = cxt.push("q", "http://example.com/q");
+    orcus::xmlns_id_t ns_p;
+    orcus::xmlns_id_t ns_q;
+    orcus::xmlns_id_t ns_default;
+    {
+        // a temporary context just to mint the xmlns_id_t values; the tree
+        // owns its own context internally for dump-time alias lookup
+        orcus::xmlns_context cxt = repo.create_context();
+        ns_p = cxt.push("p", "http://example.com/p");
+        ns_q = cxt.push("q", "http://example.com/q");
+        ns_default = cxt.push("", "http://example.com/default");
+    }
 
+    document_tree tree(repo);
     auto root = tree.set_root({ns_p, "root"});
     root.declare_namespace("p", ns_p);
     root.declare_namespace("q", ns_q);
@@ -290,8 +294,7 @@ void test_mutable_namespaces()
     assert(output.find(R"(q:id="x")") != std::string::npos);
 
     // default-namespace case
-    document_tree tree2(cxt);
-    orcus::xmlns_id_t ns_default = cxt.push("", "http://example.com/default");
+    document_tree tree2(repo);
     auto root2 = tree2.set_root({ns_default, "root"});
     root2.declare_namespace("", ns_default);
     std::string output2 = tree2.dump(0);
@@ -301,8 +304,7 @@ void test_mutable_namespaces()
 void test_mutable_non_element_throws()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
+    document_tree tree(repo);
 
     auto pi = tree.add_processing_instruction("target");
 
@@ -344,8 +346,7 @@ void test_mutable_non_element_throws()
 void test_mutable_reset_then_load()
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    document_tree tree(cxt);
+    document_tree tree(repo);
 
     // build something first
     tree.set_root({"original"}).append_element({"child"});

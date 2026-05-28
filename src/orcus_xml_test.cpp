@@ -132,8 +132,7 @@ void test_xml_sax_parser()
         assert(!content.empty());
 
         xmlns_repository repo;
-        xmlns_context cxt = repo.create_context();
-        dom::document_tree tree(cxt);
+        dom::document_tree tree(repo);
         tree.load(content.str());
 
         // Get the compact form of the content.
@@ -165,8 +164,7 @@ void test_xml_sax_parser_read_only()
         file.append("input.xml");
 
         xmlns_repository repo;
-        xmlns_context cxt = repo.create_context();
-        dom::document_tree tree(cxt);
+        dom::document_tree tree(repo);
         parse_file(tree, file.c_str());
     }
 }
@@ -177,8 +175,7 @@ void test_xml_declarations()
 
     const char* file_path = SRCDIR"/test/xml/custom-decl-1/input.xml";
     xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    dom::document_tree dom(cxt);
+    dom::document_tree dom(repo);
     parse_file(dom, file_path);
 
     // make sure we parse the custom processing instruction correctly
@@ -221,8 +218,7 @@ void test_xml_dtd()
     for (size_t i = 0; i < n; ++i)
     {
         const char* file_path = tests[i].file_path;
-        xmlns_context cxt = repo.create_context();
-        dom::document_tree dom(cxt);
+        dom::document_tree dom(repo);
         parse_file(dom, file_path);
         const sax::doctype_declaration* dtd = dom.get_doctype();
         assert(dtd);
@@ -282,8 +278,7 @@ void test_xml_lint()
         auto content = test::to_file_content(input_path);
         assert(!content.empty());
 
-        orcus::xmlns_context cxt = repo.create_context();
-        orcus::dom::document_tree tree{cxt};
+        orcus::dom::document_tree tree{repo};
         tree.load(content.str());
 
         // Test dump with different indent values

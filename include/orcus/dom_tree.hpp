@@ -15,6 +15,7 @@
 
 namespace orcus {
 
+class xmlns_repository;
 class xmlns_context;
 class string_pool;
 
@@ -111,7 +112,7 @@ class ORCUS_DLLPUBLIC node : public const_node
 {
     friend class document_tree;
 
-    node(std::unique_ptr<impl>&& _impl, string_pool* pool);
+    node(std::unique_ptr<impl>&& _impl, string_pool* pool, xmlns_context* ns_cxt);
 
 public:
     node();
@@ -125,7 +126,7 @@ public:
     /**
      * Append a new child element to this element.
      *
-     * @param name name of the new child element.
+     * @param name Name of the new child element.
      *
      * @return mutable handle to the newly created child element.
      *
@@ -136,7 +137,7 @@ public:
     /**
      * Append a text content node to this element.
      *
-     * @param value text content.
+     * @param value Text content.
      *
      * @throw std::invalid_argument if this node is not an element.
      */
@@ -145,7 +146,7 @@ public:
     /**
      * Append a comment node to this element.
      *
-     * @param value comment text (without the surrounding `<!--` `-->`).
+     * @param value Comment text (without the surrounding `<!--` `-->`).
      *
      * @throw std::invalid_argument if this node is not an element.
      */
@@ -155,8 +156,8 @@ public:
      * Set or update a namespaced attribute on this element. If an attribute
      * with the same namespace-name pair already exists, its value is replaced.
      *
-     * @param name attribute name (with namespace).
-     * @param value attribute value.
+     * @param name Attribute name (with namespace).
+     * @param value Attribute value.
      *
      * @throw std::invalid_argument if this node is not an element.
      */
@@ -168,8 +169,8 @@ public:
      * without a namespace prefix. If an attribute with the same name already
      * exists, its value is replaced.
      *
-     * @param name attribute name.
-     * @param value attribute value.
+     * @param name Attribute name.
+     * @param value Attribute value.
      *
      * @throw std::invalid_argument if this node is unset.
      */
@@ -186,8 +187,8 @@ public:
      * Declare a namespace prefix on this element. An empty alias declares a
      * default namespace.
      *
-     * @param alias namespace prefix (or empty for the default namespace).
-     * @param ns namespace identifier to bind to the prefix.
+     * @param alias Namespace prefix (or empty for the default namespace).
+     * @param ns Namespace identifier to bind to the prefix.
      *
      * @throw std::invalid_argument if this node is not an element.
      */
@@ -206,7 +207,11 @@ public:
     document_tree(const document_tree&) = delete;
     document_tree& operator= (const document_tree&) = delete;
 
-    document_tree(xmlns_context& cxt);
+    /**
+     * @param repo Namespace repository used to mint namespace identifiers for
+     *             the tree's stored names. Must outlive the document_tree.
+     */
+    document_tree(xmlns_repository& repo);
     document_tree(document_tree&& other);
     ~document_tree();
 
@@ -225,7 +230,7 @@ public:
      * the document (XML declaration, processing instructions, prolog/epilog
      * comments, DOCTYPE) are preserved.
      *
-     * @param name name of the new root element.
+     * @param name Name of the new root element.
      *
      * @return mutable handle to the newly created root element.
      */
@@ -265,7 +270,7 @@ public:
     /**
      * Swap the content with another dom_tree instance.
      *
-     * @param other the dom_tree instance to swap the content with.
+     * @param other The dom_tree instance to swap the content with.
      */
     void swap(document_tree& other);
 
