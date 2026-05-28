@@ -56,6 +56,20 @@ struct ns_declaration
     ns_declaration(std::string_view _alias, xmlns_id_t _name);
 };
 
+/**
+ * Set of all namespaces known to a document_tree. Populated either by
+ * transferring from a parser-time xmlns_context after load() or by the
+ * mutable API's node::declare_namespace. Drives the dump-time enumeration
+ * of namespace declarations.
+ */
+struct namespace_set
+{
+    std::vector<xmlns_id_t> all;
+
+    void add(xmlns_id_t ns);
+    void clear();
+};
+
 enum class node_type { element, content, comment };
 
 struct element;
@@ -101,9 +115,9 @@ struct comment : public node
     virtual ~comment();
 };
 
-void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt);
-void print(std::ostream& os, const attr& at, const xmlns_context& cxt);
-void print(std::ostream& os, const content& c, const xmlns_context& cxt);
+void print(std::ostream& os, const entity_name& name, const xmlns_repository& repo);
+void print(std::ostream& os, const attr& at, const xmlns_repository& repo);
+void print(std::ostream& os, const content& c, const xmlns_repository& repo);
 
 /**
  * Escape certain characters with backslash (\).
@@ -119,7 +133,7 @@ struct document_tree::impl : public sax_ns_handler
         std::unordered_map<std::string_view, detail::processing_instruction>;
 
     xmlns_repository& m_repo;
-    xmlns_context m_ns_cxt;
+    detail::namespace_set m_namespaces;
     string_pool m_pool;
 
     std::unique_ptr<sax::doctype_declaration> m_doctype;
@@ -136,7 +150,7 @@ struct document_tree::impl : public sax_ns_handler
     std::vector<detail::comment> m_prolog_comments;
     std::vector<detail::comment> m_epilog_comments;
 
-    impl(xmlns_repository& repo) : m_repo(repo), m_ns_cxt(repo.create_context()) {}
+    impl(xmlns_repository& repo) : m_repo(repo) {}
 
     void start_declaration()
     {

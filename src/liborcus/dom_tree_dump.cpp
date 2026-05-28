@@ -26,7 +26,6 @@ class xml_dumper : public tree_walker
     }
 
     std::ostream& m_os;
-    const xmlns_context& m_cxt;
     std::size_t m_indent;
     std::vector<std::reference_wrapper<const detail::element>> m_alias_elems;
 
@@ -63,8 +62,8 @@ class xml_dumper : public tree_walker
             }
         }
 
-        // The xml prefix is predefined and never appears in element ns_decls.
-        if (name.ns != XMLNS_UNKNOWN_ID && name.ns == m_cxt.get("xml"))
+        // the xml prefix is predefined and never appears in element ns_decls
+        if (name.ns != XMLNS_UNKNOWN_ID && name.ns == XML_BUILTIN_NS_URI)
             return "xml";
 
         std::ostringstream os;
@@ -88,8 +87,8 @@ class xml_dumper : public tree_walker
     }
 
 public:
-    xml_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt, std::size_t indent) :
-        tree_walker(root), m_os(os), m_cxt(cxt), m_indent(indent) {}
+    xml_dumper(const detail::element& root, std::ostream& os, std::size_t indent) :
+        tree_walker(root), m_os(os), m_indent(indent) {}
 
 protected:
     void on_element_enter(const detail::element& elem, std::size_t depth) override
@@ -248,7 +247,7 @@ std::string document_tree::dump(std::size_t indent) const
             os << '\n';
     }
 
-    xml_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt, indent);
+    xml_dumper walker(*mp_impl->m_root, os, indent);
     walker.run();
 
     if (indent && !mp_impl->m_epilog_comments.empty())

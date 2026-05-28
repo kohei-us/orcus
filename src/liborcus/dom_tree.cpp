@@ -46,15 +46,15 @@ struct const_node::impl
     node_t type;
     value_type value;
     string_pool* pool; //< non-null only for handles obtained via the mutable API
-    xmlns_context* ns_cxt; //< non-null only for handles obtained via the mutable API
+    detail::namespace_set* ns_set; //< non-null only for handles obtained via the mutable API
 
-    impl() : type(node_t::unset), pool(nullptr), ns_cxt(nullptr) {}
+    impl() : type(node_t::unset), pool(nullptr), ns_set(nullptr) {}
 
     impl(detail::element* _elem) :
-        type(node_t::element), value(_elem), pool(nullptr), ns_cxt(nullptr) {}
+        type(node_t::element), value(_elem), pool(nullptr), ns_set(nullptr) {}
 
     impl(detail::processing_instruction* _pi, node_t _type) :
-        type(_type), value(_pi), pool(nullptr), ns_cxt(nullptr) {}
+        type(_type), value(_pi), pool(nullptr), ns_set(nullptr) {}
 
     /**
      * Ensure this node is an element and return a reference to it as an element
@@ -238,11 +238,11 @@ bool const_node::operator!= (const const_node& other) const
     return !operator==(other);
 }
 
-node::node(std::unique_ptr<impl>&& _impl, string_pool* pool, xmlns_context* ns_cxt) :
+node::node(std::unique_ptr<impl>&& _impl, string_pool* pool, detail::namespace_set* ns_set) :
     const_node(std::move(_impl))
 {
     mp_impl->pool = pool;
-    mp_impl->ns_cxt = ns_cxt;
+    mp_impl->ns_set = ns_set;
 }
 
 node::node() = default;
@@ -288,7 +288,7 @@ node node::append_element(entity_name name)
     child->parent = &parent_elem;
 
     auto v = std::make_unique<const_node::impl>(child);
-    return node(std::move(v), pool, mp_impl->ns_cxt);
+    return node(std::move(v), pool, mp_impl->ns_set);
 }
 
 void node::append_content(std::string_view value)
@@ -362,9 +362,7 @@ void node::declare_namespace(std::string_view alias, xmlns_id_t ns)
     auto& elem = mp_impl->require_element("dom::node::declare_namespace");
     alias = mp_impl->pool->intern(alias).first;
     elem.ns_decls.emplace_back(alias, ns);
-    // mirror into the tree's internal context so dumps from build-from-scratch
-    // trees can resolve this alias via xml_util::get_alias
-    mp_impl->ns_cxt->push(alias, ns);
+    mp_impl->ns_set->add(ns);
 }
 
 document_tree::document_tree(xmlns_repository& repo) :
@@ -393,12 +391,16 @@ void document_tree::load(std::string_view strm)
     mp_impl->m_root.reset();
     mp_impl->m_prolog_comments.clear();
     mp_impl->m_epilog_comments.clear();
-    // start parsing with a fresh namespace context so push/pop residue from a
-    // previous load() doesn't leak into the next parse
-    mp_impl->m_ns_cxt = mp_impl->m_repo.create_context();
+    mp_impl->m_namespaces.clear();
 
-    sax_ns_parser<impl> parser(strm, mp_impl->m_ns_cxt, *mp_impl);
+    // the parser context lives only for the duration of parsing; afterwards we
+    // copy out the namespaces it observed and discard the context
+    xmlns_context ns_cxt = mp_impl->m_repo.create_context();
+    sax_ns_parser<impl> parser(strm, ns_cxt, *mp_impl);
     parser.parse();
+
+    for (xmlns_id_t ns : ns_cxt.get_all_namespaces())
+        mp_impl->m_namespaces.add(ns);
 }
 
 dom::const_node document_tree::root() const
@@ -415,7 +417,7 @@ dom::node document_tree::set_root(entity_name name)
     mp_impl->m_elem_stack.clear();
 
     auto v = std::make_unique<const_node::impl>(mp_impl->m_root.get());
-    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_namespaces);
 }
 
 dom::const_node document_tree::declaration() const
@@ -435,7 +437,7 @@ dom::node document_tree::set_declaration()
     auto v = std::make_unique<dom::const_node::impl>(
         &*mp_impl->m_xml_decl, node_t::declaration);
 
-    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_namespaces);
 }
 
 dom::const_node document_tree::processing_instruction(std::string_view target) const
@@ -457,7 +459,7 @@ dom::node document_tree::add_processing_instruction(std::string_view target)
     auto v = std::make_unique<dom::const_node::impl>(
         &it->second, node_t::processing_instruction);
 
-    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_ns_cxt);
+    return dom::node(std::move(v), &mp_impl->m_pool, &mp_impl->m_namespaces);
 }
 
 void document_tree::append_prolog_comment(std::string_view value)
@@ -500,7 +502,7 @@ namespace {
 class compact_dumper : public tree_walker
 {
     std::ostream& m_os;
-    const xmlns_context& m_cxt;
+    const xmlns_repository& m_repo;
 
     void print_path(const detail::element& elem)
     {
@@ -511,13 +513,13 @@ class compact_dumper : public tree_walker
         for (auto it = path.rbegin(); it != path.rend(); ++it)
         {
             m_os << "/";
-            detail::print(m_os, (*it)->name, m_cxt);
+            detail::print(m_os, (*it)->name, m_repo);
         }
     }
 
 public:
-    compact_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt) :
-        tree_walker(root), m_os(os), m_cxt(cxt) {}
+    compact_dumper(const detail::element& root, std::ostream& os, const xmlns_repository& repo) :
+        tree_walker(root), m_os(os), m_repo(repo) {}
 
 protected:
     void on_element_enter(const detail::element& elem, std::size_t /*depth*/) override
@@ -537,7 +539,7 @@ protected:
             // print path, element then the attribute
             print_path(elem);
             m_os << "@";
-            detail::print(m_os, a, m_cxt);
+            detail::print(m_os, a, m_repo);
             m_os << "\n";
         }
     }
@@ -547,7 +549,7 @@ protected:
         // print the value of this content node
         assert(c.parent);
         print_path(*c.parent);
-        detail::print(m_os, c, m_cxt);
+        detail::print(m_os, c, m_repo);
         m_os << "\n";
     }
 };
@@ -559,8 +561,16 @@ void document_tree::dump_compact(std::ostream& os) const
     if (!mp_impl->m_root)
         return;
 
-    mp_impl->m_ns_cxt.dump(os);
-    compact_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt);
+    for (xmlns_id_t ns : mp_impl->m_namespaces.all)
+    {
+        std::size_t index = mp_impl->m_repo.get_index(ns);
+        if (index == INDEX_NOT_FOUND)
+            continue;
+
+        os << "ns" << index << "=\"" << ns << '"' << std::endl;
+    }
+
+    compact_dumper walker(*mp_impl->m_root, os, mp_impl->m_repo);
     walker.run();
 }
 

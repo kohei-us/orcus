@@ -40,8 +40,6 @@ class ORCUS_PSR_DLLPUBLIC xmlns_repository
 
     xmlns_id_t intern(std::string_view uri);
 
-    size_t get_index(xmlns_id_t ns_id) const;
-
 public:
     xmlns_repository(const xmlns_repository&) = delete;
     xmlns_repository& operator= (const xmlns_repository&) = delete;
@@ -91,6 +89,17 @@ public:
      * which works identically to it.
      */
     std::string get_short_name(xmlns_id_t ns_id) const;
+
+    /**
+     * Get the numerical index assigned to a namespace identifier within this
+     * repository.
+     *
+     * @param ns_id Namespace identifier obtained from this repository.
+     *
+     * @return Numerical index, or INDEX_NOT_FOUND if the identifier is not
+     *         known to this repository.
+     */
+    size_t get_index(xmlns_id_t ns_id) const;
 };
 
 /**

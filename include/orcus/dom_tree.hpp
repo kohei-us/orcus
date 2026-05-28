@@ -16,7 +16,6 @@
 namespace orcus {
 
 class xmlns_repository;
-class xmlns_context;
 class string_pool;
 
 namespace sax {
@@ -28,6 +27,12 @@ struct doctype_declaration;
 namespace dom {
 
 class document_tree;
+
+namespace detail {
+
+struct namespace_set;
+
+} // namespace detail
 
 enum class node_t : uint8_t
 {
@@ -112,7 +117,7 @@ class ORCUS_DLLPUBLIC node : public const_node
 {
     friend class document_tree;
 
-    node(std::unique_ptr<impl>&& _impl, string_pool* pool, xmlns_context* ns_cxt);
+    node(std::unique_ptr<impl>&& _impl, string_pool* pool, detail::namespace_set* ns_set);
 
 public:
     node();

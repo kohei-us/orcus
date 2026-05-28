@@ -7,6 +7,7 @@
 
 #include "dom_tree_impl.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <deque>
 
@@ -23,15 +24,29 @@ std::size_t entity_name_hash::operator()(const entity_name& v) const
 ns_declaration::ns_declaration(std::string_view _alias, xmlns_id_t _name) :
     alias(_alias), name(_name) {}
 
-void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
+void namespace_set::add(xmlns_id_t ns)
+{
+    if (!ns)
+        return;
+
+    if (std::find(all.begin(), all.end(), ns) == all.end())
+        all.push_back(ns);
+}
+
+void namespace_set::clear()
+{
+    all.clear();
+}
+
+void print(std::ostream& os, const entity_name& name, const xmlns_repository& repo)
 {
     if (name.ns)
     {
-        if (name.ns == cxt.get("xml"))
+        if (name.ns == XML_BUILTIN_NS_URI)
             os << "xml:";
         else
         {
-            std::size_t index = cxt.get_index(name.ns);
+            std::size_t index = repo.get_index(name.ns);
             if (index != INDEX_NOT_FOUND)
                 os << "ns" << index << ':';
         }
@@ -39,9 +54,9 @@ void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
     os << name.name;
 }
 
-void print(std::ostream& os, const attr& at, const xmlns_context& cxt)
+void print(std::ostream& os, const attr& at, const xmlns_repository& repo)
 {
-    print(os, at.name, cxt);
+    print(os, at.name, repo);
     os << "=\"";
     escape(os, at.value);
     os << '"';
@@ -98,7 +113,7 @@ content::~content() = default;
 comment::comment(std::string_view _value) : node(node_type::comment), value(_value) {}
 comment::~comment() = default;
 
-void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
+void print(std::ostream& os, const content& c, const xmlns_repository& /*repo*/)
 {
     os << '"';
     escape(os, c.value);
