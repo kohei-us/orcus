@@ -13,8 +13,10 @@
 #include <orcus/spreadsheet/shared_strings.hpp>
 
 #include <climits>
+#include <filesystem>
 
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 void test_sheet()
 {
@@ -72,10 +74,37 @@ void test_array_formula_malformed_range()
     drive(ss::range_t{{-1, -1}, {5, 5}});
 }
 
+void test_dump_unsafe_sheet_name()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path base = fs::temp_directory_path() / "orcus_h12_dump_test";
+    fs::remove_all(base);
+    fs::create_directories(base);
+
+    fs::path outdir = base / "out";
+
+    // A sheet named "../escapee" would compose outdir/../escapee.csv, i.e.
+    // base/escapee.csv, escaping the chosen output directory. The unsafe
+    // sheet must be skipped while the safe one still gets written.
+    ss::range_size_t ssize{200, 10};
+    ss::document doc{ssize};
+    doc.append_sheet("../escapee");
+    doc.append_sheet("Safe");
+
+    doc.dump(orcus::dump_format_t::csv, outdir);
+
+    assert(!fs::exists(base / "escapee.csv"));
+    assert(fs::exists(outdir / "Safe.csv"));
+
+    fs::remove_all(base);
+}
+
 int main()
 {
     test_sheet();
     test_array_formula_malformed_range();
+    test_dump_unsafe_sheet_name();
 
     return EXIT_SUCCESS;
 }

@@ -17,6 +17,20 @@
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
+namespace {
+
+// Excel and ODF both forbid path separators in sheet names
+bool is_unsafe_dump_sheet_name(std::string_view name)
+{
+    if (name.empty() || name == "." || name == "..")
+        return true;
+
+    return name.find_first_of("/\\") != std::string_view::npos ||
+        name.find('\0') != std::string_view::npos;
+}
+
+}
+
 sheet_item::sheet_item(document& doc, std::string_view _name, sheet_t sheet_index) :
     name(_name), data(doc, sheet_index) {}
 
@@ -113,6 +127,12 @@ void document_impl::dump_flat(const fs::path& outdir) const
 
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
+        if (is_unsafe_dump_sheet_name(sheet->name))
+        {
+            std::cerr << "skipping sheet with unsafe name: " << sheet->name << std::endl;
+            continue;
+        }
+
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".txt");
@@ -134,6 +154,12 @@ void document_impl::dump_html(const fs::path& outdir) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
+        if (is_unsafe_dump_sheet_name(sheet->name))
+        {
+            std::cerr << "skipping sheet with unsafe name: " << sheet->name << std::endl;
+            continue;
+        }
+
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".html");
@@ -153,6 +179,12 @@ void document_impl::dump_json(const fs::path& outdir) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
+        if (is_unsafe_dump_sheet_name(sheet->name))
+        {
+            std::cerr << "skipping sheet with unsafe name: " << sheet->name << std::endl;
+            continue;
+        }
+
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".json");
@@ -172,6 +204,12 @@ void document_impl::dump_csv(const fs::path& outdir) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
+        if (is_unsafe_dump_sheet_name(sheet->name))
+        {
+            std::cerr << "skipping sheet with unsafe name: " << sheet->name << std::endl;
+            continue;
+        }
+
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".csv");
@@ -195,6 +233,12 @@ void document_impl::dump_debug_state(const fs::path& outdir) const
 
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
+        if (is_unsafe_dump_sheet_name(sheet->name))
+        {
+            std::cerr << "skipping sheet with unsafe name: " << sheet->name << std::endl;
+            continue;
+        }
+
         fs::path outpath = outdir;
         outpath /= "sheets";
         outpath /= sheet->name;
