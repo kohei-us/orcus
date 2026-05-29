@@ -10,6 +10,7 @@
 #include <orcus/stream.hpp>
 #include <orcus/json_document_tree.hpp>
 #include <orcus/json_parser_base.hpp>
+#include <orcus/exception.hpp>
 #include <orcus/config.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/dom_tree.hpp>
@@ -217,6 +218,31 @@ void test_json_resolve_refs()
     {
         fs::path basedir = json_test_refs_dirs[i];
         verify_input(test_config, basedir);
+    }
+}
+
+void test_json_reject_external_ref_outside_dir()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    json_config test_config;
+    test_config.resolve_references = true;
+    test_config.input_path = SRCDIR"/test/json/refs1/input.json";
+
+    // A $ref that climbs out of the document's directory, or names an
+    // absolute path, must be refused rather than read from disk. Both
+    // targets below are valid JSON that would load cleanly if read, so a
+    // thrown general_error can only mean the target was rejected for
+    // leaving the directory, not that parsing it failed.
+    const char* escapes[] = {
+        "{\"$ref\": \"../basic1/input.json\"}",
+        "{\"$ref\": \"" SRCDIR "/test/json/basic1/input.json\"}",
+    };
+
+    for (const char* stream : escapes)
+    {
+        json::document_tree doc;
+        ORCUS_TEST_EXPECT_THROW(doc.load(stream, test_config), general_error);
     }
 }
 
@@ -1053,6 +1079,7 @@ int main()
         test_json_parse();
         test_json_dump_indent_0();
         test_json_resolve_refs();
+        test_json_reject_external_ref_outside_dir();
         test_json_parse_empty();
         test_json_parse_invalid();
         test_json_const_node_unset();

@@ -1760,11 +1760,30 @@ void document_tree::load(std::string_view stream, const json_config& config)
 
     fs::path parent_dir = config.input_path;
     parent_dir = parent_dir.parent_path();
+
+    // The directory a reference is allowed to resolve under. An input
+    // loaded without a path resolves references relative to the current
+    // directory, so fall back to "." when parent_dir is empty.
+    fs::path base_dir = parent_dir.lexically_normal();
+    if (base_dir.empty())
+        base_dir = ".";
+
     for (auto it = external_refs.begin(), ite = external_refs.end(); it != ite; ++it)
     {
         fs::path extfile = std::string{it->path};
-        fs::path extpath = parent_dir;
-        extpath /= extfile;
+        fs::path extpath = (parent_dir / extfile).lexically_normal();
+
+        // Only follow a reference that stays within the document's own
+        // directory tree. An absolute target, or one that climbs out with
+        // "..", normalises to a path whose route from base_dir starts with
+        // ".." (or has no route at all), and is refused rather than read.
+        fs::path rel = extpath.lexically_relative(base_dir);
+        if (rel.empty() || *rel.begin() == "..")
+        {
+            std::ostringstream os;
+            os << "refusing to resolve external reference outside the document directory: " << extfile.string();
+            throw general_error(os.str());
+        }
 
         // Get the stream content from the path.
         file_content ext_content(extpath.string().data());
