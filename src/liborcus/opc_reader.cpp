@@ -100,16 +100,22 @@ void opc_reader::read_part(std::string_view path, const schema_t type, opc_rel_e
 
         if (*p == '/')
         {
-            // Push a new directory.
-            std::string dir_name(p_name, name_len);
-            if (dir_name == "..")
+            // name_len counts the trailing '/' too, so drop it to get the
+            // bare segment and recognise a ".." that moves up one level.
+            std::string_view segment(p_name, name_len - 1);
+            if (segment == "..")
             {
-                dir_changed.push_back(m_dir_stack.back());
-                m_dir_stack.pop_back();
+                // Don't pop past the package root (the initial empty entry),
+                // matching resolve_file_path which refuses to ascend above it.
+                if (m_dir_stack.size() > 1)
+                {
+                    dir_changed.push_back(m_dir_stack.back());
+                    m_dir_stack.pop_back();
+                }
             }
             else
             {
-                m_dir_stack.push_back(dir_name);
+                m_dir_stack.push_back(std::string(p_name, name_len));
 
                 // Add a null directory to the change record to remove it at the end.
                 dir_changed.push_back(std::string());
