@@ -120,10 +120,11 @@ public:
     bool inflate()
     {
         int err = ::inflate(&m_zlib_cxt, Z_SYNC_FLUSH);
-        if (err >= 0 && m_zlib_cxt.msg)
-            return false;
-
-        return true;
+        // A complete entry reaches the end of the deflate stream and fills the
+        // whole output buffer. Z_OK (more input wanted) or any leftover
+        // avail_out means the payload was truncated, and a negative code is a
+        // hard zlib error.
+        return err == Z_STREAM_END && m_zlib_cxt.avail_out == 0;
     }
 };
 

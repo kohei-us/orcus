@@ -218,6 +218,81 @@ std::vector<uint8_t> make_zip_with_divergent_names(
     return buf;
 }
 
+// Build a zip blob with one deflated entry: a local file header at offset 0
+// followed by raw_deflate bytes, plus a matching central directory entry.
+// size_uncompressed is declared independently of raw_deflate so a truncated
+// stream can be paired with the full uncompressed size.
+std::vector<uint8_t> make_zip_with_deflated_entry(
+    std::string_view name, const std::vector<uint8_t>& raw_deflate,
+    uint32_t size_uncompressed)
+{
+    std::vector<uint8_t> buf;
+
+    auto write_u16 = [&](uint16_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+    };
+    auto write_u32 = [&](uint32_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+        buf.push_back(static_cast<uint8_t>(v >> 16));
+        buf.push_back(static_cast<uint8_t>(v >> 24));
+    };
+
+    const uint32_t comp_size = static_cast<uint32_t>(raw_deflate.size());
+
+    // Local file header at offset 0.
+    write_u32(0x04034b50);  // signature
+    write_u16(0);  // version needed
+    write_u16(0);  // general purpose flags
+    write_u16(8);  // compression method (deflated)
+    write_u16(0);  // last mod time
+    write_u16(0);  // last mod date
+    write_u32(0);  // crc32
+    write_u32(comp_size);          // compressed size
+    write_u32(size_uncompressed);  // uncompressed size
+    write_u16(static_cast<uint16_t>(name.size()));  // filename length
+    write_u16(0);  // extra field length
+    buf.insert(buf.end(), name.begin(), name.end());
+    buf.insert(buf.end(), raw_deflate.begin(), raw_deflate.end());
+
+    const uint32_t cd_offset = static_cast<uint32_t>(buf.size());
+
+    // Central directory entry.
+    write_u32(0x02014b50);  // signature
+    write_u16(0);  // version made by
+    write_u16(0);  // min version needed
+    write_u16(0);  // general purpose flags
+    write_u16(8);  // compression method (deflated)
+    write_u16(0);  // last mod time
+    write_u16(0);  // last mod date
+    write_u32(0);  // crc32
+    write_u32(comp_size);          // compressed size
+    write_u32(size_uncompressed);  // uncompressed size
+    write_u16(static_cast<uint16_t>(name.size()));  // filename length
+    write_u16(0);  // extra field length
+    write_u16(0);  // file comment length
+    write_u16(0);  // disk number where file starts
+    write_u16(0);  // internal file attributes
+    write_u32(0);  // external file attributes
+    write_u32(0);  // local header offset
+    buf.insert(buf.end(), name.begin(), name.end());
+
+    const uint32_t cd_size = static_cast<uint32_t>(buf.size() - cd_offset);
+
+    // End of central directory.
+    write_u32(0x06054b50);
+    write_u16(0);  // this disk
+    write_u16(0);  // disk where CD starts
+    write_u16(1);  // entries on this disk
+    write_u16(1);  // total entries
+    write_u32(cd_size);
+    write_u32(cd_offset);
+    write_u16(0);  // archive comment length
+
+    return buf;
+}
+
 } // namespace
 
 void test_zip_rejects_unsafe_entry_names()
@@ -473,6 +548,52 @@ void test_zip_rejects_unsafe_local_header_name()
     assert(header.filename == "safe.xml");
 }
 
+void test_zip_rejects_truncated_deflate()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const std::string_view name = "a";
+
+    // A raw deflate stream (windowBits -MAX_WBITS, matching the inflater) of a
+    // single final stored block holding the byte 'A': BFINAL=1 / BTYPE=00
+    // header byte, then LEN / NLEN and the literal byte.
+    const std::vector<uint8_t> full_deflate =
+        { 0x01, 0x01, 0x00, 0xfe, 0xff, 0x41 };
+
+    // The complete stream inflates cleanly to its one declared byte.
+    {
+        auto blob = make_zip_with_deflated_entry(name, full_deflate, 1);
+        zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+        zip_archive archive(&strm);
+        archive.load();
+        unnamed_buffer ub = archive.read_file_entry(name);
+        // the buffer carries the one decoded byte plus a trailing NUL
+        assert(ub.size() == 2);
+        assert(ub.data()[0] == 'A');
+    }
+
+    // Dropping the trailing literal byte leaves the deflate stream short of its
+    // end while size_uncompressed still claims one byte. The old code accepted
+    // the partial result; the entry must now be refused.
+    {
+        std::vector<uint8_t> cut(full_deflate.begin(), full_deflate.end() - 1);
+        auto blob = make_zip_with_deflated_entry(name, cut, 1);
+        zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+        zip_archive archive(&strm);
+        archive.load();
+        bool threw = false;
+        try
+        {
+            archive.read_file_entry(name);
+        }
+        catch (const zip_error&)
+        {
+            threw = true;
+        }
+        assert(threw);
+    }
+}
+
 void test_seek_central_dir_window()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -511,6 +632,7 @@ int main()
     test_zip_entry_count_cap();
     test_zip_rejects_encrypted_and_multidisk();
     test_zip_rejects_unsafe_local_header_name();
+    test_zip_rejects_truncated_deflate();
     test_seek_central_dir_window();
 
     return EXIT_SUCCESS;
