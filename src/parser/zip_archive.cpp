@@ -157,7 +157,9 @@ public:
     std::string read_string(size_t n)
     {
         auto buf = read_string_to_buffer(n);
-        return std::string(buf.data());
+        // full n bytes, not cut at the first NUL, so a NUL stays visible to
+        // is_unsafe_zip_path
+        return std::string(buf.data(), n);
     }
 
     std::vector<uint8_t> read_bytes(std::size_t n)
@@ -357,7 +359,11 @@ zip_file_entry_header zip_archive::impl::get_file_entry_header(std::size_t index
     uint16_t extra_field_len = file_header.read_2bytes();
 
     if (filename_len)
+    {
         header.filename = file_header.read_string(filename_len);
+        if (is_unsafe_zip_path(header.filename))
+            throw zip_error(std::format("unsafe zip entry name: '{}'", header.filename));
+    }
 
     if (extra_field_len)
         header.extra_field = file_header.read_bytes(extra_field_len);

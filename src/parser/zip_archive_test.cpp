@@ -146,6 +146,78 @@ std::vector<uint8_t> make_zip_with_entry_name(std::string_view name)
     return buf;
 }
 
+// Build a zip blob with one entry whose local file header declares
+// local_name while the central directory declares central_name, so the two
+// filename copies can be made to diverge.  The local header sits at offset 0
+// and the central directory entry points at it.
+std::vector<uint8_t> make_zip_with_divergent_names(
+    std::string_view central_name, std::string_view local_name)
+{
+    std::vector<uint8_t> buf;
+
+    auto write_u16 = [&](uint16_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+    };
+    auto write_u32 = [&](uint32_t v) {
+        buf.push_back(static_cast<uint8_t>(v));
+        buf.push_back(static_cast<uint8_t>(v >> 8));
+        buf.push_back(static_cast<uint8_t>(v >> 16));
+        buf.push_back(static_cast<uint8_t>(v >> 24));
+    };
+
+    // Local file header at offset 0.
+    const uint32_t local_header_offset = 0;
+    write_u32(0x04034b50);  // signature
+    write_u16(0);  // version needed
+    write_u16(0);  // general purpose flags
+    write_u16(0);  // compression method (stored)
+    write_u16(0);  // last mod time
+    write_u16(0);  // last mod date
+    write_u32(0);  // crc32
+    write_u32(0);  // compressed size
+    write_u32(0);  // uncompressed size
+    write_u16(static_cast<uint16_t>(local_name.size()));  // filename length
+    write_u16(0);  // extra field length
+    buf.insert(buf.end(), local_name.begin(), local_name.end());
+
+    const uint32_t cd_offset = static_cast<uint32_t>(buf.size());
+
+    // Central directory entry.
+    write_u32(0x02014b50);  // signature
+    write_u16(0);  // version made by
+    write_u16(0);  // min version needed
+    write_u16(0);  // general purpose flags
+    write_u16(0);  // compression method (stored)
+    write_u16(0);  // last mod time
+    write_u16(0);  // last mod date
+    write_u32(0);  // crc32
+    write_u32(0);  // compressed size
+    write_u32(0);  // uncompressed size
+    write_u16(static_cast<uint16_t>(central_name.size()));  // filename length
+    write_u16(0);  // extra field length
+    write_u16(0);  // file comment length
+    write_u16(0);  // disk number where file starts
+    write_u16(0);  // internal file attributes
+    write_u32(0);  // external file attributes
+    write_u32(local_header_offset);  // local header offset
+    buf.insert(buf.end(), central_name.begin(), central_name.end());
+
+    const uint32_t cd_size = static_cast<uint32_t>(buf.size() - cd_offset);
+
+    // End of central directory.
+    write_u32(0x06054b50);
+    write_u16(0);  // this disk
+    write_u16(0);  // disk where CD starts
+    write_u16(1);  // entries on this disk
+    write_u16(1);  // total entries
+    write_u32(cd_size);
+    write_u32(cd_offset);
+    write_u16(0);  // archive comment length
+
+    return buf;
+}
+
 } // namespace
 
 void test_zip_rejects_unsafe_entry_names()
@@ -359,6 +431,48 @@ void test_zip_rejects_encrypted_and_multidisk()
     }
 }
 
+void test_zip_rejects_unsafe_local_header_name()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // The central directory carries a safe name, so load() succeeds, but the
+    // local file header that get_file_entry_header reads declares an unsafe
+    // one. The header read must reject it rather than hand back the
+    // unsanitised (or NUL-truncated) name.
+    const std::string_view bad_local_names[] = {
+        "../etc/something",
+        "/etc/something",
+        "foo\\bar",
+        std::string_view{"safe.xml\0../etc/something", 25},
+    };
+
+    for (auto local_name : bad_local_names)
+    {
+        auto blob = make_zip_with_divergent_names("safe.xml", local_name);
+        zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+        zip_archive archive(&strm);
+        archive.load();
+        bool threw = false;
+        try
+        {
+            archive.get_file_entry_header(std::size_t(0));
+        }
+        catch (const zip_error&)
+        {
+            threw = true;
+        }
+        assert(threw);
+    }
+
+    // Sanity check: matching safe names read back cleanly.
+    auto blob = make_zip_with_divergent_names("safe.xml", "safe.xml");
+    zip_archive_stream_blob strm(std::span{blob.data(), blob.size()});
+    zip_archive archive(&strm);
+    archive.load();
+    zip_file_entry_header header = archive.get_file_entry_header(std::size_t(0));
+    assert(header.filename == "safe.xml");
+}
+
 void test_seek_central_dir_window()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -396,6 +510,7 @@ int main()
     test_zip_central_dir_bounds();
     test_zip_entry_count_cap();
     test_zip_rejects_encrypted_and_multidisk();
+    test_zip_rejects_unsafe_local_header_name();
     test_seek_central_dir_window();
 
     return EXIT_SUCCESS;
