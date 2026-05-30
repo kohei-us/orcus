@@ -163,8 +163,12 @@ bool sheet_write_as_csv(spreadsheet::sheet* sheet, PyObject* file)
 
         // write the content as python's utf-8 string ('s').  Use 'y' to write
         // it as bytes (for future reference).
-        PyObject_CallFunction(func_write, "s", s.data(), nullptr);
+        PyObject* res = PyObject_CallFunction(func_write, "s", s.data(), nullptr);
         Py_XDECREF(func_write);
+        if (!res)
+            // write() raised; let its error out instead of reporting success.
+            return false;
+        Py_DECREF(res);
     }
 
     return true;

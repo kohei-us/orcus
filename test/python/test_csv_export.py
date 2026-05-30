@@ -96,5 +96,19 @@ def test_export_from_xlsx():
                 doc.sheets[0].write(mfo, format=invalid_format)
 
 
+def test_sheet_write_propagates_write_exception():
+    # A file object whose write() raises must surface that exception rather
+    # than report success and strand a pending error.
+    doc = csv.read("a,b,c\n1,2,3\n")
+    assert len(doc.sheets) > 0
+
+    class FailingFile:
+        def write(self, content):
+            raise ValueError("write failure propagated")
+
+    with pytest.raises(ValueError):
+        doc.sheets[0].write(FailingFile(), format=FormatType.CSV)
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
