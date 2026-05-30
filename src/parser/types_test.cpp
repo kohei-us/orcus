@@ -37,9 +37,33 @@ void test_character_set_t()
     }
 }
 
+void test_date_time_from_chars()
+{
+    orcus::test::stack_printer __sp__(__func__);
+
+    using orcus::date_time_t;
+
+    // The seconds field abuts trailing digits in the backing buffer. Parsing
+    // must stop at the view's end and not run on into "999999".
+    std::string backing = "2020-01-01T00:00:30999999";
+    std::string_view view(backing.data(), 19);
+    date_time_t dt = date_time_t::from_chars(view);
+    assert(dt.year == 2020);
+    assert(dt.month == 1);
+    assert(dt.day == 1);
+    assert(dt.hour == 0);
+    assert(dt.minute == 0);
+    assert(dt.second == 30.0);
+
+    // A fractional second still parses.
+    date_time_t dt2 = date_time_t::from_chars("2020-01-01T00:00:30.5");
+    assert(dt2.second == 30.5);
+}
+
 int main()
 {
     test_character_set_t();
+    test_date_time_from_chars();
 
     return EXIT_SUCCESS;
 }

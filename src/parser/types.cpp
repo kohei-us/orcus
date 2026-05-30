@@ -383,8 +383,10 @@ date_time_t date_time_t::from_chars(std::string_view str)
 
     if (t_count)
     {
-        // Flush second.
-        ret.second = strtod(digit, nullptr);
+        // Flush second. strtod would read past the end of a non-terminated view.
+        double v;
+        parse_numeric(digit, digit + digit_len, v);
+        ret.second = v;
     }
     else
     {
