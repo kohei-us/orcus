@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <vector>
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <filesystem>
 
@@ -126,6 +127,12 @@ void sheet::set_date_time(row_t row, col_t col, int year, int month, int day, in
     gregorian::date d(year, month, day);
 
     double days_since_epoch = (d - origin).days();
+
+    // converting a non-finite or out-of-range double to long is undefined
+    if (!std::isfinite(second) || second < 0.0)
+        second = 0.0;
+    else if (second > 60.0)
+        second = 60.0;
 
     long ms = second * 1000000.0;
 

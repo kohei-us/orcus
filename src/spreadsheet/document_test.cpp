@@ -12,8 +12,13 @@
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/shared_strings.hpp>
 
+#include <ixion/model_context.hpp>
+#include <ixion/address.hpp>
+
 #include <climits>
+#include <cmath>
 #include <filesystem>
+#include <limits>
 
 namespace ss = orcus::spreadsheet;
 namespace fs = std::filesystem;
@@ -100,11 +105,38 @@ void test_dump_unsafe_sheet_name()
     fs::remove_all(base);
 }
 
+void test_date_time_out_of_range_second()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{200, 10};
+    ss::document doc{ssize};
+
+    doc.set_origin_date(1899, 12, 30);
+
+    auto* sh = doc.append_sheet("Sheet 1");
+    assert(sh);
+
+    const ixion::model_context& cxt = doc.get_model_context();
+
+    // an infinite second must be clamped, not cast to long
+    sh->set_date_time(0, 0, 2020, 1, 1, 0, 0, std::numeric_limits<double>::infinity());
+    double v_inf = cxt.get_numeric_value(ixion::abs_address_t{0, 0, 0});
+    assert(std::isfinite(v_inf));
+
+    // the clamped cell must land on the same day as the second-0 cell
+    sh->set_date_time(1, 0, 2020, 1, 1, 0, 0, 0.0);
+    double base = cxt.get_numeric_value(ixion::abs_address_t{0, 1, 0});
+    assert(std::isfinite(base));
+    assert(v_inf >= base && v_inf < base + 1.0);
+}
+
 int main()
 {
     test_sheet();
     test_array_formula_malformed_range();
     test_dump_unsafe_sheet_name();
+    test_date_time_out_of_range_second();
 
     return EXIT_SUCCESS;
 }
