@@ -70,6 +70,7 @@ class json_parser_handler
 
         if (m_stack.empty())
         {
+            Py_DECREF(value);
             std::ostringstream os;
             os << BOOST_CURRENT_FUNCTION << ": Stack is unexpectedly empty.";
             throw python_json_error(os.str());
@@ -81,15 +82,27 @@ class json_parser_handler
         {
             case json::node_t::array:
             {
+                // PyList_Append does not steal the reference, so release ours
+                // once the list holds its own.
                 PyList_Append(cur.node, value);
+                Py_DECREF(value);
                 return value;
             }
             break;
             case json::node_t::object:
             {
-                assert(cur.key);
+                if (!cur.key)
+                {
+                    // object_key could not build the key (e.g. invalid utf-8).
+                    Py_DECREF(value);
+                    std::ostringstream os;
+                    os << BOOST_CURRENT_FUNCTION << ": object value has no key.";
+                    throw python_json_error(os.str());
+                }
+                // PyDict_SetItem does not steal either reference.
                 PyDict_SetItem(cur.node, cur.key, value);
-                cur.key = nullptr;
+                Py_DECREF(value);
+                Py_CLEAR(cur.key);
                 return value;
             }
             break;
@@ -248,6 +261,12 @@ PyObject* json_loads(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     catch (const orcus::parse_error& e)
     {
         PyErr_SetString(PyExc_TypeError, e.what());
+    }
+    catch (const std::exception& e)
+    {
+        // a handler error (bad key, broken invariant) must not escape into
+        // the C/Python boundary as an uncaught C++ exception.
+        PyErr_SetString(PyExc_RuntimeError, e.what());
     }
     return nullptr;
 }

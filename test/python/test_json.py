@@ -40,5 +40,24 @@ def test_loads():
     assert l[2] is None
 
 
+def test_loads_value_refcount_balance():
+    # Array/object values were appended without releasing the handler's own
+    # reference, leaking one ref per scalar. A freshly parsed float is held
+    # only by its container, so a leak shows up as an extra count here.
+    o = json.loads('[1.5]')
+    assert sys.getrefcount(o[0]) == 3
+
+    d = json.loads('{"k": 2.5}')
+    assert sys.getrefcount(d["k"]) == 3
+
+
+def test_loads_invalid_unicode_key():
+    # An object key that is not valid utf-8 (a lone surrogate) produced a NULL
+    # key that an assert let through into PyDict_SetItem. It must raise
+    # cleanly instead of aborting.
+    with pytest.raises(Exception):
+        json.loads('{"\\ud800": 1}')
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
