@@ -57,5 +57,15 @@ def test_import(test_dir_name):
     assert isinstance(doc, orcus.Document)
 
 
+def test_import_binary_stream():
+    # A stream opened in binary mode yields bytes from read(); it must load
+    # just like the text-mode stream rather than tripping over the str-only
+    # path.
+    input_file = TESTDIR / "simple-numbers" / "input.csv"
+    doc = csv.read(input_file.open("rb"))
+    assert isinstance(doc, orcus.Document)
+    assert len(doc.sheets) > 0
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

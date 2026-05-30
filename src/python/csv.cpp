@@ -96,7 +96,25 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         app.set_config(conf);
 
         Py_ssize_t n = 0;
-        const char* p = PyUnicode_AsUTF8AndSize(ret.get(), &n);
+        const char* p = nullptr;
+
+        // read() yields bytes in binary mode and str in text mode; only the
+        // latter is valid for PyUnicode_AsUTF8AndSize.
+        if (PyBytes_Check(ret.get()))
+        {
+            char* buf = nullptr;
+            if (PyBytes_AsStringAndSize(ret.get(), &buf, &n) == 0)
+                p = buf;
+        }
+        else if (PyUnicode_Check(ret.get()))
+            p = PyUnicode_AsUTF8AndSize(ret.get(), &n);
+
+        if (!p)
+        {
+            PyErr_SetString(PyExc_TypeError, "stream must yield a str or bytes object");
+            return nullptr;
+        }
+
         app.read_stream({p, static_cast<std::string_view::size_type>(n)});
 
         return create_document(std::move(doc));
