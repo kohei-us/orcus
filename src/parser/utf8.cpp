@@ -509,7 +509,7 @@ uint8_t calc_utf8_byte_length(uint8_t c1)
         // highest 4 bits are 1110.
         return 3;
 
-    if ((c1 & 0xFC) == 0xF0)
+    if ((c1 & 0xF8) == 0xF0)
         // highest 5 bits are 11110.
         return 4;
 

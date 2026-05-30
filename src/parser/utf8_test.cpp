@@ -14,6 +14,7 @@
 #include <cassert>
 #include <functional>
 #include <iomanip>
+#include <limits>
 
 using namespace orcus;
 using std::cout;
@@ -159,10 +160,21 @@ void test_xml_name_char()
     assert(res);
 }
 
+void test_calc_utf8_byte_length()
+{
+    assert(calc_utf8_byte_length(0x41) == 1); // ASCII
+    assert(calc_utf8_byte_length(0xC3) == 2); // 2-byte lead
+    assert(calc_utf8_byte_length(0xE2) == 3); // 3-byte lead
+    assert(calc_utf8_byte_length(0xF0) == 4); // 4-byte lead
+    assert(calc_utf8_byte_length(0xF4) == 4); // 4-byte lead up to U+10FFFF
+    assert(calc_utf8_byte_length(0xF8) == std::numeric_limits<uint8_t>::max()); // invalid
+}
+
 int main()
 {
     test_xml_name_start_char();
     test_xml_name_char();
+    test_calc_utf8_byte_length();
 
     return EXIT_SUCCESS;
 }
