@@ -108,7 +108,10 @@ int tp_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char**>(kwlist), &self->type))
         return -1;
 
-    if (!self->type)
+    if (self->type)
+        // PyArg hands back a borrowed reference; take our own to match tp_dealloc.
+        Py_INCREF(self->type);
+    else
         self->type = get_python_enum_value("CellType", "UNKNOWN");
 
     initialize_cell_members(self);

@@ -68,5 +68,16 @@ def test_format_read_propagates_read_exception():
         ods.read(_RaisingStream())
 
 
+def test_cell_type_refcount_balance():
+    # Cell(type=...) stored the borrowed reference from PyArg and DECREF'd it
+    # in dealloc, leaking a reference off the passed CellType each round.
+    ct = orcus.CellType.STRING
+    before = sys.getrefcount(ct)
+    cell = orcus.Cell(type=ct)
+    del cell
+    after = sys.getrefcount(ct)
+    assert after == before
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
