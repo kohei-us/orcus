@@ -73,7 +73,8 @@ std::string convert_utf16_to_utf8(const char* p, size_t n, unicode_t ut)
             for (size_t i = 0; i < n_buf; ++i)
             {
                 size_t offset = i * 2;
-                buf[i] = static_cast<char16_t>(p[offset+1] | p[offset] << 8);
+                buf[i] = static_cast<char16_t>(
+                    static_cast<uint8_t>(p[offset+1]) | static_cast<uint8_t>(p[offset]) << 8);
             }
             break;
         }
@@ -82,7 +83,8 @@ std::string convert_utf16_to_utf8(const char* p, size_t n, unicode_t ut)
             for (size_t i = 0; i < n_buf; ++i)
             {
                 size_t offset = i * 2;
-                buf[i] = static_cast<char16_t>(p[offset] | p[offset+1]);
+                buf[i] = static_cast<char16_t>(
+                    static_cast<uint8_t>(p[offset]) | static_cast<uint8_t>(p[offset+1]) << 8);
             }
             break;
         }

@@ -229,6 +229,26 @@ void test_temp_content_invalid_store_type()
     }
 }
 
+void test_stream_convert_utf16_to_utf8()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // "e-acute" U+00E9 has a low byte of 0xE9, exercising the signed-char sign
+    // extension; "zhong" U+4E2D has a non-zero high byte, exercising the
+    // high-byte shift the little-endian branch was missing.
+    const std::string expected = "\xC3\xA9\xE4\xB8\xAD";
+
+    // UTF-16 big-endian, leading BOM 0xFE 0xFF.
+    memory_content be(std::string_view("\xFE\xFF\x00\xE9\x4E\x2D", 6));
+    be.convert_to_utf8();
+    assert(be.str() == expected);
+
+    // UTF-16 little-endian, leading BOM 0xFF 0xFE.
+    memory_content le(std::string_view("\xFF\xFE\xE9\x00\x2D\x4E", 6));
+    le.convert_to_utf8();
+    assert(le.str() == expected);
+}
+
 int main()
 {
     test_stream_create_error_output();
@@ -236,6 +256,7 @@ int main()
     test_stream_logical_string_length();
     test_stream_locate_line_with_offset();
     test_stream_uuid();
+    test_stream_convert_utf16_to_utf8();
     test_temp_content_stored<unnamed_buffer_store_t::heap_allocated>();
     test_temp_content_stored<unnamed_buffer_store_t::memory_mapped>();
     test_temp_content_invalid_store_type();
