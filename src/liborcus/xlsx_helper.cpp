@@ -6,6 +6,7 @@
  */
 
 #include "xlsx_helper.hpp"
+#include "number_utils.hpp"
 
 namespace orcus {
 
@@ -19,7 +20,11 @@ bool to_rgb(
     if (n != 8)
         return false;
 
-    unsigned long v = strtoul(ps.data(), nullptr, 16);
+    std::optional<std::uint32_t> parsed = hex_to_uint32(ps);
+    if (!parsed)
+        return false;
+
+    std::uint32_t v = *parsed;
     blue  = (0x000000FF & v);
     green = (0x000000FF & (v >> 8));
     red   = (0x000000FF & (v >> 16));

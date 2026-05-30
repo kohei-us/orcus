@@ -17,6 +17,8 @@ std::optional<std::uint8_t> hex_to_uint8(std::string_view s);
 
 std::optional<std::uint16_t> hex_to_uint16(std::string_view s);
 
+std::optional<std::uint32_t> hex_to_uint32(std::string_view s);
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

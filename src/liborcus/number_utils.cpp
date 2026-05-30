@@ -69,6 +69,11 @@ std::optional<std::uint16_t> hex_to_uint16(std::string_view s)
     return hex_to_uint<std::uint16_t>(s);
 }
 
+std::optional<std::uint32_t> hex_to_uint32(std::string_view s)
+{
+    return hex_to_uint<std::uint32_t>(s);
+}
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

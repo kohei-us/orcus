@@ -200,6 +200,7 @@ xlsx_sheet_context_test_SOURCES = \
 	ooxml_schemas.cpp \
 	ooxml_tokens.cpp \
 	ooxml_types.cpp \
+	number_utils.cpp \
 	session_context.cpp \
 	spreadsheet_interface.cpp \
 	xlsx_autofilter_context.cpp \

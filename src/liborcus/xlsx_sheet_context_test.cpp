@@ -11,6 +11,7 @@
 #include "xlsx_sheet_context.hpp"
 #include "ooxml_token_constants.hpp"
 #include "xlsx_session_data.hpp"
+#include "xlsx_helper.hpp"
 #include "orcus/types.hpp"
 #include "orcus/config.hpp"
 
@@ -311,6 +312,34 @@ void test_hidden_row()
     context.end_element(ns, elem);
 }
 
+void test_to_rgb()
+{
+    spreadsheet::color_elem_t alpha, red, green, blue;
+
+    // Valid 8-character ARGB string parses into its four components.
+    assert(to_rgb("FF004A12", alpha, red, green, blue));
+    assert(alpha == 0xFF);
+    assert(red == 0x00);
+    assert(green == 0x4A);
+    assert(blue == 0x12);
+
+    // The 8-character value sits at the front of a longer buffer whose
+    // trailing bytes are also hex digits. to_rgb must parse only the
+    // 8-character view and not read past it into "ABCD"
+    std::string backing = "FF004A12ABCD";
+    std::string_view view(backing.data(), 8);
+    assert(to_rgb(view, alpha, red, green, blue));
+    assert(alpha == 0xFF);
+    assert(red == 0x00);
+    assert(green == 0x4A);
+    assert(blue == 0x12);
+
+    // Non-hex characters and wrong lengths are rejected.
+    assert(!to_rgb("FF00GG12", alpha, red, green, blue));
+    assert(!to_rgb("FF004A1", alpha, red, green, blue));
+    assert(!to_rgb("FF004A123", alpha, red, green, blue));
+}
+
 }
 
 int main()
@@ -321,6 +350,7 @@ int main()
     test_array_formula();
     test_hidden_col();
     test_hidden_row();
+    test_to_rgb();
     return 0;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
