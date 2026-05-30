@@ -245,8 +245,13 @@ stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, Py
     if (PyObject_HasAttrString(file, "read"))
     {
         PyObject* func_read = PyObject_GetAttrString(file, "read"); // new reference
+        if (!func_read)
+            return ret;
         obj_bytes = PyObject_CallFunction(func_read, nullptr);
         Py_XDECREF(func_read);
+        if (!obj_bytes)
+            // read() raised; propagate its exception, not the generic one below
+            return ret;
     }
 
     if (!obj_bytes)
@@ -300,8 +305,13 @@ py_unique_ptr read_stream_from_args(PyObject* args, PyObject* kwargs)
     if (PyObject_HasAttrString(file, "read"))
     {
         PyObject* func_read = PyObject_GetAttrString(file, "read"); // new reference
+        if (!func_read)
+            return obj_bytes;
         obj_bytes.reset(PyObject_CallFunction(func_read, nullptr));
         Py_XDECREF(func_read);
+        if (!obj_bytes)
+            // read() raised; propagate its exception, not the generic one below
+            return obj_bytes;
     }
 
     if (!obj_bytes)

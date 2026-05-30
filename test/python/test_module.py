@@ -49,5 +49,24 @@ def test_detect_format(path_parts, expected_format):
         assert expected_format == fmt
 
 
+class _RaisingStream:
+    def read(self):
+        raise ValueError("read failure propagated")
+
+
+def test_detect_format_propagates_read_exception():
+    # read_stream_from_args: a read() that raises must surface its own
+    # exception rather than a generic "failed to extract bytes" error.
+    with pytest.raises(ValueError):
+        orcus.detect_format(_RaisingStream())
+
+
+def test_format_read_propagates_read_exception():
+    # read_stream_and_formula_params_from_args, the per-format read path.
+    from orcus import ods
+    with pytest.raises(ValueError):
+        ods.read(_RaisingStream())
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
