@@ -14,6 +14,7 @@
 
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
+#include <ixion/types.hpp>
 
 #include <climits>
 #include <cmath>
@@ -131,12 +132,35 @@ void test_date_time_out_of_range_second()
     assert(v_inf >= base && v_inf < base + 1.0);
 }
 
+void test_set_auto_numeric_bounds()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{200, 10};
+    ss::document doc{ssize};
+
+    auto* sh = doc.append_sheet("Sheet 1");
+    assert(sh);
+
+    const ixion::model_context& cxt = doc.get_model_context();
+
+    // The numeric text abuts trailing digits in the backing buffer. The parse
+    // must stop at the view's end, so the cell is the number 12. An over-read
+    // would see "1234", reject the unconsumed tail, and store it as a string.
+    std::string backing = "1234";
+    sh->set_auto(0, 0, std::string_view(backing.data(), 2));
+    ixion::abs_address_t pos{0, 0, 0};
+    assert(cxt.get_celltype(pos) == ixion::cell_t::numeric);
+    assert(cxt.get_numeric_value(pos) == 12.0);
+}
+
 int main()
 {
     test_sheet();
     test_array_formula_malformed_range();
     test_dump_unsafe_sheet_name();
     test_date_time_out_of_range_second();
+    test_set_auto_numeric_bounds();
 
     return EXIT_SUCCESS;
 }

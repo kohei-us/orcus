@@ -14,6 +14,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -611,8 +612,8 @@ void ods_content_xml_context::start_cell(const xml_token_attrs_t& attrs)
                 case XML_value:
                 {
                     const char* end = attr.value.data() + attr.value.size();
-                    char* endptr;
-                    double val = strtod(attr.value.data(), &endptr);
+                    double val;
+                    const char* endptr = parse_numeric(attr.value.data(), end, val);
                     if (endptr == end)
                         m_cell_attr.value = val;
                     break;

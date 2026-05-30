@@ -334,19 +334,19 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
         {
             case XML_Unit:
             {
-                double n = atoi(attr.value.data());
+                double n = to_long(attr.value);
                 font_style->set_size(n);
                 break;
             }
             case XML_Bold:
             {
-                bool b = atoi(attr.value.data()) != 0;
+                bool b = to_long(attr.value) != 0;
                 font_style->set_bold(b);
                 break;
             }
             case XML_Italic:
             {
-                bool b = atoi(attr.value.data()) != 0;
+                bool b = to_long(attr.value) != 0;
                 font_style->set_italic(b);
                 break;
             }
@@ -500,7 +500,7 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
             }
             case XML_Hidden:
             {
-                bool b = atoi(attr.value.data());
+                bool b = to_long(attr.value);
                 cell_protection->set_hidden(b);
 
                 protection_set = true;
@@ -508,7 +508,7 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
             }
             case XML_Locked:
             {
-                bool b = atoi(attr.value.data());
+                bool b = to_long(attr.value);
                 cell_protection->set_locked(b);
 
                 protection_set = true;
@@ -589,25 +589,25 @@ void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
         {
             case XML_startCol:
             {
-                size_t n = atoi(attr.value.data());
+                size_t n = to_long(attr.value);
                 m_region_data->start_col = n;
                 break;
             }
             case XML_startRow:
             {
-                size_t n = atoi(attr.value.data());
+                size_t n = to_long(attr.value);
                 m_region_data->start_row = n;
                 break;
             }
             case XML_endCol:
             {
-                size_t n = atoi(attr.value.data());
+                size_t n = to_long(attr.value);
                 m_region_data->end_col = n;
                 break;
             }
             case XML_endRow:
             {
-                size_t n = atoi(attr.value.data());
+                size_t n = to_long(attr.value);
                 m_region_data->end_row = n;
                 break;
             }
@@ -634,7 +634,7 @@ void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
         {
             case XML_Operator:
             {
-                int val = atoi(attr.value.data());
+                int val = to_long(attr.value);
                 ss::condition_operator_t op = get_condition_operator(val);
                 cond_format->set_operator(op);
                 break;

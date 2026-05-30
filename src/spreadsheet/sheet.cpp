@@ -8,6 +8,7 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/exception.hpp"
+#include "orcus/parser_global.hpp"
 
 #include "json_dumper.hpp"
 #include "check_dumper.hpp"
@@ -77,10 +78,10 @@ void sheet::set_auto(row_t row, col_t col, std::string_view s)
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
 
     // First, see if this can be parsed as a number.
-    char* endptr = nullptr;
-    double val = strtod(s.data(), &endptr);
-    const char* endptr_check = s.data() + s.size();
-    if (endptr == endptr_check)
+    double val;
+    const char* end = s.data() + s.size();
+    const char* endptr = parse_numeric(s.data(), end, val);
+    if (endptr == end)
         // Treat this as a numeric value.
         cxt.set_numeric_cell(ixion::abs_address_t(mp_impl->sheet_id,row,col), val);
     else
