@@ -27,3 +27,4 @@ Classes
 
    class-const_node.rst
    class-document_tree.rst
+   class-node.rst

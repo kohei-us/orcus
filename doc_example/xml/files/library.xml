@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library name="City Library">
+  <book id="b1" title="The Go Programming Language"/>
+  <book id="b2" title="Effective Modern C++"/>
+</library>

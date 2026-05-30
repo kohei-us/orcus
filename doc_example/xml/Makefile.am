@@ -7,9 +7,14 @@ AM_CPPFLAGS = \
 
 EXTRA_DIST = \
 	files/cities.xml \
+	files/library.xml \
 	files/server-logs.xml
 
 EXTRA_PROGRAMS = \
+	sax-parser-1 \
+	sax-ns-parser-1 \
+	sax-token-parser-1 \
+	dom-tree-1 \
 	xml-namespace \
 	xml-mapping-basic \
 	xml-mapping-repeat \
@@ -22,12 +27,26 @@ SPDOC_LDADD = \
 	../../src/spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(LIBIXION_LIBS)
 
+PSR_LDADD = \
+	../../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
+
+sax_parser_1_SOURCES = sax_parser_1.cpp
+sax_parser_1_LDADD = $(PSR_LDADD)
+
+sax_ns_parser_1_SOURCES = sax_ns_parser_1.cpp
+sax_ns_parser_1_LDADD = $(PSR_LDADD)
+
+sax_token_parser_1_SOURCES = sax_token_parser_1.cpp
+sax_token_parser_1_LDADD = $(PSR_LDADD)
+
+dom_tree_1_SOURCES = dom_tree_1.cpp
+dom_tree_1_LDADD = $(PSR_LDADD)
+
 xml_namespace_SOURCES = \
 	xml_namespace.cpp
 
-xml_namespace_LDADD = \
-	../../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	../../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
+xml_namespace_LDADD = $(PSR_LDADD)
 
 xml_mapping_basic_SOURCES = xml_mapping_basic.cpp
 xml_mapping_basic_LDADD = $(SPDOC_LDADD)

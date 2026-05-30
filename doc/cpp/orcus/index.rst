@@ -15,6 +15,7 @@ Enum
    enum-length_unit_t.rst
    enum-string_escape_char_t.rst
    enum-unnamed_buffer_store_t.rst
+   enum-xml_encode_context_t.rst
 
 Type aliases
 ------------
@@ -36,6 +37,8 @@ Constants
 
    variable-INDEX_NOT_FOUND.rst
    variable-XMLNS_UNKNOWN_ID.rst
+   variable-XML_BUILTIN_NS_ALIAS.rst
+   variable-XML_BUILTIN_NS_URI.rst
    variable-XML_UNKNOWN_TOKEN.rst
 
 Functions
@@ -79,6 +82,7 @@ Functions
    function-to_long.rst
    function-to_long_checked.rst
    function-trim.rst
+   function-write_content_encoded.rst
 
 Struct
 ------
