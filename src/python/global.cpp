@@ -68,7 +68,7 @@ bool set_tuple_item_new(PyObject* tuple, Py_ssize_t pos, py_scoped_ref value)
     return PyTuple_SetItem(tuple, pos, value.release()) == 0;
 }
 
-PyObject* create_object_from_type(PyTypeObject* type)
+py_scoped_ref create_object_from_type(PyTypeObject* type)
 {
     if (!type)
     {

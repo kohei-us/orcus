@@ -19,7 +19,7 @@ void set_python_exception(PyObject* type, const std::exception& e);
 
 PyObject* get_python_enum_value(const char* enum_class_name, const char* value_name);
 
-PyObject* create_object_from_type(PyTypeObject* type);
+py_scoped_ref create_object_from_type(PyTypeObject* type);
 
 /**
  * Set a new-reference value into a dict under the given key.

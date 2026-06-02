@@ -145,17 +145,14 @@ PyObject* create_document_object()
 {
     PyTypeObject* type = get_document_type();
 
-    PyObject* obj_doc = create_object_from_type(type);
+    py_scoped_ref obj_doc = create_object_from_type(type);
     if (!obj_doc)
         return nullptr;
 
-    if (type->tp_init(obj_doc, nullptr, nullptr) < 0)
-    {
-        Py_DECREF(obj_doc);
+    if (type->tp_init(obj_doc.get(), nullptr, nullptr) < 0)
         return nullptr;
-    }
 
-    return obj_doc;
+    return obj_doc.release();
 }
 
 bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)

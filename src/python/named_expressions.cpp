@@ -194,22 +194,19 @@ PyObject* create_named_expressions_object(
 {
     PyTypeObject* type = get_named_exps_type();
 
-    PyObject* obj = create_object_from_type(type);
+    py_scoped_ref obj = create_object_from_type(type);
     if (!obj)
         return nullptr;
 
-    if (type->tp_init(obj, nullptr, nullptr) < 0)
-    {
-        Py_DECREF(obj);
+    if (type->tp_init(obj.get(), nullptr, nullptr) < 0)
         return nullptr;
-    }
 
-    named_exps_data& data = *t(obj)->data;
+    named_exps_data& data = *t(obj.get())->data;
     data.src = iter;
     data.origin_sheet = origin_sheet;
     data.doc = &doc;
 
-    return obj;
+    return obj.release();
 }
 
 PyTypeObject* get_named_exps_type()
