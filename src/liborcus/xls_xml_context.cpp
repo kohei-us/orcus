@@ -729,6 +729,20 @@ void xls_xml_data_context::store_array_formula_parent_cell(std::string_view form
 
     range += pos;
 
+    // clamp to sheet bounds to avoid excessive allocation on malformed range
+    ss::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+    auto clamped = sheet ? ss::clamp_range(range, sheet->get_sheet_size()) : std::optional<ss::range_t>{};
+    if (!clamped)
+    {
+        std::ostringstream os;
+        os << "skipping an array formula at " << pos << " whose range " << range
+           << " is invalid for the sheet";
+        warn(os.str());
+        return;
+    }
+
+    range = *clamped;
+
     store.push_back(
         std::make_pair(
             range,

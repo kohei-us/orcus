@@ -707,15 +707,31 @@ void xlsx_sheet_context::end_element_cell()
         else if (m_cur_formula.type == ss::formula_t::array)
         {
             // array formula expression
-            session_data.m_array_formulas.push_back(
-                std::make_unique<xlsx_session_data::array_formula>(
-                    m_sheet_id, m_cur_formula.ref, m_cur_formula.str
-                )
-            );
 
-            xlsx_session_data::array_formula& af = *session_data.m_array_formulas.back();
-            push_raw_cell_result(*af.results, 0, 0, session_data);
-            m_array_formula_results.push_back(std::make_pair(m_cur_formula.ref, af.results));
+            // clamp to sheet bounds to avoid excessive allocation on malformed range
+            auto clamped = ss::clamp_range(m_cur_formula.ref, m_sheet.get_sheet_size());
+            if (clamped)
+            {
+                m_cur_formula.ref = *clamped;
+
+                session_data.m_array_formulas.push_back(
+                    std::make_unique<xlsx_session_data::array_formula>(
+                        m_sheet_id, m_cur_formula.ref, m_cur_formula.str
+                    )
+                );
+
+                xlsx_session_data::array_formula& af = *session_data.m_array_formulas.back();
+                push_raw_cell_result(*af.results, 0, 0, session_data);
+                m_array_formula_results.push_back(std::make_pair(m_cur_formula.ref, af.results));
+            }
+            else
+            {
+                ss::address_t cell{m_cur_row, m_cur_col};
+                std::ostringstream os;
+                os << "skipping an array formula at " << cell << " whose range "
+                   << m_cur_formula.ref << " is invalid for the sheet";
+                warn(os.str());
+            }
         }
         else
         {

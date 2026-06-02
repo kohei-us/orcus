@@ -123,6 +123,11 @@ public:
     {
         return &m_array_formula;
     }
+
+    virtual range_size_t get_sheet_size() const override
+    {
+        return range_size_t{1048576, 16384};
+    }
 };
 
 class mock_sheet_properties : public import_sheet_properties
