@@ -94,21 +94,18 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*
 {
     PyTypeObject* sr_type = get_sheet_rows_type();
 
-    PyObject* rows = sr_type->tp_new(sr_type, nullptr, nullptr);
+    py_scoped_ref rows = sr_type->tp_new(sr_type, nullptr, nullptr);
     if (!rows)
         return nullptr;
 
-    if (sr_type->tp_init(rows, nullptr, nullptr) < 0)
-    {
-        Py_DECREF(rows);
+    if (sr_type->tp_init(rows.get(), nullptr, nullptr) < 0)
         return nullptr;
-    }
 
     // Populate the sheet rows data.
     sheet_data* data = get_sheet_data(self);
-    store_sheet_rows_data(rows, data->m_doc, data->m_sheet);
+    store_sheet_rows_data(rows.get(), data->m_doc, data->m_sheet);
 
-    return rows;
+    return rows.release();
 }
 
 namespace {
