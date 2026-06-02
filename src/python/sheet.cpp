@@ -126,7 +126,7 @@ format_t to_format_type_enum(PyObject* format)
 
     // Now check the member name.
 
-    PyObject* format_s = PyObject_GetAttrString(format, "name"); // new reference
+    py_scoped_ref format_s = PyObject_GetAttrString(format, "name"); // new reference
     if (!format_s)
     {
         PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
@@ -136,15 +136,13 @@ format_t to_format_type_enum(PyObject* format)
     // TODO : currently we only support csv format.  Change this code when we
     // add more format type(s) to support.
 
-    const char* p = PyUnicode_AsUTF8(format_s);
+    const char* p = PyUnicode_AsUTF8(format_s.get());
     if (!p || strncmp(p, "CSV", 3u) != 0)
     {
         PyErr_SetString(PyExc_RuntimeError, err_format_not_supported);
-        Py_DECREF(format_s);
         return format_t::unknown;
     }
 
-    Py_DECREF(format_s);
     return format_t::csv;
 }
 
