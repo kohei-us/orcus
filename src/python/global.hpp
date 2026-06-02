@@ -42,6 +42,17 @@ bool set_dict_item_new(PyObject* dict, const char* key, py_scoped_ref value);
  */
 bool add_to_set_new(PyObject* set, py_scoped_ref key);
 
+/**
+ * Set a new-reference value into a tuple at the given position.
+ *
+ * @param tuple Tuple object to set the value to.
+ * @param pos Position within the tuple to set the value at.
+ * @param value Value object to set into the tuple.
+ *
+ * @return true if the value is successfully set, otherwise false.
+ */
+bool set_tuple_item_new(PyObject* tuple, Py_ssize_t pos, py_scoped_ref value);
+
 py_scoped_ref from_long(long v);
 
 py_scoped_ref from_string(std::string_view s);

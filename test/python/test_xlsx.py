@@ -122,5 +122,45 @@ def test_sheets_refcount_balance():
         f"doc; expected exactly 1 (the tuple's owned reference)")
 
 
+def test_row_cells_refcount_balance():
+    # Each row tuple must own exactly one reference per cell object it holds.
+    filepath = TESTDIR / "raw-values-1" / "input.xlsx"
+    with filepath.open("rb") as f:
+        doc = xlsx.read(f)
+
+    sheet = doc.sheets[0]
+
+    # rows come from an iterator (SheetRows tp_iter/tp_iternext); each
+    # iteration yields a fresh tuple of cell objects.
+    first_row = next(iter(sheet.get_rows()))
+
+    # The row tuple should hold exactly one reference to each cell.
+    # first_row[0] places one transient reference on the evaluation stack;
+    # getrefcount sees that plus the tuple's owned reference.
+    refs_via_tuple_only = sys.getrefcount(first_row[0])
+    assert refs_via_tuple_only == 2, (
+        f"cell refcount is {refs_via_tuple_only}; expected 2 "
+        f"(1 owned by the row tuple, 1 transient on the eval stack); a "
+        f"larger value indicates the row builder leaks a reference")
+
+    # Use a multi-cell row so a per-slot leak on column N>0 can't hide behind
+    # a balanced column 0.
+    row = next(
+        r for r in sheet.get_rows()
+        if sum(1 for c in r if str(c.type) != "CellType.EMPTY") >= 2)
+    cells = list(row)
+
+    before = [sys.getrefcount(c) for c in cells]
+    del row
+    gc.collect()
+    after = [sys.getrefcount(c) for c in cells]
+
+    for col, (b, a) in enumerate(zip(before, after)):
+        assert b - a == 1, (
+            f"refcount on cell at column {col} dropped by {b - a} after "
+            f"destroying the row; expected exactly 1 (the row tuple's owned "
+            f"reference)")
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

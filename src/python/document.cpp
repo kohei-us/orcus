@@ -186,19 +186,22 @@ bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
         if (!sheet)
             continue;
 
-        PyObject* pysheet = sheet_type->tp_new(sheet_type, nullptr, nullptr);
+        py_scoped_ref pysheet = sheet_type->tp_new(sheet_type, nullptr, nullptr);
         if (!pysheet)
         {
             PyErr_SetString(PyExc_RuntimeError, "failed to create a sheet object");
             return false;
         }
 
-        sheet_type->tp_init(pysheet, nullptr, nullptr);
+        sheet_type->tp_init(pysheet.get(), nullptr, nullptr);
 
-        // PyTuple_SetItem steals the reference returned by tp_new.
-        PyTuple_SetItem(pydoc->sheets, i, pysheet);
+        // the tuple steals the reference; capture the borrowed pointer for
+        // store_sheet, which the tuple now keeps alive
+        PyObject* borrowed = pysheet.get();
+        if (!set_tuple_item_new(pydoc->sheets, i, std::move(pysheet)))
+            return false;
 
-        if (!store_sheet(pysheet, pydoc_data->m_doc.get(), sheet))
+        if (!store_sheet(borrowed, pydoc_data->m_doc.get(), sheet))
             return false;
     }
 

@@ -58,6 +58,16 @@ bool add_to_set_new(PyObject* set, py_scoped_ref key)
     return ret == 0;
 }
 
+bool set_tuple_item_new(PyObject* tuple, Py_ssize_t pos, py_scoped_ref value)
+{
+    if (!value)
+        return false;
+
+    // PyTuple_SetItem steals the reference, and DECREFs it on error, so
+    // release() before the call is leak-free in both branches
+    return PyTuple_SetItem(tuple, pos, value.release()) == 0;
+}
+
 PyObject* create_object_from_type(PyTypeObject* type)
 {
     if (!type)

@@ -7,6 +7,7 @@
 
 #include "sheet_rows.hpp"
 #include "memory.hpp"
+#include "global.hpp"
 #include "cell.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
@@ -91,7 +92,7 @@ PyObject* sheet_rows_iternext(PyObject* self)
         return nullptr;
     }
 
-    PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
+    py_scoped_ref pyobj_row = PyTuple_New(data->m_range.last.column+1);
 
     for (; iter != end; ++iter)
     {
@@ -103,7 +104,7 @@ PyObject* sheet_rows_iternext(PyObject* self)
             break;
         }
 
-        PyObject* obj = nullptr;
+        py_scoped_ref obj;
         switch (cell.type)
         {
             case ixion::cell_t::empty:
@@ -140,10 +141,12 @@ PyObject* sheet_rows_iternext(PyObject* self)
         if (!obj)
             return nullptr;
 
-        PyTuple_SetItem(pyobj_row, cell.col, obj);
+        if (!set_tuple_item_new(pyobj_row.get(), cell.col, std::move(obj)))
+            return nullptr;
     }
 
-    return pyobj_row;
+    // the iterator protocol steals the returned reference
+    return pyobj_row.release();
 }
 
 PyTypeObject sheet_rows_type =

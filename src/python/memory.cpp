@@ -35,9 +35,7 @@ py_scoped_ref::~py_scoped_ref()
 
 py_scoped_ref& py_scoped_ref::operator=(PyObject* p)
 {
-    if (m_pyobj)
-        Py_DECREF(m_pyobj);
-    m_pyobj = p;
+    reset(p);
     return *this;
 }
 
@@ -82,6 +80,23 @@ const PyObject* py_scoped_ref::get() const
 py_scoped_ref::operator bool() const
 {
     return m_pyobj != nullptr;
+}
+
+PyObject* py_scoped_ref::release() noexcept
+{
+    PyObject* p = m_pyobj;
+    m_pyobj = nullptr;
+    return p;
+}
+
+void py_scoped_ref::reset(PyObject* p) noexcept
+{
+    if (p == m_pyobj)
+        return;
+
+    if (m_pyobj)
+        Py_DECREF(m_pyobj);
+    m_pyobj = p;
 }
 
 }}

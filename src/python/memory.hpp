@@ -36,6 +36,9 @@ public:
     PyObject* get();
     const PyObject* get() const;
     operator bool() const;
+
+    [[nodiscard]] PyObject* release() noexcept;
+    void reset(PyObject* p = nullptr) noexcept;
 };
 
 }}
