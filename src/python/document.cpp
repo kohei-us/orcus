@@ -141,7 +141,7 @@ bool import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
     return true;
 }
 
-PyObject* create_document_object()
+py_scoped_ref create_document_object()
 {
     PyTypeObject* type = get_document_type();
 
@@ -152,7 +152,7 @@ PyObject* create_document_object()
     if (type->tp_init(obj_doc.get(), nullptr, nullptr) < 0)
         return nullptr;
 
-    return obj_doc.release();
+    return obj_doc;
 }
 
 bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)
@@ -330,17 +330,14 @@ PyObject* import_from_stream_into_document(
 
 PyObject* create_document(std::unique_ptr<spreadsheet::document>&& doc)
 {
-    PyObject* obj_doc = create_document_object();
+    py_scoped_ref obj_doc = create_document_object();
     if (!obj_doc)
         return nullptr;
 
-    if (!store_document(obj_doc, std::move(doc)))
-    {
-        Py_DECREF(obj_doc);
+    if (!store_document(obj_doc.get(), std::move(doc)))
         return nullptr;
-    }
 
-    return obj_doc;
+    return obj_doc.release();
 }
 
 }}
