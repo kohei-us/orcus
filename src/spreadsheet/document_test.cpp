@@ -80,6 +80,38 @@ void test_array_formula_malformed_range()
     drive(ss::range_t{{-1, -1}, {5, 5}});
 }
 
+void test_merge_cell_malformed_range()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{200, 10};
+    ss::document doc{ssize};
+
+    auto* sh = doc.append_sheet("Sheet 1");
+    assert(sh);
+
+    // a well-formed merge range is stored and read back intact
+    sh->set_merge_cell_range(ss::range_t{{1, 1}, {3, 3}});
+    assert((sh->get_merge_cell_range(1, 1) == ss::range_t{{1, 1}, {3, 3}}));
+
+    // malformed ranges are rejected, so the anchor cell stays unmerged
+    // (get_merge_cell_range returns the single cell when nothing is stored)
+
+    // inverted row
+    sh->set_merge_cell_range(ss::range_t{{5, 5}, {4, 6}});
+    assert((sh->get_merge_cell_range(5, 5) == ss::range_t{{5, 5}, {5, 5}}));
+
+    // inverted column
+    sh->set_merge_cell_range(ss::range_t{{7, 7}, {8, 6}});
+    assert((sh->get_merge_cell_range(7, 7) == ss::range_t{{7, 7}, {7, 7}}));
+
+    // negative first
+    sh->set_merge_cell_range(ss::range_t{{-1, -1}, {2, 2}});
+
+    // first past sheet bounds
+    sh->set_merge_cell_range(ss::range_t{{500, 50}, {600, 60}});
+}
+
 void test_is_valid_range()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -244,6 +276,7 @@ int main()
 {
     test_sheet();
     test_array_formula_malformed_range();
+    test_merge_cell_malformed_range();
     test_is_valid_range();
     test_clamp_range();
     test_dimensions_of();

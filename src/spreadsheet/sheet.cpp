@@ -347,6 +347,10 @@ bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const
 
 void sheet::set_merge_cell_range(const range_t& range)
 {
+    // reject malformed ranges so the span arithmetic below stays well-formed
+    if (!is_valid_range(range, mp_impl->doc.get_sheet_size()))
+        return;
+
     detail::col_merge_size_type::iterator it_col = mp_impl->merge_ranges.find(range.first.column);
     if (it_col == mp_impl->merge_ranges.end())
     {
