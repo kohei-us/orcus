@@ -198,7 +198,11 @@ PyObject* create_named_expressions_object(
     if (!obj)
         return nullptr;
 
-    type->tp_init(obj, nullptr, nullptr);
+    if (type->tp_init(obj, nullptr, nullptr) < 0)
+    {
+        Py_DECREF(obj);
+        return nullptr;
+    }
 
     named_exps_data& data = *t(obj)->data;
     data.src = iter;

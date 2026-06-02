@@ -149,7 +149,11 @@ PyObject* create_document_object()
     if (!obj_doc)
         return nullptr;
 
-    type->tp_init(obj_doc, nullptr, nullptr);
+    if (type->tp_init(obj_doc, nullptr, nullptr) < 0)
+    {
+        Py_DECREF(obj_doc);
+        return nullptr;
+    }
 
     return obj_doc;
 }
@@ -193,7 +197,8 @@ bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
             return false;
         }
 
-        sheet_type->tp_init(pysheet.get(), nullptr, nullptr);
+        if (sheet_type->tp_init(pysheet.get(), nullptr, nullptr) < 0)
+            return false;
 
         // the tuple steals the reference; capture the borrowed pointer for
         // store_sheet, which the tuple now keeps alive

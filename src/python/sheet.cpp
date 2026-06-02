@@ -98,7 +98,11 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*
     if (!rows)
         return nullptr;
 
-    sr_type->tp_init(rows, nullptr, nullptr);
+    if (sr_type->tp_init(rows, nullptr, nullptr) < 0)
+    {
+        Py_DECREF(rows);
+        return nullptr;
+    }
 
     // Populate the sheet rows data.
     sheet_data* data = get_sheet_data(self);
