@@ -162,5 +162,48 @@ def test_row_cells_refcount_balance():
             f"reference)")
 
 
+def test_document_refcount_balance():
+    # xlsx.read returns a new-reference document object built by the document
+    # factory; the caller must receive exactly one owned reference.
+    filepath = TESTDIR / "raw-values-1" / "input.xlsx"
+    with filepath.open("rb") as f:
+        doc = xlsx.read(f)
+
+    # the 'doc' binding owns the only reference; getrefcount also sees the
+    # transient reference on the evaluation stack
+    refs = sys.getrefcount(doc)
+    assert refs == 2, (
+        f"document refcount is {refs}; expected 2 (1 owned by the caller, "
+        f"1 transient on the eval stack); a larger value indicates the "
+        f"document factory leaks a reference")
+
+
+def test_named_expressions_refcount_balance():
+    # get_named_expressions() returns a fresh new-reference object built via
+    # create_object_from_type; the factory must hand back exactly one
+    # owned reference.
+    filepath = TESTDIR / "named-expression" / "input.xlsx"
+    with filepath.open("rb") as f:
+        doc = xlsx.read(f)
+
+    named_exps = doc.get_named_expressions()
+    refs = sys.getrefcount(named_exps)
+    assert refs == 2, (
+        f"named expressions object refcount is {refs}; expected 2 (1 owned "
+        f"by the caller, 1 transient on the eval stack); a larger value "
+        f"indicates the factory leaks a reference")
+
+    # repeatedly creating and dropping the object must not leak a reference to
+    # the document it borrows from
+    before = sys.getrefcount(doc)
+    for _ in range(100):
+        doc.get_named_expressions()
+    gc.collect()
+    after = sys.getrefcount(doc)
+    assert before == after, (
+        f"document refcount changed from {before} to {after} after creating "
+        f"transient named-expression objects; the factory leaks a reference")
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
