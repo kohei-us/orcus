@@ -80,6 +80,92 @@ void test_array_formula_malformed_range()
     drive(ss::range_t{{-1, -1}, {5, 5}});
 }
 
+void test_is_valid_range()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{200, 10};
+
+    // negative first row
+    assert(!ss::is_valid_range(ss::range_t{{-1, 0}, {5, 5}}, ssize));
+    // negative first column
+    assert(!ss::is_valid_range(ss::range_t{{0, -1}, {5, 5}}, ssize));
+    // first past bound row
+    assert(!ss::is_valid_range(ss::range_t{{200, 0}, {200, 5}}, ssize));
+    // first past bound column
+    assert(!ss::is_valid_range(ss::range_t{{0, 10}, {5, 10}}, ssize));
+    // inverted row
+    assert(!ss::is_valid_range(ss::range_t{{5, 0}, {4, 5}}, ssize));
+    // inverted column
+    assert(!ss::is_valid_range(ss::range_t{{0, 5}, {5, 4}}, ssize));
+    // single cell
+    assert(ss::is_valid_range(ss::range_t{{3, 3}, {3, 3}}, ssize));
+    // maximal valid range
+    assert(ss::is_valid_range(ss::range_t{{0, 0}, {199, 9}}, ssize));
+}
+
+void test_clamp_range()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{200, 10};
+
+    // nullopt on invalid input
+    assert(!ss::clamp_range(ss::range_t{{-1, 0}, {5, 5}}, ssize));
+
+    {
+        // no-op on already-in-bounds range
+        ss::range_t in{{0, 0}, {199, 9}};
+        auto out = ss::clamp_range(in, ssize);
+        assert(out);
+        assert(*out == in);
+    }
+
+    {
+        // clamp when last extends past the row bound only
+        auto out = ss::clamp_range(ss::range_t{{0, 0}, {1000, 5}}, ssize);
+        assert(out);
+        assert(*out == (ss::range_t{{0, 0}, {199, 5}}));
+    }
+
+    {
+        // clamp when last extends past the column bound only
+        auto out = ss::clamp_range(ss::range_t{{0, 0}, {5, 1000}}, ssize);
+        assert(out);
+        assert(*out == (ss::range_t{{0, 0}, {5, 9}}));
+    }
+
+    {
+        // clamp when last extends past both bounds
+        auto out = ss::clamp_range(ss::range_t{{0, 0}, {1000, 1000}}, ssize);
+        assert(out);
+        assert(*out == (ss::range_t{{0, 0}, {199, 9}}));
+    }
+}
+
+void test_dimensions_of()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    {
+        // single cell -> 1x1
+        auto dims = ss::dimensions_of(ss::range_t{{3, 3}, {3, 3}});
+        assert(dims.rows == 1 && dims.columns == 1);
+    }
+
+    {
+        // maximal range over a 200x10 sheet
+        auto dims = ss::dimensions_of(ss::range_t{{0, 0}, {199, 9}});
+        assert(dims.rows == 200 && dims.columns == 10);
+    }
+
+    {
+        // rectangular non-square range
+        auto dims = ss::dimensions_of(ss::range_t{{2, 1}, {6, 3}});
+        assert(dims.rows == 5 && dims.columns == 3);
+    }
+}
+
 void test_dump_unsafe_sheet_name()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -158,6 +244,9 @@ int main()
 {
     test_sheet();
     test_array_formula_malformed_range();
+    test_is_valid_range();
+    test_clamp_range();
+    test_dimensions_of();
     test_dump_unsafe_sheet_name();
     test_date_time_out_of_range_second();
     test_set_auto_numeric_bounds();

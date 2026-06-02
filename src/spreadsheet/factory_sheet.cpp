@@ -107,32 +107,21 @@ import_array_formula::~import_array_formula()
 
 void import_array_formula::set_range(const range_t& range)
 {
-    m_range = range;
-
     const range_size_t sheet_size = m_doc.get_sheet_size();
 
-    if (m_range.first.row < 0 || m_range.first.column < 0 ||
-        m_range.first.row >= sheet_size.rows ||
-        m_range.first.column >= sheet_size.columns ||
-        m_range.last.row < m_range.first.row ||
-        m_range.last.column < m_range.first.column)
+    auto clamped = clamp_range(range, sheet_size);
+    if (!clamped)
     {
-        m_range.first.row = -1;
-        m_range.first.column = -1;
-        m_range.last = m_range.first;
+        m_range = range_t{{-1, -1}, {-1, -1}};
         m_result_mtx = ixion::matrix();
         return;
     }
 
-    if (m_range.last.row >= sheet_size.rows)
-        m_range.last.row = sheet_size.rows - 1;
-    if (m_range.last.column >= sheet_size.columns)
-        m_range.last.column = sheet_size.columns - 1;
+    m_range = *clamped;
 
-    const size_t rows =
-        static_cast<size_t>(m_range.last.row) - static_cast<size_t>(m_range.first.row) + 1;
-    const size_t cols =
-        static_cast<size_t>(m_range.last.column) - static_cast<size_t>(m_range.first.column) + 1;
+    const range_size_t dims = dimensions_of(m_range);
+    const size_t rows = static_cast<size_t>(dims.rows);
+    const size_t cols = static_cast<size_t>(dims.columns);
 
     // Initialize the result matrix with the missing result value.
     switch (m_missing_formula_result.get_type())

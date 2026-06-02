@@ -312,6 +312,36 @@ range_t to_rc_range(const src_range_t& r)
     return ret;
 }
 
+bool is_valid_range(const range_t& r, const range_size_t& sheet_size)
+{
+    // a zero-sized sheet rejects every range: first cannot be both >= 0 and < 0
+    return r.first.row >= 0 && r.first.column >= 0 &&
+        r.first.row < sheet_size.rows && r.first.column < sheet_size.columns &&
+        r.last.row >= r.first.row && r.last.column >= r.first.column;
+}
+
+std::optional<range_t> clamp_range(const range_t& r, const range_size_t& sheet_size)
+{
+    if (!is_valid_range(r, sheet_size))
+        return std::nullopt;
+
+    range_t clamped = r;
+    if (clamped.last.row >= sheet_size.rows)
+        clamped.last.row = sheet_size.rows - 1;
+    if (clamped.last.column >= sheet_size.columns)
+        clamped.last.column = sheet_size.columns - 1;
+
+    return clamped;
+}
+
+range_size_t dimensions_of(const range_t& r)
+{
+    range_size_t dims;
+    dims.rows = r.last.row - r.first.row + 1;
+    dims.columns = r.last.column - r.first.column + 1;
+    return dims;
+}
+
 bool operator== (const address_t& left, const address_t& right)
 {
     return left.column == right.column && left.row == right.row;

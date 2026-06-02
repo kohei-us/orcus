@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <initializer_list>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -741,6 +742,38 @@ ORCUS_DLLPUBLIC address_t to_rc_address(const src_address_t& r);
  * by dropping the sheet indices.
  */
 ORCUS_DLLPUBLIC range_t to_rc_range(const src_range_t& r);
+
+/**
+ * Check if the passed range is structurally valid for a specified sheet size,
+ * first row/col non-negative and < sheet bounds, and last >= first.
+ *
+ * @param r Range to validate.
+ * @param sheet_size Sheet size to validate the range against.
+ *
+ * @return True of the range if valid, otherwise false.
+ */
+ORCUS_DLLPUBLIC bool is_valid_range(
+    const range_t& r, const range_size_t& sheet_size);
+
+/**
+ * Clamp range to a specified sheet bounds.
+ *
+ * @param r Range to clamp.
+ * @param sheet_size Sheet size to use when clamping.
+ *
+ * @return Clamped range, or nullopt if the range is invalid.
+ */
+ORCUS_DLLPUBLIC std::optional<range_t> clamp_range(
+    const range_t& r, const range_size_t& sheet_size);
+
+/**
+ * Returns the inclusive extents (last - first + 1) as a range_size_t.
+ *
+ * The caller must first check if the range is valid.
+ *
+ * @see is_valid_range()
+ */
+ORCUS_DLLPUBLIC range_size_t dimensions_of(const range_t& r);
 
 ORCUS_DLLPUBLIC bool operator== (const address_t& left, const address_t& right);
 ORCUS_DLLPUBLIC bool operator!= (const address_t& left, const address_t& right);
