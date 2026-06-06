@@ -47,6 +47,9 @@ void xml_stream_handler::declaration(const xml_declaration_t& decl)
 
 void xml_stream_handler::start_element(const xml_token_element_t& elem)
 {
+    if (m_context_stack.size() > max_element_nesting)
+        throw xml_structure_error("maximum element nesting depth exceeded");
+
     xml_context_base& cur = get_current_context();
     if (cur.evaluate_child_element(elem.ns, elem.name))
     {

@@ -161,6 +161,9 @@ const tokens& xml_context_base::get_tokens() const
 
 xml_token_pair_t xml_context_base::push_stack(xmlns_id_t ns, xml_token_t name)
 {
+    if (m_stack.size() > max_element_nesting)
+        throw xml_structure_error("maximum element nesting depth exceeded");
+
     xml_token_pair_t parent = get_current_element();
     m_stack.emplace_back(ns, name);
     return parent;

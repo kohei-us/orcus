@@ -18,6 +18,10 @@ class tokens;
 class xmlns_context;
 class xml_element_validator;
 
+// Maximum element nesting depth the XML context handlers accept.
+// libxml2's default xmlParserMaxDepth was 256
+inline constexpr std::size_t max_element_nesting = 256;
+
 class xml_context_base
 {
 public:
