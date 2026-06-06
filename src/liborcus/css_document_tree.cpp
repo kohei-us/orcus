@@ -460,9 +460,20 @@ void dump_all_properties(const css_selector_t& selector, const css_pseudo_elemen
     }
 }
 
+// A chained selector this long does not occur in a real stylesheet.
+constexpr std::size_t max_selector_chain_depth = 256;
+
 void dump_chained_recursive(
-    css_selector_t& selector, css::combinator_t op, const simple_selectors_type& ss)
+    css_selector_t& selector, css::combinator_t op, const simple_selectors_type& ss,
+    std::size_t depth)
 {
+    if (depth > max_selector_chain_depth)
+    {
+        std::cout << "... (selector chain truncated at " << max_selector_chain_depth
+                  << " levels)" << std::endl;
+        return;
+    }
+
     simple_selectors_type::const_iterator it_ss = ss.begin(), ite_ss = ss.end();
     for (; it_ss != ite_ss; ++it_ss)
     {
@@ -476,7 +487,7 @@ void dump_chained_recursive(
 
         combinators_type::const_iterator it_comb = node.children.begin(), ite_comb = node.children.end();
         for (; it_comb != ite_comb; ++it_comb)
-            dump_chained_recursive(selector, it_comb->first, it_comb->second);
+            dump_chained_recursive(selector, it_comb->first, it_comb->second, depth + 1);
 
         selector.chained.pop_back();
     }
@@ -633,7 +644,7 @@ void css_document_tree::dump() const
 
         combinators_type::const_iterator it_comb = node.children.begin(), ite_comb = node.children.end();
         for (; it_comb != ite_comb; ++it_comb)
-            dump_chained_recursive(selector, it_comb->first, it_comb->second);
+            dump_chained_recursive(selector, it_comb->first, it_comb->second, 1);
     }
 }
 
