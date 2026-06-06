@@ -637,9 +637,12 @@ void ods_content_xml_context::end_cell()
     push_cell_value();
 
     ++m_col;
-    if (m_cell_attr.number_columns_repeated > 1)
+    if (m_cell_attr.number_columns_repeated > 1 && m_cur_sheet.sheet)
     {
-        int col_upper = m_col + m_cell_attr.number_columns_repeated - 2;
+        // clamp the fill to the sheet width
+        const long n_cols = m_cur_sheet.sheet->get_sheet_size().columns;
+        const long col_upper = std::min<long>(
+            m_col + m_cell_attr.number_columns_repeated - 2, n_cols - 1);
         for (; m_col <= col_upper; ++m_col)
             push_cell_value();
     }
