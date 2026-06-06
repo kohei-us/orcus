@@ -23,8 +23,23 @@ namespace orcus {
 
 parser_base::parser_base(const char* p, size_t n) :
     mp_begin(p), mp_char(p), mp_end(p+n),
-    m_func_parse_numeric(parse_numeric)
+    m_func_parse_numeric(parse_numeric),
+    m_nest_level(0)
 {
+}
+
+parser_base::nest_tracker::nest_tracker(parser_base& parser) :
+    m_parser(parser)
+{
+    if (m_parser.m_nest_level >= max_nest_level)
+        throw parse_error("maximum nesting depth exceeded", m_parser.offset());
+
+    ++m_parser.m_nest_level;
+}
+
+parser_base::nest_tracker::~nest_tracker()
+{
+    --m_parser.m_nest_level;
 }
 
 void parser_base::prev(size_t dec)

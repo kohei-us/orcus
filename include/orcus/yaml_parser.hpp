@@ -493,6 +493,8 @@ void yaml_parser<_Handler>::push_value(const char* p, size_t len)
 template<typename _Handler>
 void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
 {
+    nest_tracker nest(*this);
+
     const char* p_end = p + len;
     const char* p0 = p; // Save the original head position.
 

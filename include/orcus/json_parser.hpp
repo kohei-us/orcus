@@ -165,6 +165,8 @@ void json_parser<_Handler>::parse()
 template<typename _Handler>
 void json_parser<_Handler>::value()
 {
+    nest_tracker nest(*this);
+
     char c = cur_char();
     if (is_numeric(c))
     {

@@ -29,8 +29,24 @@ protected:
 
 private:
     numeric_parser_type m_func_parse_numeric;
+    std::size_t m_nest_level;
 
 protected:
+    /**
+     * Maximum nesting depth of structural elements that the recursive-descent
+     * parsers accept. The limit is allowed to be set by the RFC, there is no
+     * recommended value or required minimum depth to be supported.
+     */
+    static constexpr std::size_t max_nest_level = 2048;
+
+    class nest_tracker
+    {
+        parser_base& m_parser;
+    public:
+        nest_tracker(parser_base& parser);
+        ~nest_tracker();
+    };
+
     parser_base(const char* p, size_t n);
 
     void set_numeric_parser(const numeric_parser_type& func)
