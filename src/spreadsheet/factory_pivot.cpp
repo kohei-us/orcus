@@ -6,6 +6,7 @@
  */
 
 #include "factory_pivot.hpp"
+#include "reserve_bounded.hpp"
 
 #include "orcus/string_pool.hpp"
 #include "orcus/exception.hpp"
@@ -163,7 +164,7 @@ void import_pivot_cache_def::set_worksheet_source(std::string_view table_name)
 
 void import_pivot_cache_def::set_field_count(size_t n)
 {
-    m_current_fields.reserve(n);
+    orcus::detail::reserve_bounded(m_current_fields, n);
 }
 
 void import_pivot_cache_def::set_field_name(std::string_view name)
@@ -263,7 +264,7 @@ void import_pivot_cache_records::set_cache(pivot_cache* p)
 
 void import_pivot_cache_records::set_record_count(size_t n)
 {
-    m_records.reserve(n);
+    orcus::detail::reserve_bounded(m_records, n);
 }
 
 void import_pivot_cache_records::append_record_value_numeric(double v)

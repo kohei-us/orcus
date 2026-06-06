@@ -12,6 +12,7 @@
 #include "xlsx_helper.hpp"
 #include "xml_context_global.hpp"
 #include "xls_types.hpp"
+#include "reserve_bounded.hpp"
 
 #include <orcus/tokens.hpp>
 #include <orcus/measurement.hpp>
@@ -251,7 +252,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
                 {
                     mp_styles->set_font_count(*v);
-                    m_font_ids.reserve(*v);
+                    detail::reserve_bounded(m_font_ids, *v);
                 }
                 break;
             }
@@ -347,7 +348,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
                 {
                     mp_styles->set_fill_count(*v);
-                    m_fill_ids.reserve(*v);
+                    detail::reserve_bounded(m_fill_ids, *v);
                 }
                 break;
             }
@@ -430,7 +431,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
                 {
                     mp_styles->set_border_count(*v);
-                    m_border_ids.reserve(*v);
+                    detail::reserve_bounded(m_border_ids, *v);
                 }
                 break;
             }
@@ -485,7 +486,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (std::optional<std::size_t> count = extract_count(attrs); count)
                 {
                     mp_styles->set_xf_count(ss::xf_category_t::cell_style, *count);
-                    m_cell_style_xf_ids.reserve(*count);
+                    detail::reserve_bounded(m_cell_style_xf_ids, *count);
                 }
 
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell_style);

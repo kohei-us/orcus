@@ -6,4 +6,5 @@ EXTRA_DIST = \
 	mock_spreadsheet.hpp \
 	numeric_parser.hpp \
 	ostream_utils.hpp \
+	reserve_bounded.hpp \
 	test_global.hpp

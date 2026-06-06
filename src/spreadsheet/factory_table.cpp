@@ -8,6 +8,7 @@
 #include "factory_table.hpp"
 #include "factory_auto_filter.hpp"
 #include "formula_global.hpp"
+#include "reserve_bounded.hpp"
 
 #include <orcus/string_pool.hpp>
 #include <orcus/spreadsheet/document.hpp>
@@ -81,7 +82,7 @@ void import_table::set_totals_row_count(size_t row_count)
 
 void import_table::set_column_count(size_t n)
 {
-    mp_impl->table->columns.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->table->columns, n);
 }
 
 void import_table::set_column_identifier(size_t id)

@@ -7,6 +7,7 @@
 
 #include "factory_pivot_table_def.hpp"
 #include "formula_global.hpp"
+#include "reserve_bounded.hpp"
 
 #include <orcus/string_pool.hpp>
 #include <orcus/spreadsheet/document.hpp>
@@ -17,7 +18,7 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 void import_pivot_field::set_item_count(std::size_t count)
 {
-    m_current_field.items.reserve(count);
+    orcus::detail::reserve_bounded(m_current_field.items, count);
 }
 
 void import_pivot_field::set_axis(pivot_axis_t axis)
@@ -48,7 +49,7 @@ void import_pivot_field::reset(commit_func_type func)
 
 void import_pivot_fields::set_count(std::size_t count)
 {
-    m_current_fields.reserve(count);
+    orcus::detail::reserve_bounded(m_current_fields, count);
 }
 
 iface::import_pivot_field* import_pivot_fields::start_pivot_field()
@@ -70,7 +71,7 @@ void import_pivot_fields::reset(commit_func_type func)
 
 void import_pivot_rc_fields::set_count(std::size_t count)
 {
-    m_fields.reserve(count);
+    orcus::detail::reserve_bounded(m_fields, count);
 }
 
 void import_pivot_rc_fields::append_field(std::size_t index)
@@ -120,7 +121,7 @@ void import_pivot_page_field::reset(commit_func_type func)
 
 void import_pivot_page_fields::set_count(std::size_t count)
 {
-    m_current_fields.reserve(count);
+    orcus::detail::reserve_bounded(m_current_fields, count);
 }
 
 iface::import_pivot_page_field* import_pivot_page_fields::start_page_field()
@@ -183,7 +184,7 @@ import_pivot_data_fields::import_pivot_data_fields(string_pool& pool) :
 
 void import_pivot_data_fields::set_count(std::size_t count)
 {
-    m_current_fields.reserve(count);
+    orcus::detail::reserve_bounded(m_current_fields, count);
 }
 
 iface::import_pivot_data_field* import_pivot_data_fields::start_data_field()
@@ -238,7 +239,7 @@ void import_pivot_rc_item::reset(commit_func_type func)
 
 void import_pivot_rc_items::set_count(std::size_t count)
 {
-    m_current_rc_items.reserve(count);
+    orcus::detail::reserve_bounded(m_current_rc_items, count);
 }
 
 iface::import_pivot_rc_item* import_pivot_rc_items::start_item()

@@ -9,6 +9,7 @@
 #include "orcus/string_pool.hpp"
 
 #include "ostream_utils.hpp"
+#include "reserve_bounded.hpp"
 
 #include <functional>
 #include <algorithm>
@@ -219,7 +220,7 @@ styles::~styles() {}
 
 void styles::reserve_font_store(size_t n)
 {
-    mp_impl->fonts.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->fonts, n);
 }
 
 std::size_t styles::append_font(const font_t& font)
@@ -230,7 +231,7 @@ std::size_t styles::append_font(const font_t& font)
 
 void styles::reserve_fill_store(size_t n)
 {
-    mp_impl->fills.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->fills, n);
 }
 
 std::size_t styles::append_fill(const fill_t& fill)
@@ -241,7 +242,7 @@ std::size_t styles::append_fill(const fill_t& fill)
 
 void styles::reserve_border_store(size_t n)
 {
-    mp_impl->borders.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->borders, n);
 }
 
 std::size_t styles::append_border(const border_t& border)
@@ -258,7 +259,7 @@ std::size_t styles::append_protection(const protection_t& protection)
 
 void styles::reserve_number_format_store(size_t n)
 {
-    mp_impl->number_formats.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->number_formats, n);
 }
 
 std::size_t styles::append_number_format(const number_format_t& nf)
@@ -277,7 +278,7 @@ std::size_t styles::append_number_format(const number_format_t& nf)
 
 void styles::reserve_cell_style_format_store(size_t n)
 {
-    mp_impl->cell_style_formats.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->cell_style_formats, n);
 }
 
 size_t styles::append_cell_style_format(const cell_format_t& cf)
@@ -288,7 +289,7 @@ size_t styles::append_cell_style_format(const cell_format_t& cf)
 
 void styles::reserve_cell_format_store(size_t n)
 {
-    mp_impl->cell_formats.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->cell_formats, n);
 }
 
 size_t styles::append_cell_format(const cell_format_t& cf)
@@ -299,7 +300,7 @@ size_t styles::append_cell_format(const cell_format_t& cf)
 
 void styles::reserve_diff_cell_format_store(size_t n)
 {
-    mp_impl->dxf_formats.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->dxf_formats, n);
 }
 
 size_t styles::append_diff_cell_format(const cell_format_t& cf)
@@ -310,7 +311,7 @@ size_t styles::append_diff_cell_format(const cell_format_t& cf)
 
 void styles::reserve_cell_style_store(size_t n)
 {
-    mp_impl->cell_styles.reserve(n);
+    orcus::detail::reserve_bounded(mp_impl->cell_styles, n);
 }
 
 void styles::append_cell_style(const cell_style_t& cs)

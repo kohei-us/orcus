@@ -10,6 +10,7 @@
 #include "ooxml_token_constants.hpp"
 #include "session_context.hpp"
 #include "xml_context_global.hpp"
+#include "reserve_bounded.hpp"
 
 #include "orcus/measurement.hpp"
 #include "orcus/string_pool.hpp"
@@ -190,7 +191,7 @@ void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_header);
                 m_cur_sheet_ids.clear();
                 if (auto n = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); n && *n > 0)
-                    m_cur_sheet_ids.reserve(*n);
+                    detail::reserve_bounded(m_cur_sheet_ids, *n);
             }
             break;
             case XML_sheetId:
