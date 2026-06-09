@@ -77,13 +77,6 @@ enum xlsx_cond_format_date
     date_yesterday
 };
 
-enum xlsx_cond_format_boolean
-{
-    boolean_default = 0,
-    boolean_true,
-    boolean_false
-};
-
 namespace cond_type {
 
 using map_type = mdds::sorted_string_map<xlsx_cond_format_type>;
@@ -173,43 +166,6 @@ const map_type& get()
 
 } // namespace cond_date
 
-namespace cond_boolean {
-
-using map_type = mdds::sorted_string_map<xlsx_cond_format_boolean>;
-
-// keys must be sorted
-constexpr map_type::entry_type entries[] =
-{
-    { "0", boolean_false },
-    { "1", boolean_true },
-    { "false", boolean_true },
-    { "true", boolean_false }
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, boolean_default);
-    return mt;
-}
-
-} // namespace cond_boolean
-
-bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
-{
-    xlsx_cond_format_boolean val = cond_boolean::get().find(attr.value);
-    switch (val)
-    {
-        case boolean_default:
-            return default_value;
-        case boolean_true:
-            return true;
-        case boolean_false:
-            return false;
-    }
-
-    return default_value;
-}
-
 struct cfRule_attr_parser
 {
 
@@ -241,14 +197,14 @@ struct cfRule_attr_parser
             break;
             case XML_aboveAverage:
             {
-                m_above_average = parse_boolean_flag(attr, true);
+                m_above_average = to_bool(attr.value);
             }
             break;
             case XML_percent:
-                m_percent = parse_boolean_flag(attr, false);
+                m_percent = to_bool(attr.value);
             break;
             case XML_bottom:
-                m_bottom = parse_boolean_flag(attr, false);
+                m_bottom = to_bool(attr.value);
             break;
             case XML_operator:
                 m_operator = cond_operator::get().find(attr.value);
@@ -269,7 +225,7 @@ struct cfRule_attr_parser
                 m_std_dev = attr.value;
             break;
             case XML_equalAverage:
-                m_equal_average = parse_boolean_flag(attr, false);
+                m_equal_average = to_bool(attr.value);
             break;
             default:
                 break;
@@ -558,7 +514,7 @@ struct cfvo_attr_parser
         switch (attr.name)
         {
             case XML_gte:
-                m_values.m_include_equal = parse_boolean_flag(attr, true);
+                m_values.m_include_equal = to_bool(attr.value);
             break;
             case XML_type:
                 m_values.m_type = cfvo_type::get().find(attr.value);
@@ -602,7 +558,7 @@ struct data_bar_attr_parser
         switch (attr.name)
         {
             case XML_showValue:
-                m_show_value = parse_boolean_flag(attr, true);
+                m_show_value = to_bool(attr.value);
             break;
             case XML_maxLength:
                 m_max_length = to_long(attr.value);
@@ -646,13 +602,13 @@ struct icon_set_attr_parser
                 icon_name = attr.value;
             break;
             case XML_percent:
-                m_percent = parse_boolean_flag(attr, true);
+                m_percent = to_bool(attr.value);
             break;
             case XML_reverse:
-                m_reverse = parse_boolean_flag(attr, false);
+                m_reverse = to_bool(attr.value);
             break;
             case XML_showValue:
-                m_show_value = parse_boolean_flag(attr, true);
+                m_show_value = to_bool(attr.value);
             break;
             default:
             break;
