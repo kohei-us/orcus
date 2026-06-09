@@ -39,11 +39,13 @@ protected:
      */
     static constexpr std::size_t max_nest_level = 2048;
 
-    class nest_tracker
+    class ORCUS_PSR_DLLPUBLIC nest_tracker
     {
         parser_base& m_parser;
     public:
         nest_tracker(parser_base& parser);
+        nest_tracker(const nest_tracker&) = delete;
+        nest_tracker& operator=(const nest_tracker&) = delete;
         ~nest_tracker();
     };
 
