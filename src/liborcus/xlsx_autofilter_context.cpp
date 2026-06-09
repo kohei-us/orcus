@@ -42,7 +42,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    static const map_type mt(entries, ss::auto_filter_op_t::unspecified);
     return mt;
 }
 
@@ -93,7 +93,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), xlsx_dynamic_filter_t::unknown);
+    static const map_type mt(entries, xlsx_dynamic_filter_t::unknown);
     return mt;
 }
 

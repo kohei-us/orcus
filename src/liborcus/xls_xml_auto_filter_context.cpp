@@ -43,7 +43,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), xls_xml_auto_filter_context::filter_column_type::all);
+    static const map_type mt(entries, xls_xml_auto_filter_context::filter_column_type::all);
     return mt;
 }
 
@@ -65,7 +65,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    static const map_type mt(entries, ss::auto_filter_op_t::unspecified);
     return mt;
 }
 

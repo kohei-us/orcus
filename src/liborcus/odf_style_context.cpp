@@ -42,7 +42,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), style_family_unknown);
+    static const map_type mt(entries, style_family_unknown);
     return mt;
 }
 
@@ -50,7 +50,7 @@ const map_type& get()
 
 odf_style_family to_style_family(std::string_view val)
 {
-    return style_family::get().find(val.data(), val.size());
+    return style_family::get().find(val);
 }
 
 std::string_view to_string(odf_style_family family)
@@ -77,7 +77,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::strikethrough_style_t::none);
+    static const map_type mt(entries, ss::strikethrough_style_t::none);
     return mt;
 }
 
@@ -410,7 +410,7 @@ void style_context::start_text_properties(const xml_token_attrs_t& attrs)
                 }
                 case XML_text_line_through_style:
                 {
-                    strikethrough_style = st_style::get().find(attr.value.data(), attr.value.size());
+                    strikethrough_style = st_style::get().find(attr.value);
                     break;
                 }
                 case XML_text_line_through_type:

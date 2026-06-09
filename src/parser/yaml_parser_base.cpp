@@ -337,7 +337,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), detail::keyword_t::unknown);
+    static const map_type map(entries, detail::keyword_t::unknown);
     return map;
 }
 

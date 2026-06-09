@@ -42,7 +42,7 @@ constexpr map_type::entry_type entries[] = {
 const map_type& get()
 {
     static const map_type map(
-        entries, std::size(entries),
+        entries,
         xlsx_pivot_cache_def_context::source_type::unknown);
 
     return map;
@@ -75,7 +75,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), ss::pivot_field_item_t::unknown);
+    static const map_type map(entries, ss::pivot_field_item_t::unknown);
     return map;
 }
 
@@ -95,7 +95,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), ss::pivot_axis_t::unknown);
+    static const map_type map(entries, ss::pivot_axis_t::unknown);
     return map;
 }
 
@@ -122,7 +122,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), ss::pivot_data_subtotal_t::unknown);
+    static const map_type map(entries, ss::pivot_data_subtotal_t::unknown);
     return map;
 }
 
@@ -147,7 +147,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), ss::pivot_data_show_data_as_t::unknown);
+    static const map_type map(entries, ss::pivot_data_show_data_as_t::unknown);
     return map;
 }
 

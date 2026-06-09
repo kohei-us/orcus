@@ -69,7 +69,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::border_direction_t::unknown);
+    static const map_type mt(entries, ss::border_direction_t::unknown);
     return mt;
 }
 
@@ -92,7 +92,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
+    static const map_type mt(entries, ss::border_style_t::unknown);
     return mt;
 }
 
@@ -113,7 +113,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
+    static const map_type mt(entries, ss::hor_alignment_t::unknown);
     return mt;
 }
 
@@ -134,7 +134,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
+    static const map_type mt(entries, ss::ver_alignment_t::unknown);
     return mt;
 }
 
@@ -167,7 +167,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), std::string_view{});
+    static const map_type mt(entries, std::string_view{});
     return mt;
 }
 
@@ -188,7 +188,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), detail::xls_underline_t::none);
+    static const map_type mt(entries, detail::xls_underline_t::none);
     return mt;
 }
 

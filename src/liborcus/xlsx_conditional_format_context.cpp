@@ -153,8 +153,8 @@ constexpr cond_format_boolean_map::entry_type cond_format_boolean_entries[] =
 
 bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
 {
-    static const cond_format_boolean_map boolean_map(cond_format_boolean_entries, sizeof(cond_format_boolean_entries)/sizeof(cond_format_boolean_entries[0]), boolean_default);
-    xlsx_cond_format_boolean val = boolean_map.find(attr.value.data(), attr.value.size());
+    static const cond_format_boolean_map boolean_map(cond_format_boolean_entries, boolean_default);
+    xlsx_cond_format_boolean val = boolean_map.find(attr.value);
     switch (val)
     {
         case boolean_default:
@@ -189,8 +189,8 @@ struct cfRule_attr_parser
         {
             case XML_type:
             {
-                cond_format_type_map type_map(cond_format_type_entries, sizeof(cond_format_type_entries)/sizeof(cond_format_type_entries[0]), none);
-                m_type = type_map.find(attr.value.data(), attr.value.size());
+                cond_format_type_map type_map(cond_format_type_entries, none);
+                m_type = type_map.find(attr.value);
             }
             break;
             case XML_dxfId:
@@ -213,8 +213,8 @@ struct cfRule_attr_parser
             break;
             case XML_operator:
             {
-                cond_format_operator_map operator_map(cond_format_operator_entries, sizeof(cond_format_operator_entries)/sizeof(cond_format_operator_entries[0]), operator_default);
-                m_operator = operator_map.find(attr.value.data(), attr.value.size());
+                cond_format_operator_map operator_map(cond_format_operator_entries, operator_default);
+                m_operator = operator_map.find(attr.value);
             }
             break;
             case XML_text:
@@ -223,8 +223,8 @@ struct cfRule_attr_parser
             break;
             case XML_timePeriod:
             {
-                cond_format_date_map date_map(cond_format_date_entries, sizeof(cond_format_date_entries)/sizeof(cond_format_date_entries[0]), date_default);
-                m_date = date_map.find(attr.value.data(), attr.value.size());
+                cond_format_date_map date_map(cond_format_date_entries, date_default);
+                m_date = date_map.find(attr.value);
             }
             break;
             case XML_rank:
@@ -518,8 +518,8 @@ struct cfvo_attr_parser
             break;
             case XML_type:
             {
-                cond_format_cfvo_type_map cfvo_type_map(cond_format_cfvo_entries, sizeof(cond_format_cfvo_entries)/sizeof(cond_format_cfvo_entries[0]), cfvo_default);
-                m_values.m_type = cfvo_type_map.find(attr.value.data(), attr.value.size());
+                cond_format_cfvo_type_map cfvo_type_map(cond_format_cfvo_entries, cfvo_default);
+                m_values.m_type = cfvo_type_map.find(attr.value);
             }
             break;
             case XML_val:

@@ -38,7 +38,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
+    static const map_type mt(entries, ss::border_style_t::unknown);
     return mt;
 }
 
@@ -61,7 +61,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_thickness_t::none);
+    static const map_type mt(entries, ss::underline_thickness_t::none);
     return mt;
 }
 
@@ -86,7 +86,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), ss::underline_style_t::none);
+    static map_type mt(entries, ss::underline_style_t::none);
     return mt;
 }
 
@@ -107,7 +107,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
+    static map_type mt(entries, ss::hor_alignment_t::unknown);
     return mt;
 }
 
@@ -128,7 +128,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
+    static map_type mt(entries, ss::ver_alignment_t::unknown);
     return mt;
 }
 

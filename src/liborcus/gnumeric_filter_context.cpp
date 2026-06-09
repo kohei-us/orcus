@@ -48,7 +48,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), gnumeric_filter_field_type_t::invalid);
+    static const map_type mt(entries, gnumeric_filter_field_type_t::invalid);
     return mt;
 }
 
@@ -70,7 +70,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    static const map_type mt(entries, ss::auto_filter_op_t::unspecified);
     return mt;
 }
 

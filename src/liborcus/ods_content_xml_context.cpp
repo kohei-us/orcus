@@ -43,7 +43,7 @@ constexpr map_type::entry_type entries[] = {
 const map_type& get()
 {
     static map_type cv_map(
-        entries, std::size(entries), ods_content_xml_context::vt_unknown);
+        entries, ods_content_xml_context::vt_unknown);
 
     return cv_map;
 }
@@ -619,7 +619,7 @@ void ods_content_xml_context::start_cell(const xml_token_attrs_t& attrs)
                     break;
                 }
                 case XML_value_type:
-                    m_cell_attr.type = cell_value::get().find(attr.value.data(), attr.value.size());
+                    m_cell_attr.type = cell_value::get().find(attr.value);
                     break;
                 case XML_date_value:
                     m_cell_attr.date_value = attr.value;

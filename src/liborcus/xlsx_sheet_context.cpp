@@ -45,7 +45,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::sheet_pane_t::unspecified);
+    static const map_type mt(entries, ss::sheet_pane_t::unspecified);
     return mt;
 }
 
@@ -64,7 +64,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::pane_state_t::unspecified);
+    static const map_type mt(entries, ss::pane_state_t::unspecified);
     return mt;
 }
 
@@ -84,7 +84,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::formula_t::unknown);
+    static const map_type mt(entries, ss::formula_t::unknown);
     return mt;
 }
 

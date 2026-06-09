@@ -38,7 +38,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), totals_row_function_t::none);
+    static const map_type map(entries, totals_row_function_t::none);
     return map;
 }
 
@@ -62,7 +62,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), pivot_cache_group_by_t::unknown);
+    static const map_type map(entries, pivot_cache_group_by_t::unknown);
     return map;
 }
 
@@ -86,7 +86,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), error_value_t::unknown);
+    static const map_type map(entries, error_value_t::unknown);
     return map;
 }
 
@@ -240,7 +240,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), { 0x00, 0x00, 0x00 });
+    static map_type mt(entries, { 0x00, 0x00, 0x00 });
     return mt;
 }
 
@@ -258,7 +258,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), formula_error_policy_t::unknown);
+    static map_type mt(entries, formula_error_policy_t::unknown);
     return mt;
 }
 

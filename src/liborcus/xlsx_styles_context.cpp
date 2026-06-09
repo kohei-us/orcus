@@ -53,7 +53,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::border_style_t::none);
+    static const map_type mt(entries, ss::border_style_t::none);
     return mt;
 }
 
@@ -88,7 +88,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::fill_pattern_t::none);
+    static const map_type mt(entries, ss::fill_pattern_t::none);
     return mt;
 }
 
@@ -109,7 +109,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), detail::xls_underline_t::none);
+    static const map_type mt(entries, detail::xls_underline_t::none);
     return mt;
 }
 
@@ -130,7 +130,7 @@ public:
             case XML_style:
             {
                 m_border_style.set_style(m_dir,
-                    border_style::get().find(attr.value.data(), attr.value.size()));
+                    border_style::get().find(attr.value));
                 break;
             }
         }
@@ -362,7 +362,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_patternType);
                 assert(mp_fill);
-                mp_fill->set_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
+                mp_fill->set_pattern_type(fill_pattern::get().find(ps));
                 break;
             }
             case XML_fgColor:

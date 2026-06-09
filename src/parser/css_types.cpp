@@ -38,7 +38,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static map_type map(entries, std::size(entries), 0);
+    static map_type map(entries, 0);
     return map;
 }
 
@@ -142,7 +142,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static map_type map(entries, std::size(entries), 0);
+    static map_type map(entries, 0);
     return map;
 }
 
@@ -187,7 +187,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static map_type map(entries, std::size(entries), property_function_t::unknown);
+    static map_type map(entries, property_function_t::unknown);
     return map;
 }
 
@@ -197,7 +197,7 @@ const map_type& get()
 
 property_function_t to_property_function(std::string_view s)
 {
-    return propfunc::get().find(s.data(), s.size());
+    return propfunc::get().find(s);
 }
 
 }}

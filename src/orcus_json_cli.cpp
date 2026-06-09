@@ -57,7 +57,7 @@ constexpr map_type::entry_type entries[] =
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), detail::mode_t::unknown);
+    static map_type mt(entries, detail::mode_t::unknown);
     return mt;
 }
 

@@ -31,7 +31,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), xlsx_ct_unknown);
+    static const map_type map(entries, xlsx_ct_unknown);
     return map;
 }
 
@@ -51,7 +51,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type map(entries, std::size(entries), xlsx_rev_rca_unknown);
+    static const map_type map(entries, xlsx_rev_rca_unknown);
     return map;
 }
 

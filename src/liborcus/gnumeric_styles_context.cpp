@@ -34,7 +34,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
+    static const map_type mt(entries, ss::hor_alignment_t::unknown);
     return mt;
 }
 
@@ -55,7 +55,7 @@ constexpr map_type::entry_type entries[] = {
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
+    static const map_type mt(entries, ss::ver_alignment_t::unknown);
     return mt;
 }
 
