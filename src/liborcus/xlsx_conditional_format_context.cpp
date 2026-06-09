@@ -16,7 +16,6 @@
 #include "orcus/measurement.hpp"
 
 #include <mdds/sorted_string_map.hpp>
-#include <mdds/global.hpp>
 
 namespace ss = orcus::spreadsheet;
 
@@ -85,15 +84,12 @@ enum xlsx_cond_format_boolean
     boolean_false
 };
 
-typedef mdds::sorted_string_map<xlsx_cond_format_type> cond_format_type_map;
+namespace cond_type {
 
-typedef mdds::sorted_string_map<xlsx_cond_format_boolean> cond_format_boolean_map;
+using map_type = mdds::sorted_string_map<xlsx_cond_format_type>;
 
-typedef mdds::sorted_string_map<xlsx_cond_format_operator> cond_format_operator_map;
-
-typedef mdds::sorted_string_map<xlsx_cond_format_date> cond_format_date_map;
-
-constexpr cond_format_type_map::entry_type cond_format_type_entries[] =
+// keys must be sorted
+constexpr map_type::entry_type entries[] =
 {
     { "aboveAverage", aboveAverage },
     { "beginsWith", beginsWith },
@@ -114,7 +110,20 @@ constexpr cond_format_type_map::entry_type cond_format_type_entries[] =
     { "uniqueValues", uniqueValues }
 };
 
-constexpr cond_format_operator_map::entry_type cond_format_operator_entries[] =
+const map_type& get()
+{
+    static const map_type mt(entries, none);
+    return mt;
+}
+
+} // namespace cond_type
+
+namespace cond_operator {
+
+using map_type = mdds::sorted_string_map<xlsx_cond_format_operator>;
+
+// keys must be sorted
+constexpr map_type::entry_type entries[] =
 {
     { "beginsWith", operator_beginsWith },
     { "between", operator_between },
@@ -130,7 +139,20 @@ constexpr cond_format_operator_map::entry_type cond_format_operator_entries[] =
     { "notEqual", operator_notEqual }
 };
 
-constexpr cond_format_date_map::entry_type cond_format_date_entries[] =
+const map_type& get()
+{
+    static const map_type mt(entries, operator_default);
+    return mt;
+}
+
+} // namespace cond_operator
+
+namespace cond_date {
+
+using map_type = mdds::sorted_string_map<xlsx_cond_format_date>;
+
+// keys must be sorted
+constexpr map_type::entry_type entries[] =
 {
     { "last7Days", date_last7Days },
     { "lastMonth", date_lastMonth },
@@ -143,7 +165,20 @@ constexpr cond_format_date_map::entry_type cond_format_date_entries[] =
     { "yesterday", date_yesterday }
 };
 
-constexpr cond_format_boolean_map::entry_type cond_format_boolean_entries[] =
+const map_type& get()
+{
+    static const map_type mt(entries, date_default);
+    return mt;
+}
+
+} // namespace cond_date
+
+namespace cond_boolean {
+
+using map_type = mdds::sorted_string_map<xlsx_cond_format_boolean>;
+
+// keys must be sorted
+constexpr map_type::entry_type entries[] =
 {
     { "0", boolean_false },
     { "1", boolean_true },
@@ -151,10 +186,17 @@ constexpr cond_format_boolean_map::entry_type cond_format_boolean_entries[] =
     { "true", boolean_false }
 };
 
+const map_type& get()
+{
+    static const map_type mt(entries, boolean_default);
+    return mt;
+}
+
+} // namespace cond_boolean
+
 bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
 {
-    static const cond_format_boolean_map boolean_map(cond_format_boolean_entries, boolean_default);
-    xlsx_cond_format_boolean val = boolean_map.find(attr.value);
+    xlsx_cond_format_boolean val = cond_boolean::get().find(attr.value);
     switch (val)
     {
         case boolean_default:
@@ -188,10 +230,7 @@ struct cfRule_attr_parser
         switch(attr.name)
         {
             case XML_type:
-            {
-                cond_format_type_map type_map(cond_format_type_entries, none);
-                m_type = type_map.find(attr.value);
-            }
+                m_type = cond_type::get().find(attr.value);
             break;
             case XML_dxfId:
             {
@@ -212,20 +251,14 @@ struct cfRule_attr_parser
                 m_bottom = parse_boolean_flag(attr, false);
             break;
             case XML_operator:
-            {
-                cond_format_operator_map operator_map(cond_format_operator_entries, operator_default);
-                m_operator = operator_map.find(attr.value);
-            }
+                m_operator = cond_operator::get().find(attr.value);
             break;
             case XML_text:
                 // do we need to worry about the transient flag here?
                 m_text = attr.value;
             break;
             case XML_timePeriod:
-            {
-                cond_format_date_map date_map(cond_format_date_entries, date_default);
-                m_date = date_map.find(attr.value);
-            }
+                m_date = cond_date::get().find(attr.value);
             break;
             case XML_rank:
                 // do we need to worry about the transient flag here?
@@ -473,17 +506,28 @@ enum xlsx_cond_format_cfvo_type
     cfvo_percentile
 };
 
-typedef mdds::sorted_string_map<xlsx_cond_format_cfvo_type> cond_format_cfvo_type_map;
+namespace cfvo_type {
 
-constexpr cond_format_cfvo_type_map::entry_type cond_format_cfvo_entries[] =
+using map_type = mdds::sorted_string_map<xlsx_cond_format_cfvo_type>;
+
+// keys must be sorted
+constexpr map_type::entry_type entries[] =
 {
-    { "num", cfvo_num },
-    { "percent", cfvo_percent },
+    { "formula", cfvo_formula },
     { "max", cfvo_max },
     { "min", cfvo_min },
-    { "formula", cfvo_formula },
+    { "num", cfvo_num },
+    { "percent", cfvo_percent },
     { "percentile", cfvo_percentile },
 };
+
+const map_type& get()
+{
+    static const map_type mt(entries, cfvo_default);
+    return mt;
+}
+
+} // namespace cfvo_type
 
 }
 
@@ -517,10 +561,7 @@ struct cfvo_attr_parser
                 m_values.m_include_equal = parse_boolean_flag(attr, true);
             break;
             case XML_type:
-            {
-                cond_format_cfvo_type_map cfvo_type_map(cond_format_cfvo_entries, cfvo_default);
-                m_values.m_type = cfvo_type_map.find(attr.value);
-            }
+                m_values.m_type = cfvo_type::get().find(attr.value);
             break;
             case XML_val:
                 if (attr.transient)
