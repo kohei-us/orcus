@@ -57,6 +57,47 @@ void test_encoded_content()
     }
 }
 
+void test_encoded_namespace()
+{
+    // A namespace URI is escaped in its xmlns declaration the same way an
+    // attribute value is, so special characters survive a round trip.
+    const std::vector<std::string> test_uris = {
+        "http://example.com/ns?a=1&b=2",
+        "http://example.com/\"quoted\"",
+        "http://example.com/<tag>",
+    };
+
+    struct _handler : public sax_handler
+    {
+        std::string ns_value;
+
+        void attribute(const sax::parser_attribute& attr)
+        {
+            ns_value = std::string(attr.value);
+        }
+    };
+
+    for (const std::string& test_uri : test_uris)
+    {
+        xmlns_repository repo;
+        std::ostringstream os;
+
+        {
+            xml_writer writer(repo, os);
+            xmlns_id_t ns = writer.add_namespace("p", test_uri);
+            auto scope_root = writer.push_element_scope({ns, "root"});
+        }
+
+        std::string stream = os.str();
+
+        _handler hdl;
+        sax_parser<_handler> parser(stream, hdl);
+        parser.parse();
+
+        assert(test_uri == hdl.ns_value);
+    }
+}
+
 void test_move()
 {
     xmlns_repository repo;
@@ -98,6 +139,7 @@ void test_move()
 int main()
 {
     test_encoded_content();
+    test_encoded_namespace();
     test_move();
 
     return EXIT_SUCCESS;

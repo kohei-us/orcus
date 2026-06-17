@@ -207,7 +207,8 @@ void xml_writer::push_element(const xml_name_t& _name)
             os << ':' << alias;
         os << "=\"";
         xmlns_id_t ns = mp_impl->cxt.get(alias);
-        os << ns << '"';
+        write_content_encoded(os, ns, xml_encode_context_t::attr_double_quoted);
+        os << '"';
     }
 
     for (const _attr& attr : mp_impl->attrs)
