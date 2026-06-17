@@ -143,6 +143,37 @@ uint32_t hex_string_to_int32(std::string_view sv)
     return cp;
 }
 
+// Combine a UTF-16 high surrogate with the following \u low surrogate into
+// one code point and encode it as UTF-8. A lone or mismatched surrogate
+// returns false. p advances past the low half when a pair is consumed.
+bool decode_unicode_escape(uint32_t cp, const char*& p, const char* p_end, std::string& encoded)
+{
+    if (cp >= 0xD800 && cp <= 0xDBFF)
+    {
+        if (p_end - p < 6 || p[0] != '\\' || p[1] != 'u')
+            return false;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            if (!std::isxdigit(static_cast<unsigned char>(p[2 + i])))
+                return false;
+        }
+
+        uint32_t lo = hex_string_to_int32(std::string_view{p + 2, 4});
+        if (lo < 0xDC00 || lo > 0xDFFF)
+            return false;
+
+        cp = 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00);
+        p += 6;
+    }
+    else if (cp >= 0xDC00 && cp <= 0xDFFF)
+        // lone low surrogate
+        return false;
+
+    encoded = encode_utf8(cp);
+    return !encoded.empty();
+}
+
 parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& buffer, const char*& p, const char* p_end)
 {
     parse_quoted_string_state ret;
@@ -222,8 +253,8 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                 assert(n == 4);
 
                 uint32_t cp = hex_string_to_int32(std::string_view{p_head, n});
-                auto encoded = encode_utf8(cp);
-                if (encoded.empty())
+                std::string encoded;
+                if (!decode_unicode_escape(cp, p, p_end, encoded))
                 {
                     // failed to encode it as utf-8
                     ret.length = parse_quoted_string_state::error_invalid_hex_digits;
@@ -232,6 +263,14 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
 
                 buffer.append(encoded);
                 mode = double_quoted_string_parse_mode_t::unspecified;
+
+                // a surrogate pair may have advanced p past its low half
+                if (p == p_end)
+                {
+                    ret.length = parse_quoted_string_state::error_no_closing_quote;
+                    return ret;
+                }
+                c = *p;
 
                 switch (c)
                 {
@@ -562,8 +601,8 @@ parse_quoted_string_state parse_double_quoted_string(
                     buffer.append({ret.str, ret.length-6});
 
                 uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
-                auto encoded = encode_utf8(cp);
-                if (encoded.empty())
+                std::string encoded;
+                if (!decode_unicode_escape(cp, p, p_end, encoded))
                 {
                     // failed to encode it as utf-8
                     ret.str = nullptr;
