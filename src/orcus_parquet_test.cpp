@@ -16,6 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
+#include <cstdint>
 
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
@@ -112,6 +113,42 @@ void test_parquet_detection()
     }
 }
 
+namespace {
+
+// Minimal parquet-shaped stream: leading magic, footer metadata, the
+// little-endian footer size, trailing magic.
+std::string make_parquet_stream(std::uint32_t footer_size)
+{
+    std::string s = "PAR1";
+    s.append(footer_size, '\0');
+    const char le[4] = {
+        static_cast<char>(footer_size & 0xff),
+        static_cast<char>((footer_size >> 8) & 0xff),
+        static_cast<char>((footer_size >> 16) & 0xff),
+        static_cast<char>((footer_size >> 24) & 0xff),
+    };
+    s.append(le, 4);
+    s += "PAR1";
+    return s;
+}
+
+}
+
+void test_parquet_detect_footer_size()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // A footer size whose little-endian encoding has a byte >= 0x80 must
+    // still be detected. The size bytes are read as unsigned; reading them
+    // as signed char would sign-extend a byte like 0x90 into the high bits
+    // and corrupt the size.
+    for (std::uint32_t footer_size : {0x90u, 0xc8u, 0xffu, 0x40u})
+    {
+        std::string stream = make_parquet_stream(footer_size);
+        assert(orcus_parquet::detect(stream));
+    }
+}
+
 int main()
 {
     try
@@ -119,6 +156,7 @@ int main()
         test_parquet_create_filter();
         test_parquet_basic();
         test_parquet_detection();
+        test_parquet_detect_footer_size();
     }
     catch (const std::exception& e)
     {

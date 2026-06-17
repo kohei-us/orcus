@@ -510,19 +510,19 @@ bool orcus_parquet::detect(std::string_view strm)
     if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
         return false;
 
-    // Check the footer metadata size (little endian)
+    // Check the footer metadata size (little endian). Read each byte as
+    // unsigned so a byte >= 0x80 does not sign-extend into the high bits.
     p -= 1u;
-    std::uint32_t footer_size = *p--;
+    std::uint32_t footer_size = static_cast<std::uint8_t>(*p--);
     footer_size <<= 8;
-    footer_size |= *p--;
+    footer_size |= static_cast<std::uint8_t>(*p--);
     footer_size <<= 8;
-    footer_size |= *p--;
+    footer_size |= static_cast<std::uint8_t>(*p--);
     footer_size <<= 8;
-    footer_size |= *p;
+    footer_size |= static_cast<std::uint8_t>(*p);
 
-    p -= footer_size;
-    if (p <= strm.data())
-        // footer metadata position must be within the stream.
+    // The footer metadata must fit within the stream.
+    if (footer_size >= strm.size() - 8u)
         return false;
 
     return true;
