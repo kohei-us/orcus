@@ -46,7 +46,6 @@ void print_args(PyObject* args)
     PyObject* repr = PyObject_Repr(args);
     if (repr)
     {
-        Py_INCREF(repr);
         args_str = PyBytes_AsString(repr);
         Py_DECREF(repr);
     }

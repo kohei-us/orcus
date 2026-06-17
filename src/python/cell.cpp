@@ -211,12 +211,12 @@ PyObject* create_cell_object_boolean(bool v)
     if (v)
     {
         Py_INCREF(Py_True);
-        obj_data->value = Py_True;
+        Py_SETREF(obj_data->value, Py_True);
     }
     else
     {
         Py_INCREF(Py_False);
-        obj_data->value = Py_False;
+        Py_SETREF(obj_data->value, Py_False);
     }
 
     return obj;
@@ -230,7 +230,7 @@ PyObject* create_cell_object_string(std::string_view s)
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
 
-    obj_data->value = PyUnicode_FromStringAndSize(s.data(), s.size());
+    Py_SETREF(obj_data->value, PyUnicode_FromStringAndSize(s.data(), s.size()));
     if (!obj_data->value)
     {
         // The string contains invalid utf-8 sequence, and the function has
@@ -250,7 +250,7 @@ PyObject* create_cell_object_numeric(double v)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->value = PyFloat_FromDouble(v);
+    Py_SETREF(obj_data->value, PyFloat_FromDouble(v));
 
     return obj;
 }
@@ -286,7 +286,7 @@ PyObject* create_cell_object_formula(
     if (fc->get_group_properties().grouped)
         formula_s = "{" + formula_s + "}";
 
-    obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
+    Py_SETREF(obj_data->formula, PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size()));
 
     ixion::formula_result res;
 
@@ -297,8 +297,7 @@ PyObject* create_cell_object_formula(
     }
     catch (const std::exception&)
     {
-        Py_INCREF(Py_None);
-        obj_data->value = Py_None;
+        // No cached result to read; value stays the default None.
         return obj;
     }
 
@@ -306,13 +305,13 @@ PyObject* create_cell_object_formula(
     {
         case ixion::formula_result::result_type::value:
         {
-            obj_data->value = PyFloat_FromDouble(res.get_value());
+            Py_SETREF(obj_data->value, PyFloat_FromDouble(res.get_value()));
             break;
         }
         case ixion::formula_result::result_type::string:
         {
             const std::string& s = res.get_string();
-            obj_data->value = PyUnicode_FromStringAndSize(s.data(), s.size());
+            Py_SETREF(obj_data->value, PyUnicode_FromStringAndSize(s.data(), s.size()));
             break;
         }
         case ixion::formula_result::result_type::error:
@@ -320,21 +319,13 @@ PyObject* create_cell_object_formula(
             ixion::formula_error_t fe = res.get_error();
             std::string_view fename = ixion::get_formula_error_name(fe);
             if (!fename.empty())
-                obj_data->value = PyUnicode_FromStringAndSize(fename.data(), fename.size());
-            else
-            {
-                // This should not be hit, but just in case...
-                Py_INCREF(Py_None);
-                obj_data->value = Py_None;
-            }
+                Py_SETREF(obj_data->value, PyUnicode_FromStringAndSize(fename.data(), fename.size()));
+            // an empty error name should not happen; value stays the default None.
             break;
         }
         default:
-        {
-            // This should not be hit, but just in case...
-            Py_INCREF(Py_None);
-            obj_data->value = Py_None;
-        }
+            // unknown result type; value stays the default None.
+            break;
     }
 
     return obj;

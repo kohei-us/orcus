@@ -181,11 +181,11 @@ PyObject* create_named_exp_object(const spreadsheet::document& doc, const ixion:
 
         // Create base
         std::string origin_s = resolver->get_name(exp->origin, ixion::abs_address_t(), true);
-        self->origin = PyUnicode_FromStringAndSize(origin_s.data(), origin_s.size());
+        Py_SETREF(self->origin, PyUnicode_FromStringAndSize(origin_s.data(), origin_s.size()));
 
         // Create formula expression string.
         std::string formula_s = ixion::print_formula_tokens(cxt, exp->origin, *resolver, exp->tokens);
-        self->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
+        Py_SETREF(self->formula, PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size()));
     }
 
     return obj;
@@ -199,7 +199,11 @@ PyObject* create_named_exp_dict(const ss::document& doc, ixion::named_expression
         auto ne = iter.get();
         PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
         PyObject* tokens = create_named_exp_object(doc, ne.expression);
-        PyDict_SetItem(dict, name, tokens);
+        if (name && tokens)
+            PyDict_SetItem(dict, name, tokens);
+        // PyDict_SetItem takes its own references, so release ours.
+        Py_XDECREF(name);
+        Py_XDECREF(tokens);
     }
 
     return dict;

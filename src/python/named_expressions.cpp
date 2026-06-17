@@ -105,9 +105,20 @@ PyObject* tp_iternext(PyObject* self)
 
     PyObject* ne = create_named_exp_object(*data.doc, item.expression);
     if (!ne)
+    {
+        Py_DECREF(name);
         return nullptr;
+    }
 
     PyObject* tup = PyTuple_New(2);
+    if (!tup)
+    {
+        Py_DECREF(name);
+        Py_DECREF(ne);
+        return nullptr;
+    }
+
+    // PyTuple_SET_ITEM steals both references.
     PyTuple_SET_ITEM(tup, 0, name);
     PyTuple_SET_ITEM(tup, 1, ne);
 

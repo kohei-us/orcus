@@ -146,8 +146,8 @@ PyObject* create_and_init_formula_token_object(ixion::fopcode_t op, std::string 
 
     pyobj_formula_token* self = reinterpret_cast<pyobj_formula_token*>(obj);
     init_members(self);
-    self->type = get_python_enum_value("FormulaTokenType", to_formula_token_type(op));
-    self->op = get_python_enum_value("FormulaTokenOp", to_formula_token_op(op));
+    Py_SETREF(self->type, get_python_enum_value("FormulaTokenType", to_formula_token_type(op)));
+    Py_SETREF(self->op, get_python_enum_value("FormulaTokenOp", to_formula_token_op(op)));
     self->data->repr = std::move(repr);
 
     return obj;
