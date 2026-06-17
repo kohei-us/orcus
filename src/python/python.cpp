@@ -102,7 +102,7 @@ bool add_type_to_module(PyObject* m, PyTypeObject* typeobj, const char* type_nam
     Py_INCREF(typeobj);
     if (PyModule_AddObject(m, type_name, reinterpret_cast<PyObject*>(typeobj)) < 0)
     {
-        Py_DECREF(m);
+        // m is borrowed here; the caller that created it releases it.
         Py_DECREF(typeobj);
         return false;
     }
@@ -119,7 +119,10 @@ bool populate_module_attributes(PyObject* m)
 
     PyObject* version = PyUnicode_FromString(os.str().data());
     if (PyModule_AddObject(m, "__version__", version) < 0)
+    {
+        Py_XDECREF(version);
         return false;
+    }
 
     return true;
 }
@@ -146,34 +149,27 @@ extern "C" {
 ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
 {
     PyObject* m = PyModule_Create(&orcus::python::moduledef);
-    if (!orcus::python::populate_module_attributes(m))
+    if (!m)
         return nullptr;
 
+    bool ok = orcus::python::populate_module_attributes(m)
 #ifdef __ORCUS_SPREADSHEET_MODEL
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_document_type(), "Document"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_sheet_type(), "Sheet"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_sheet_rows_type(), "SheetRows"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_cell_type(), "Cell"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_named_exp_type(), "NamedExpression"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_named_exps_type(), "NamedExpressions"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_formula_token_type(), "FormulaToken"))
-        return nullptr;
-
-    if (!orcus::python::add_type_to_module(m, orcus::python::get_formula_tokens_type(), "FormulaTokens"))
-        return nullptr;
+        && orcus::python::add_type_to_module(m, orcus::python::get_document_type(), "Document")
+        && orcus::python::add_type_to_module(m, orcus::python::get_sheet_type(), "Sheet")
+        && orcus::python::add_type_to_module(m, orcus::python::get_sheet_rows_type(), "SheetRows")
+        && orcus::python::add_type_to_module(m, orcus::python::get_cell_type(), "Cell")
+        && orcus::python::add_type_to_module(m, orcus::python::get_named_exp_type(), "NamedExpression")
+        && orcus::python::add_type_to_module(m, orcus::python::get_named_exps_type(), "NamedExpressions")
+        && orcus::python::add_type_to_module(m, orcus::python::get_formula_token_type(), "FormulaToken")
+        && orcus::python::add_type_to_module(m, orcus::python::get_formula_tokens_type(), "FormulaTokens")
 #endif
+        ;
+
+    if (!ok)
+    {
+        Py_DECREF(m);
+        return nullptr;
+    }
 
     return m;
 }
