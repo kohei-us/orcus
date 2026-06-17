@@ -136,6 +136,11 @@ public:
     {
         return &m_formula;
     }
+
+    virtual range_size_t get_sheet_size() const override
+    {
+        return range_size_t{1048576, 16384};
+    }
 };
 
 class mock_shared_strings : public import_shared_strings

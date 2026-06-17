@@ -186,6 +186,15 @@ void gnumeric_cell_context::end_cell()
                 }
                 case vt_array:
                 {
+                    const ss::range_size_t sheet_size = mp_sheet->get_sheet_size();
+                    if (col < 0 || row < 0 ||
+                        col >= sheet_size.columns || row >= sheet_size.rows ||
+                        m_cell_data->array_cols < 1 ||
+                        m_cell_data->array_cols > sheet_size.columns - col ||
+                        m_cell_data->array_rows < 1 ||
+                        m_cell_data->array_rows > sheet_size.rows - row)
+                        break;
+
                     ss::range_t range;
                     range.first.column = col;
                     range.first.row = row;
