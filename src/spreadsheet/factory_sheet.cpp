@@ -276,8 +276,7 @@ void import_formula::set_formula(formula_grammar_t /*grammar*/, std::string_view
         tokens = ixion::create_formula_error_tokens(cxt, formula, error_s);
     }
 
-    m_tokens_store = ixion::formula_tokens_store::create();
-    m_tokens_store->get() = std::move(tokens);
+    m_tokens_store = ixion::formula_tokens_store::create(std::move(tokens));
 }
 
 void import_formula::set_shared_formula_index(size_t index)
