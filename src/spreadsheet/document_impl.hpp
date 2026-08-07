@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <orcus/spreadsheet/table.hpp>
 #include <orcus/spreadsheet/tables.hpp>
 #include <orcus/spreadsheet/config.hpp>
 #include <orcus/spreadsheet/document.hpp>
@@ -22,7 +21,6 @@
 #include <ixion/formula.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
-#include <ixion/interface/table_handler.hpp>
 #include <ixion/matrix.hpp>
 #include <ixion/model_context.hpp>
 
@@ -46,7 +44,6 @@ struct sheet_item
     sheet_item(document& doc, std::string_view _name, sheet_t sheet_index);
 };
 
-typedef std::map<std::string_view, std::unique_ptr<table_t>> table_store_type;
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
 
 using formula_context_to_resolver_type =

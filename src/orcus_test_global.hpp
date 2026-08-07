@@ -114,7 +114,7 @@ struct excel_field_filter_items
         const spreadsheet::auto_filter_t& filter, spreadsheet::col_t field_index);
 };
 
-std::shared_ptr<const spreadsheet::table_t> get_table_from_sheet(
+const spreadsheet::table_t* get_table_from_sheet(
     const spreadsheet::document& doc, std::string_view sheet_name, std::string_view table_name);
 
 }}

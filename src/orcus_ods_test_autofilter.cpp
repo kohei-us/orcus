@@ -10,6 +10,8 @@
 #include <orcus/spreadsheet/tables.hpp>
 #include <orcus/spreadsheet/table.hpp>
 
+#include <ixion/model_context.hpp>
+
 namespace ss = orcus::spreadsheet;
 namespace test = orcus::test;
 
@@ -25,12 +27,15 @@ void test_ods_autofilter_multi_conditions()
     const ss::tables& t = doc->get_tables();
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__0").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__0");
         assert(table);
-        assert(table->range == to_range("'OR-AND'.B3:'OR-AND'.G96"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__0");
+        assert(itab);
+        assert(itab->range == to_range("'OR-AND'.B3:'OR-AND'.G96"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //  |
@@ -97,12 +102,15 @@ void test_ods_autofilter_multi_conditions()
     }
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__1").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__1");
         assert(table);
-        assert(table->range == to_range("'AND x 3'.B3:'AND x 3'.G96"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__1");
+        assert(itab);
+        assert(itab->range == to_range("'AND x 3'.B3:'AND x 3'.G96"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //  |
@@ -162,12 +170,15 @@ void test_ods_autofilter_text_comparisons()
     const ss::tables& t = doc->get_tables();
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__0").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__0");
         assert(table);
-        assert(table->range == to_range("Table1.B3:Table1.E13"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__0");
+        assert(itab);
+        assert(itab->range == to_range("Table1.B3:Table1.E13"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {and}
         //   |
@@ -186,12 +197,15 @@ void test_ods_autofilter_text_comparisons()
     }
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__1").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__1");
         assert(table);
-        assert(table->range == to_range("Table2.B3:Table2.E13"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__1");
+        assert(itab);
+        assert(itab->range == to_range("Table2.B3:Table2.E13"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {and}
         //   |
@@ -220,12 +234,15 @@ void test_ods_autofilter_text_comparisons()
     }
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__2").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__2");
         assert(table);
-        assert(table->range == to_range("Table3.B3:Table3.C23"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__2");
+        assert(itab);
+        assert(itab->range == to_range("Table3.B3:Table3.C23"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //   |
@@ -253,12 +270,15 @@ void test_ods_autofilter_text_comparisons()
     }
 
     {
-        auto table = t.get("__Anonymous_Sheet_DB__3").lock();
+        const ss::table_t* table = t.get("__Anonymous_Sheet_DB__3");
         assert(table);
-        assert(table->range == to_range("Table4.B3:Table4.C23"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__3");
+        assert(itab);
+        assert(itab->range == to_range("Table4.B3:Table4.C23"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //   |
@@ -298,12 +318,15 @@ void test_ods_autofilter_largest_smallest()
     const ss::tables& t = doc->get_tables();
 
     {
-        auto table = t.get("Largest").lock();
+        const ss::table_t* table = t.get("Largest");
         assert(table);
-        assert(table->range == to_range("Largest.B3:Largest.I13"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("Largest");
+        assert(itab);
+        assert(itab->range == to_range("Largest.B3:Largest.I13"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //   |
@@ -332,12 +355,15 @@ void test_ods_autofilter_largest_smallest()
     }
 
     {
-        auto table = t.get("Smallest").lock();
+        const ss::table_t* table = t.get("Smallest");
         assert(table);
-        assert(table->range == to_range("Smallest.B3:Smallest.I13"));
+
+        const ixion::table_t* itab = doc->get_model_context().get_table("Smallest");
+        assert(itab);
+        assert(itab->range == to_range("Smallest.B3:Smallest.I13"));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(table->range));
+        assert(filter.range == ixion::abs_rc_range_t(itab->range));
 
         // root {or}
         //   |

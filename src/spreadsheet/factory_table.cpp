@@ -18,6 +18,7 @@
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 
 #include <ixion/formula_name_resolver.hpp>
+#include <ixion/table.hpp>
 
 namespace orcus { namespace spreadsheet {
 
@@ -28,8 +29,10 @@ struct import_table::impl
 
     import_auto_filter auto_filter;
 
-    std::unique_ptr<table_t> table;
+    ixion::table_t core;  // core properties destined for the ixion model context
+    table_t pres;         // presentation properties for the orcus tables store
     table_column_t column;
+    std::string column_name;
 
     impl(const impl&) = delete;
     impl& operator=(const impl&) = delete;
@@ -43,7 +46,7 @@ import_table::~import_table() = default;
 
 iface::import_auto_filter* import_table::start_auto_filter(const range_t& range)
 {
-    auto_filter_t& dest = mp_impl->table->filter;
+    auto_filter_t& dest = mp_impl->pres.filter;
     import_auto_filter::commit_func_type func = [&dest](auto_filter_t&& filter)
     {
         dest.swap(filter);
@@ -55,34 +58,36 @@ iface::import_auto_filter* import_table::start_auto_filter(const range_t& range)
 
 void import_table::set_range(const range_t& range)
 {
-    mp_impl->table->range = to_abs_range(range, mp_impl->sh.get_index());
+    mp_impl->core.range = to_abs_range(range, mp_impl->sh.get_index());
 }
 
 void import_table::set_identifier(size_t id)
 {
-    mp_impl->table->identifier = id;
+    mp_impl->pres.identifier = id;
 }
 
 void import_table::set_name(std::string_view name)
 {
     string_pool& sp = mp_impl->doc.get_string_pool();
-    mp_impl->table->name = sp.intern(name).first;
+    mp_impl->pres.name = sp.intern(name).first;
+    mp_impl->core.name = name;
 }
 
 void import_table::set_display_name(std::string_view name)
 {
     string_pool& sp = mp_impl->doc.get_string_pool();
-    mp_impl->table->display_name = sp.intern(name).first;
+    mp_impl->pres.display_name = sp.intern(name).first;
 }
 
 void import_table::set_totals_row_count(size_t row_count)
 {
-    mp_impl->table->totals_row_count = row_count;
+    mp_impl->core.totals_row_count = static_cast<ixion::row_t>(row_count);
 }
 
 void import_table::set_column_count(size_t n)
 {
-    orcus::detail::reserve_bounded(mp_impl->table->columns, n);
+    orcus::detail::reserve_bounded(mp_impl->core.columns, n);
+    orcus::detail::reserve_bounded(mp_impl->pres.columns, n);
 }
 
 void import_table::set_column_identifier(size_t id)
@@ -92,8 +97,7 @@ void import_table::set_column_identifier(size_t id)
 
 void import_table::set_column_name(std::string_view name)
 {
-    string_pool& sp = mp_impl->doc.get_string_pool();
-    mp_impl->column.name = sp.intern(name).first;
+    mp_impl->column_name = name;
 }
 
 void import_table::set_column_totals_row_label(std::string_view label)
@@ -109,50 +113,54 @@ void import_table::set_column_totals_row_function(orcus::spreadsheet::totals_row
 
 void import_table::commit_column()
 {
-    mp_impl->table->columns.push_back(mp_impl->column);
+    mp_impl->core.columns.push_back(std::move(mp_impl->column_name));
+    mp_impl->pres.columns.push_back(mp_impl->column);
+    mp_impl->column_name.clear();
     mp_impl->column.reset();
 }
 
 void import_table::set_style_name(std::string_view name)
 {
-    table_style_t& style = mp_impl->table->style;
+    table_style_t& style = mp_impl->pres.style;
     string_pool& sp = mp_impl->doc.get_string_pool();
     style.name = sp.intern(name).first;
 }
 
 void import_table::set_style_show_first_column(bool b)
 {
-    table_style_t& style = mp_impl->table->style;
+    table_style_t& style = mp_impl->pres.style;
     style.show_first_column = b;
 }
 
 void import_table::set_style_show_last_column(bool b)
 {
-    table_style_t& style = mp_impl->table->style;
+    table_style_t& style = mp_impl->pres.style;
     style.show_last_column = b;
 }
 
 void import_table::set_style_show_row_stripes(bool b)
 {
-    table_style_t& style = mp_impl->table->style;
+    table_style_t& style = mp_impl->pres.style;
     style.show_row_stripes = b;
 }
 
 void import_table::set_style_show_column_stripes(bool b)
 {
-    table_style_t& style = mp_impl->table->style;
+    table_style_t& style = mp_impl->pres.style;
     style.show_column_stripes = b;
 }
 
 void import_table::commit()
 {
-    mp_impl->doc.get_tables().insert(std::move(mp_impl->table));
+    mp_impl->doc.get_tables().insert(std::move(mp_impl->core), std::move(mp_impl->pres));
 }
 
 void import_table::reset()
 {
-    mp_impl->table = std::make_unique<table_t>();
+    mp_impl->core = ixion::table_t{};
+    mp_impl->pres.reset();
     mp_impl->column.reset();
+    mp_impl->column_name.clear();
 }
 
 }}

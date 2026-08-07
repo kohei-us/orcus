@@ -14,6 +14,8 @@
 #include <string_view>
 #include <map>
 
+#include <ixion/table.hpp>
+
 namespace ixion {
 
 class model_context;
@@ -44,22 +46,36 @@ public:
     tables& operator=(const tables&) = delete;
 
     /**
-     * Insert a new table instance.
+     * Insert a new table.  The core properties of the table, which formula
+     * expressions may reference, are stored in the ixion model context,
+     * while the presentation properties are stored in this store under the
+     * same table name.
      *
-     * @param p Table instance to insert.
+     * @param core Core properties of the table to store in the ixion model
+     *             context.
+     * @param pres Presentation properties of the table to store in this
+     *             store.
+     *
+     * @throw std::invalid_argument When the table name is empty, or the
+     *        table range is invalid or spans multiple sheets.
+     * @throw ixion::model_context_error When a table by the same name
+     *        already exists.
      */
-    void insert(std::unique_ptr<table_t> p);
+    void insert(ixion::table_t core, table_t pres);
 
     /**
-     * Get a structure containing properties of a named table.
+     * Get the presentation properties of a named table.  The rest of the
+     * table properties are stored in the ixion model context, accessible
+     * through document::get_model_context().
      *
      * @param name Name of the table.
      *
-     * @return Weak pointer to the structure containing the properties of a
-     *         named table, or an empty pointer if no such table exists for the
-     *         given name.
+     * @return Pointer to the structure containing the presentation
+     *         properties of the table, or nullptr if no such table exists
+     *         for the given name.  The returned pointer remains valid for
+     *         the lifetime of this store.
      */
-    std::weak_ptr<const table_t> get(std::string_view name) const;
+    const table_t* get(std::string_view name) const;
 
     /**
      * Get all tables belonging to a certain sheet by sheet index.
@@ -69,7 +85,7 @@ public:
      * @return Map containing pointers to all table instances belonging to
      *         specified sheet and their respective names as keys.
      */
-    std::map<std::string_view, std::weak_ptr<const table_t>> get_by_sheet(sheet_t pos) const;
+    std::map<std::string_view, const table_t*> get_by_sheet(sheet_t pos) const;
 
 private:
     struct impl;

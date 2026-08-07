@@ -654,37 +654,37 @@ void test_xlsx_table()
     std::unique_ptr<ss::document> doc = load_doc(path);
 
     std::string_view name("Table1");
-    auto p = doc->get_tables().get(name).lock();
+    const ss::table_t* p = doc->get_tables().get(name);
     assert(p);
     assert(p->identifier == 1);
     assert(p->name == name);
     assert(p->display_name == name);
-    assert(p->totals_row_count == 1);
+
+    // The core properties of the table live in the ixion model context.
+    const ixion::table_t* itab = doc->get_model_context().get_table(name);
+    assert(itab);
+    assert(itab->name == name);
+    assert(itab->totals_row_count == 1);
 
     // Table range is C3:D9.
-    ixion::abs_range_t range;
-    range.first.column = 2;
-    range.first.row = 2;
-    range.first.sheet = 0;
-    range.last.column = 3;
-    range.last.row = 8;
-    range.last.sheet = 0;
-    assert(p->range == range);
+    assert(itab->range == ixion::abs_range_t({0, 2, 2}, {0, 8, 3}));
 
     // Table1 has 2 table columns.
+    assert(itab->columns.size() == 2);
+    assert(itab->columns[0] == "Category");
+    assert(itab->columns[1] == "Value");
+
     assert(p->columns.size() == 2);
 
     const ss::table_column_t* tcol = &p->columns[0];
     assert(tcol);
     assert(tcol->identifier == 1);
-    assert(tcol->name == "Category");
     assert(tcol->totals_row_label == "Total");
     assert(tcol->totals_row_function == ss::totals_row_function_t::none);
 
     tcol = &p->columns[1];
     assert(tcol);
     assert(tcol->identifier == 2);
-    assert(tcol->name == "Value");
     assert(tcol->totals_row_label.empty());
     assert(tcol->totals_row_function == ss::totals_row_function_t::sum);
 

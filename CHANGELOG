@@ -1,3 +1,12 @@
+orcus 0.22.0
+
+* The spreadsheet document model now stores the core properties of
+  tables - the name, the range, the column names and the totals row
+  count - in the ixion model context, which now resolves table
+  references in formula expressions natively.  The table_t struct in the
+  spreadsheet model keeps only the presentation properties of a table.
+  The public API has changed to accommodate for this change.
+
 orcus 0.21.0
 
 * When importing an XML document via orcus_xml, import_factory's

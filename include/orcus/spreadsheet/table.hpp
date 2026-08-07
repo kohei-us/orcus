@@ -11,17 +11,16 @@
 
 #include <string_view>
 
-#include <ixion/address.hpp>
-
 namespace orcus { namespace spreadsheet {
 
 /**
- * Single column entry in table.
+ * Presentation properties of a single column in a table.  The column name
+ * is stored in the corresponding ixion::table_t entry in the ixion model
+ * context, at the same column position.
  */
 struct ORCUS_SPM_DLLPUBLIC table_column_t
 {
     std::size_t identifier;
-    std::string_view name;
     std::string_view totals_row_label;
     totals_row_function_t totals_row_function;
 
@@ -56,8 +55,14 @@ struct ORCUS_SPM_DLLPUBLIC table_style_t
 };
 
 /**
- * Single table entry.  A table is a range in a spreadsheet that represents
- * a single set of data that can be used as a data source.
+ * Presentation properties of a single table.  A table is a range in a
+ * spreadsheet that represents a single set of data that can be used as a
+ * data source.
+ *
+ * The core properties of the tables are stored in the ixion::table_t entry of
+ * the same name inside ixion::model_context.  Both this type and
+ * ixion::table_t include a member named columns; the latter stores the column
+ * names.  Both members maintain the same ordering.
  */
 struct ORCUS_SPM_DLLPUBLIC table_t
 {
@@ -67,10 +72,6 @@ struct ORCUS_SPM_DLLPUBLIC table_t
 
     std::string_view name;
     std::string_view display_name;
-
-    ixion::abs_range_t range;
-
-    std::size_t totals_row_count;
 
     auto_filter_t filter;
     columns_type columns;

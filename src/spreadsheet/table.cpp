@@ -19,7 +19,6 @@ table_column_t& table_column_t::operator=(const table_column_t& other) = default
 void table_column_t::reset()
 {
     identifier = 0;
-    name = std::string_view{};
     totals_row_label = std::string_view{};
     totals_row_function = totals_row_function_t::none;
 }
@@ -44,7 +43,7 @@ void table_style_t::reset()
     show_column_stripes = false;
 }
 
-table_t::table_t() : identifier(0), range(ixion::abs_range_t::invalid), totals_row_count(0) {}
+table_t::table_t() : identifier(0) {}
 table_t::table_t(table_t&& other) = default;
 table_t::~table_t() = default;
 
@@ -55,8 +54,6 @@ void table_t::reset()
     identifier = 0;
     name = std::string_view{};
     display_name = std::string_view{};
-    range = ixion::abs_range_t(ixion::abs_range_t::invalid);
-    totals_row_count = 0;
     filter.reset();
     columns.clear();
     style.reset();

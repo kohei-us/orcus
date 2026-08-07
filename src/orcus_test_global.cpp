@@ -280,14 +280,14 @@ excel_field_filter_items excel_field_filter_items::get(
     return items;
 }
 
-std::shared_ptr<const spreadsheet::table_t> get_table_from_sheet(
+const spreadsheet::table_t* get_table_from_sheet(
     const spreadsheet::document& doc, std::string_view sheet_name, std::string_view table_name)
 {
     const ss::sheet* sh = doc.get_sheet(sheet_name);
     if (!sh)
     {
         std::cerr << "sheet named '" << sheet_name << "' not found in the document" << std::endl;
-        return {};
+        return nullptr;
     }
 
     auto tabs = doc.get_tables().get_by_sheet(sh->get_index());
@@ -295,19 +295,12 @@ std::shared_ptr<const spreadsheet::table_t> get_table_from_sheet(
     if (it == tabs.end())
     {
         std::cerr << "table named '" << table_name << "' not found in sheet '" << sheet_name << "'" << std::endl;
-        return {};
+        return nullptr;
     }
 
     std::cout << "sheet: " << sheet_name << "; table: " << table_name << std::endl;
 
-    auto p = it->second.lock();
-    if (!p)
-    {
-        std::cerr << "instance for table named '" << table_name << "' has expired" << std::endl;
-        return {};
-    }
-
-    return p;
+    return it->second;
 }
 
 }}
