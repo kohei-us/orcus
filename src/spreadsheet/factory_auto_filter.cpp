@@ -115,7 +115,7 @@ void import_auto_filter::commit()
 void import_auto_filter::reset(commit_func_type func, const ixion::abs_range_t& range)
 {
     m_filter = auto_filter_t{};
-    m_filter.range = range;
+    m_filter.range = ixion::abs_rc_range_t(range);
     m_func_commit = std::move(func);
 }
 

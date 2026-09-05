@@ -51,7 +51,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     range.first.row = 0;
     range.first.column = 0;
     auto cell_range = cxt.iterate_cells(
-        sheet_id, ixion::rc_direction_t::vertical, range);
+        sheet_id, ixion::rc_direction_t::vertical, ixion::abs_rc_range_t(range));
 
     std::vector<std::string> mx(row_count*col_count);
 

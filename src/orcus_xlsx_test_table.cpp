@@ -666,8 +666,9 @@ void test_xlsx_table()
     assert(itab->name == name);
     assert(itab->totals_row_count == 1);
 
-    // Table range is C3:D9.
-    assert(itab->range == ixion::abs_range_t({0, 2, 2}, {0, 8, 3}));
+    // Table range is C3:D9 on the first sheet.
+    assert(itab->sheet == 0);
+    assert(itab->range == ixion::abs_rc_range_t(2, 2, 7, 2));
 
     // Table1 has 2 table columns.
     assert(itab->columns.size() == 2);

@@ -58,7 +58,8 @@ iface::import_auto_filter* import_table::start_auto_filter(const range_t& range)
 
 void import_table::set_range(const range_t& range)
 {
-    mp_impl->core.range = to_abs_range(range, mp_impl->sh.get_index());
+    mp_impl->core.sheet = mp_impl->sh.get_index();
+    mp_impl->core.range = to_abs_rc_range(range);
 }
 
 void import_table::set_identifier(size_t id)

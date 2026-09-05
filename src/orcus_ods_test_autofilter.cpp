@@ -15,6 +15,19 @@
 namespace ss = orcus::spreadsheet;
 namespace test = orcus::test;
 
+namespace {
+
+/** Check the sheet and the range of a table against a sheet-qualified range. */
+bool is_table_range(const ixion::table_t& tab, const ixion::abs_range_t& range)
+{
+    if (tab.sheet != range.first.sheet)
+        return false;
+
+    return tab.range == ixion::abs_rc_range_t(range);
+}
+
+} // anonymous namespace
+
 void test_ods_autofilter_multi_conditions()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -32,10 +45,10 @@ void test_ods_autofilter_multi_conditions()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__0");
         assert(itab);
-        assert(itab->range == to_range("'OR-AND'.B3:'OR-AND'.G96"));
+        assert(is_table_range(*itab, to_range("'OR-AND'.B3:'OR-AND'.G96")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //  |
@@ -107,10 +120,10 @@ void test_ods_autofilter_multi_conditions()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__1");
         assert(itab);
-        assert(itab->range == to_range("'AND x 3'.B3:'AND x 3'.G96"));
+        assert(is_table_range(*itab, to_range("'AND x 3'.B3:'AND x 3'.G96")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //  |
@@ -175,10 +188,10 @@ void test_ods_autofilter_text_comparisons()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__0");
         assert(itab);
-        assert(itab->range == to_range("Table1.B3:Table1.E13"));
+        assert(is_table_range(*itab, to_range("Table1.B3:Table1.E13")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {and}
         //   |
@@ -202,10 +215,10 @@ void test_ods_autofilter_text_comparisons()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__1");
         assert(itab);
-        assert(itab->range == to_range("Table2.B3:Table2.E13"));
+        assert(is_table_range(*itab, to_range("Table2.B3:Table2.E13")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {and}
         //   |
@@ -239,10 +252,10 @@ void test_ods_autofilter_text_comparisons()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__2");
         assert(itab);
-        assert(itab->range == to_range("Table3.B3:Table3.C23"));
+        assert(is_table_range(*itab, to_range("Table3.B3:Table3.C23")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //   |
@@ -275,10 +288,10 @@ void test_ods_autofilter_text_comparisons()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("__Anonymous_Sheet_DB__3");
         assert(itab);
-        assert(itab->range == to_range("Table4.B3:Table4.C23"));
+        assert(is_table_range(*itab, to_range("Table4.B3:Table4.C23")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //   |
@@ -323,10 +336,10 @@ void test_ods_autofilter_largest_smallest()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("Largest");
         assert(itab);
-        assert(itab->range == to_range("Largest.B3:Largest.I13"));
+        assert(is_table_range(*itab, to_range("Largest.B3:Largest.I13")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //   |
@@ -360,10 +373,10 @@ void test_ods_autofilter_largest_smallest()
 
         const ixion::table_t* itab = doc->get_model_context().get_table("Smallest");
         assert(itab);
-        assert(itab->range == to_range("Smallest.B3:Smallest.I13"));
+        assert(is_table_range(*itab, to_range("Smallest.B3:Smallest.I13")));
 
         const ss::auto_filter_t& filter = table->filter;
-        assert(filter.range == ixion::abs_rc_range_t(itab->range));
+        assert(filter.range == itab->range);
 
         // root {or}
         //   |
