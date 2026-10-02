@@ -24,6 +24,12 @@
 #include <ixion/formula_result.hpp>
 #include <ixion/matrix.hpp>
 
+namespace ixion {
+
+class model_context_loader;
+
+}
+
 namespace orcus {
 
 class string_pool;
@@ -101,6 +107,7 @@ class import_array_formula : public iface::import_array_formula
 {
     document& m_doc;
     sheet& m_sheet;
+    ixion::model_context_loader& m_loader;
 
     range_t m_range;
     ixion::formula_tokens_t m_tokens;
@@ -110,7 +117,7 @@ class import_array_formula : public iface::import_array_formula
 
 public:
     import_array_formula() = delete;
-    import_array_formula(document& doc, sheet& sheet);
+    import_array_formula(document& doc, sheet& sheet, ixion::model_context_loader& loader);
     virtual ~import_array_formula() override;
 
     virtual void set_range(const range_t& range) override;
@@ -138,6 +145,7 @@ class import_formula : public iface::import_formula
 {
     document& m_doc;
     sheet& m_sheet;
+    ixion::model_context_loader& m_loader;
     shared_formula_pool& m_shared_formula_pool;
 
     row_t m_row;
@@ -151,7 +159,8 @@ class import_formula : public iface::import_formula
 
 public:
     import_formula() = delete;
-    import_formula(document& doc, sheet& sheet, shared_formula_pool& pool);
+    import_formula(
+        document& doc, sheet& sheet, ixion::model_context_loader& loader, shared_formula_pool& pool);
     virtual ~import_formula() override;
 
     virtual void set_position(row_t row, col_t col) override;
@@ -189,7 +198,7 @@ class import_sheet : public iface::import_sheet
 
 public:
     import_sheet() = delete;
-    import_sheet(document& doc, sheet& sh, sheet_view* view);
+    import_sheet(document& doc, sheet& sh, ixion::model_context_loader& loader, sheet_view* view);
     virtual ~import_sheet() override;
 
     virtual iface::import_sheet_view* get_sheet_view() override;

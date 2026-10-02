@@ -61,7 +61,7 @@ struct sheet_impl
 
     const detail::merge_size* get_merge_size(row_t row, col_t col) const;
 
-    ixion::abs_range_t get_data_range() const;
+    ixion::abs_rc_range_t get_data_range() const;
 };
 
 }}}

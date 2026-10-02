@@ -54,6 +54,8 @@ class ORCUS_SPM_DLLPUBLIC document : public orcus::iface::document_dumper
 {
     friend class sheet;
     friend class import_factory;
+    friend class import_formula;
+    friend class import_array_formula;
 
 public:
     document() = delete;

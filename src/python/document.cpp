@@ -12,7 +12,7 @@
 #include "named_expressions.hpp"
 
 #include <ixion/model_context.hpp>
-#include <ixion/named_expressions_iterator.hpp>
+#include <ixion/named_expressions_range.hpp>
 #include <structmember.h>
 #include <object.h>
 #include <sstream>
@@ -71,7 +71,7 @@ PyObject* doc_get_named_expressions(PyObject* self, PyObject* /*args*/, PyObject
 {
     const ss::document& doc = *t(self)->data->m_doc;
     const ixion::model_context& cxt = doc.get_model_context();
-    return create_named_expressions_object(-1, doc, cxt.get_named_expressions_iterator());
+    return create_named_expressions_object(-1, doc, cxt.iterate_named_expressions());
 }
 
 PyMethodDef tp_methods[] =

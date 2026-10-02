@@ -12,7 +12,7 @@
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
-#include <ixion/named_expressions_iterator.hpp>
+#include <ixion/named_expressions_range.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <structmember.h>
 
@@ -191,14 +191,13 @@ PyObject* create_named_exp_object(const spreadsheet::document& doc, const ixion:
     return obj;
 }
 
-PyObject* create_named_exp_dict(const ss::document& doc, ixion::named_expressions_iterator iter)
+PyObject* create_named_exp_dict(const ss::document& doc, const ixion::named_expressions_range& names)
 {
     PyObject* dict = PyDict_New();
-    for (; iter.has(); iter.next())
+    for (const auto& ne : names)
     {
-        auto ne = iter.get();
-        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(doc, ne.expression);
+        PyObject* name = PyUnicode_FromStringAndSize(ne.name.data(), ne.name.size());
+        PyObject* tokens = create_named_exp_object(doc, &ne.expression);
         if (name && tokens)
             PyDict_SetItem(dict, name, tokens);
         // PyDict_SetItem takes its own references, so release ours.

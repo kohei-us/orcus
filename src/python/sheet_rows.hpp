@@ -33,7 +33,7 @@ struct sheet_rows_data
 {
     const spreadsheet::document* m_doc;
     const spreadsheet::sheet* m_sheet;
-    ixion::abs_range_t m_range;
+    ixion::abs_rc_range_t m_range;
     ixion::model_cell_range m_range_cells;
     ixion::model_cell_range::const_iterator m_range_iterator;
 

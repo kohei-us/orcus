@@ -25,6 +25,7 @@
 #include <ixion/formula_tokens.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
+#include <ixion/model_context_loader.hpp>
 #include <format>
 #include <iostream>
 #include <unordered_map>
@@ -186,6 +187,7 @@ struct import_factory::impl
     import_global_named_exp m_global_named_exp;
     import_styles m_styles;
     detail::import_shared_strings shared_strings;
+    ixion::model_context_loader m_loader;
 
     sheet_ifaces_type m_sheets;
 
@@ -206,6 +208,7 @@ struct import_factory::impl
         m_global_named_exp(doc),
         m_styles(m_config, doc.get_styles(), doc.get_string_pool()),
         shared_strings(doc.get_string_pool(), doc.get_model_context(), doc.get_styles(), doc.get_shared_strings()),
+        m_loader(doc.get_model_context()),
         m_recalc_formula_cells(false),
         m_error_policy(formula_error_policy_t::fail)
     {
@@ -289,7 +292,7 @@ iface::import_sheet* import_factory::append_sheet(sheet_t sheet_index, std::stri
         sv = mp_impl->m_view->get_or_create_sheet_view(sheet_index);
 
     mp_impl->m_sheets.push_back(
-        std::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
+        std::make_unique<import_sheet>(mp_impl->m_doc, *sh, mp_impl->m_loader, sv));
 
     import_sheet* p = mp_impl->m_sheets.back().get();
     p->set_character_set(mp_impl->m_charset);
@@ -317,6 +320,8 @@ iface::import_sheet* import_factory::get_sheet(sheet_t sheet_index)
 
 void import_factory::finalize()
 {
+    // Register the formula cells loaded so far with the dirty cell tracker.
+    mp_impl->m_loader.finalize();
     mp_impl->m_doc.finalize_import();
 
     if (mp_impl->m_recalc_formula_cells)

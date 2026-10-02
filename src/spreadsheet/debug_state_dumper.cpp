@@ -13,7 +13,7 @@
 #include "ostream_utils.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
-#include <ixion/named_expressions_iterator.hpp>
+#include <ixion/named_expressions_range.hpp>
 
 #include <fstream>
 #include <algorithm>
@@ -24,7 +24,8 @@ namespace {
 
 constexpr const char* indent_unit_s = "  ";
 
-void print_named_expressions(const ixion::model_context& cxt, ixion::named_expressions_iterator iter, std::ostream& os)
+void print_named_expressions(
+    const ixion::model_context& cxt, const ixion::named_expressions_range& names, std::ostream& os)
 {
     auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &cxt);
 
@@ -35,15 +36,15 @@ void print_named_expressions(const ixion::model_context& cxt, ixion::named_expre
     ixion::print_config config;
     config.display_sheet = ixion::display_sheet_t::always;
 
-    for (; iter.has(); iter.next())
+    for (const auto& entry : names)
     {
-        auto name = iter.get();
+        const ixion::named_expression_t& expr = entry.expression;
 
         std::string exp = ixion::print_formula_tokens(
-            config, cxt, origin, *resolver, name.expression->tokens);
+            config, cxt, origin, *resolver, expr.tokens);
 
-        os << "- name: " << *name.name << std::endl;
-        os << "  origin: " << resolver->get_name(name.expression->origin, origin, true) << std::endl;
+        os << "- name: " << entry.name << std::endl;
+        os << "  origin: " << resolver->get_name(expr.origin, origin, true) << std::endl;
         os << "  expression: " << exp << std::endl;
     }
 }
@@ -352,7 +353,7 @@ void doc_debug_state_dumper::dump_named_expressions(const fs::path& outdir) cons
     if (!of)
         return;
 
-    print_named_expressions(m_doc.context, m_doc.context.get_named_expressions_iterator(), of);
+    print_named_expressions(m_doc.context, m_doc.context.iterate_named_expressions(), of);
 }
 
 sheet_debug_state_dumper::sheet_debug_state_dumper(
@@ -503,7 +504,7 @@ void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) co
         return;
 
     const ixion::model_context& cxt = m_sheet.doc.get_model_context();
-    print_named_expressions(cxt, cxt.get_named_expressions_iterator(m_sheet.sheet_id), of);
+    print_named_expressions(cxt, cxt.iterate_named_expressions(m_sheet.sheet_id), of);
 }
 
 }}}

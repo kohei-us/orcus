@@ -16,6 +16,7 @@
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/model_context.hpp>
+#include <ixion/model_context_loader.hpp>
 #include <ixion/formula.hpp>
 
 namespace orcus { namespace spreadsheet {
@@ -93,8 +94,10 @@ void import_data_table::commit()
 {
 }
 
-import_array_formula::import_array_formula(document& doc, sheet& sheet) :
-    m_doc(doc), m_sheet(sheet), m_missing_formula_result(), m_error_policy(formula_error_policy_t::fail)
+import_array_formula::import_array_formula(
+    document& doc, sheet& sheet, ixion::model_context_loader& loader) :
+    m_doc(doc), m_sheet(sheet), m_loader(loader), m_missing_formula_result(),
+    m_error_policy(formula_error_policy_t::fail)
 {
     m_range.first.column = -1;
     m_range.first.row = -1;
@@ -207,7 +210,9 @@ void import_array_formula::commit()
         return;
 
     ixion::formula_result cached_results(std::move(m_result_mtx));
-    m_sheet.set_grouped_formula(m_range, std::move(m_tokens), std::move(cached_results));
+    ixion::abs_range_t pos = to_abs_range(m_range, m_sheet.get_index());
+    m_loader.set_grouped_formula_cells(pos, std::move(m_tokens), std::move(cached_results));
+    m_doc.insert_dirty_cell(pos.first);
 }
 
 void import_array_formula::set_missing_formula_result(ixion::formula_result result)
@@ -230,9 +235,11 @@ void import_array_formula::reset()
     m_range.last.column = -1;
 }
 
-import_formula::import_formula(document& doc, sheet& sheet, shared_formula_pool& pool) :
+import_formula::import_formula(
+    document& doc, sheet& sheet, ixion::model_context_loader& loader, shared_formula_pool& pool) :
     m_doc(doc),
     m_sheet(sheet),
+    m_loader(loader),
     m_shared_formula_pool(pool),
     m_row(-1),
     m_col(-1),
@@ -303,35 +310,27 @@ void import_formula::commit()
     if (m_row < 0 || m_col < 0)
         return;
 
+    ixion::formula_tokens_store_ptr_t ts = m_tokens_store;
+
     if (m_shared)
     {
         if (m_tokens_store)
-        {
-            if (m_result)
-                m_sheet.set_formula(m_row, m_col, m_tokens_store, *m_result);
-            else
-                m_sheet.set_formula(m_row, m_col, m_tokens_store);
-
             m_shared_formula_pool.add(m_shared_index, m_tokens_store);
-        }
         else
-        {
-            ixion::formula_tokens_store_ptr_t ts = m_shared_formula_pool.get(m_shared_index);
-            if (!ts)
-                return;
-
-            if (m_result)
-                m_sheet.set_formula(m_row, m_col, ts, *m_result);
-            else
-                m_sheet.set_formula(m_row, m_col, ts);
-        }
-        return;
+            ts = m_shared_formula_pool.get(m_shared_index);
     }
 
+    if (!ts)
+        return;
+
+    ixion::abs_address_t pos(m_sheet.get_index(), m_row, m_col);
+
     if (m_result)
-        m_sheet.set_formula(m_row, m_col, m_tokens_store, *m_result);
+        m_loader.set_formula_cell(pos, ts, *m_result);
     else
-        m_sheet.set_formula(m_row, m_col, m_tokens_store);
+        m_loader.set_formula_cell(pos, ts);
+
+    m_doc.insert_dirty_cell(pos);
 }
 
 void import_formula::set_missing_formula_result(ixion::formula_result result)
@@ -354,11 +353,11 @@ void import_formula::reset()
     m_shared = false;
 }
 
-import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
+import_sheet::import_sheet(document& doc, sheet& sh, ixion::model_context_loader& loader, sheet_view* view) :
     m_doc(doc),
     m_sheet(sh),
-    m_formula(doc, sh, m_shared_formula_pool),
-    m_array_formula(doc, sh),
+    m_formula(doc, sh, loader, m_shared_formula_pool),
+    m_array_formula(doc, sh, loader),
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
     m_data_table(sh),

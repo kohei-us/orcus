@@ -519,7 +519,7 @@ void html_dumper::dump(std::ostream& os) const
     const char* p_tr    = "tr";
     const char* p_td    = "td";
 
-    ixion::abs_range_t range = sh->get_data_range();
+    ixion::abs_rc_range_t range = sh->get_data_range();
 
     elem root(os, p_html);
     dump_html_head(os);

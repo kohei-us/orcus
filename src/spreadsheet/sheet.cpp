@@ -195,13 +195,12 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
     ixion::abs_address_t pos(mp_impl->sheet_id, row, col);
 
-    cxt.set_formula_cell(pos, tokens);
     try
     {
-        ixion::register_formula_cell(cxt, pos);
+        cxt.set_formula_cell(pos, tokens);
         mp_impl->doc.insert_dirty_cell(pos);
     }
-    catch ([[maybe_unused]] const ixion::formula_registration_error& e)
+    catch ([[maybe_unused]] const ixion::model_context_error& e)
     {
 #if ORCUS_DEBUG_SHEET
         cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << std::endl;
@@ -216,14 +215,12 @@ void sheet::set_formula(
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
     ixion::abs_address_t pos(mp_impl->sheet_id, row, col);
 
-    cxt.set_formula_cell(pos, tokens, result);
-
     try
     {
-        ixion::register_formula_cell(cxt, pos);
+        cxt.set_formula_cell(pos, tokens, result);
         mp_impl->doc.insert_dirty_cell(pos);
     }
-    catch ([[maybe_unused]] const ixion::formula_registration_error& e)
+    catch ([[maybe_unused]] const ixion::model_context_error& e)
     {
 #if ORCUS_DEBUG_SHEET
         cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << std::endl;
@@ -236,13 +233,12 @@ void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t to
     ixion::abs_range_t pos = to_ixion_range(mp_impl->sheet_id, range);
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
 
-    cxt.set_grouped_formula_cells(pos, std::move(tokens));
     try
     {
-        ixion::register_formula_cell(cxt, pos.first);
+        cxt.set_grouped_formula_cells(pos, std::move(tokens));
         mp_impl->doc.insert_dirty_cell(pos.first);
     }
-    catch ([[maybe_unused]] const ixion::formula_registration_error& e)
+    catch ([[maybe_unused]] const ixion::model_context_error& e)
     {
 #if ORCUS_DEBUG_SHEET
         cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << std::endl;
@@ -255,13 +251,12 @@ void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t to
     ixion::abs_range_t pos = to_ixion_range(mp_impl->sheet_id, range);
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
 
-    cxt.set_grouped_formula_cells(pos, std::move(tokens), std::move(result));
     try
     {
-        ixion::register_formula_cell(cxt, pos.first);
+        cxt.set_grouped_formula_cells(pos, std::move(tokens), std::move(result));
         mp_impl->doc.insert_dirty_cell(pos.first);
     }
-    catch ([[maybe_unused]] const ixion::formula_registration_error& e)
+    catch ([[maybe_unused]] const ixion::model_context_error& e)
     {
 #if ORCUS_DEBUG_SHEET
         cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << std::endl;
@@ -418,7 +413,7 @@ const auto_filter_t* sheet::get_auto_filter() const
     return mp_impl->auto_filter.get();
 }
 
-ixion::abs_range_t sheet::get_data_range() const
+ixion::abs_rc_range_t sheet::get_data_range() const
 {
     return mp_impl->get_data_range();
 }

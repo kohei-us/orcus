@@ -16,7 +16,7 @@
 #include <orcus/spreadsheet/document.hpp>
 
 #include <ixion/model_context.hpp>
-#include <ixion/named_expressions_iterator.hpp>
+#include <ixion/named_expressions_range.hpp>
 
 #include <structmember.h>
 #include <bytesobject.h>
@@ -218,7 +218,7 @@ PyObject* sheet_get_named_expressions(PyObject* self, PyObject* /*args*/, PyObje
     const ss::document& doc = *t(self)->data->m_doc;
     ss::sheet_t si = t(self)->data->m_sheet->get_index();
     const ixion::model_context& cxt = doc.get_model_context();
-    return create_named_expressions_object(si, doc, cxt.get_named_expressions_iterator(si));
+    return create_named_expressions_object(si, doc, cxt.iterate_named_expressions(si));
 }
 
 PyMethodDef tp_methods[] =
@@ -308,7 +308,7 @@ bool store_sheet(
         return false;
 
     // Data size - size of the data area.
-    ixion::abs_range_t range = orcus_sheet->get_data_range();
+    ixion::abs_rc_range_t range = orcus_sheet->get_data_range();
     if (range.valid())
     {
         pysheet->data_size = PyDict_New();

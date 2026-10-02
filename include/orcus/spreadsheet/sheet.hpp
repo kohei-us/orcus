@@ -128,7 +128,7 @@ public:
      *
      * @return smallest range that contains all non-empty cells.
      */
-    ixion::abs_range_t get_data_range() const;
+    ixion::abs_rc_range_t get_data_range() const;
 
     sheet_t get_index() const;
 

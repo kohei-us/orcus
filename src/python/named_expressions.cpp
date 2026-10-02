@@ -12,7 +12,7 @@
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
-#include <ixion/named_expressions_iterator.hpp>
+#include <ixion/named_expressions_range.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <structmember.h>
 
@@ -27,8 +27,8 @@ struct named_exps_data
 {
     ss::sheet_t origin_sheet = -1; // -1 for global, >=0 for sheet local.
     const ss::document* doc = nullptr;
-    ixion::named_expressions_iterator src; // original iterator to copy from.
-    ixion::named_expressions_iterator iter;
+    ixion::named_expressions_range src; // range to iterate over.
+    ixion::named_expressions_range::const_iterator iter;
 };
 
 /** python object. */
@@ -49,11 +49,8 @@ PyObject* named_exps_names(PyObject* self, PyObject* /*args*/, PyObject* /*kwarg
     named_exps_data& data = *t(self)->data;
     PyObject* s = PySet_New(nullptr);
 
-    for (auto iter = data.src; iter.has(); iter.next())
-    {
-        const std::string* name = iter.get().name;
-        add_to_set_new(s, from_string(*name));
-    }
+    for (const auto& entry : data.src)
+        add_to_set_new(s, from_string(entry.name));
 
     return s;
 }
@@ -79,7 +76,7 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 PyObject* tp_iter(PyObject* self)
 {
     named_exps_data& data = *t(self)->data;
-    data.iter = data.src;
+    data.iter = data.src.begin();
 
     Py_INCREF(self);
     return self;
@@ -90,20 +87,20 @@ PyObject* tp_iternext(PyObject* self)
     named_exps_data& data = *t(self)->data;
     auto& iter = data.iter;
 
-    if (!iter.has())
+    if (iter == data.src.end())
     {
         PyErr_SetNone(PyExc_StopIteration);
         return nullptr;
     }
 
-    ixion::named_expressions_iterator::named_expression item = iter.get();
-    iter.next();
+    const ixion::named_expressions_range::entry& item = *iter;
 
-    PyObject* name = PyUnicode_FromStringAndSize(item.name->data(), item.name->size());
+    PyObject* name = PyUnicode_FromStringAndSize(item.name.data(), item.name.size());
     if (!name)
         return nullptr;
 
-    PyObject* ne = create_named_exp_object(*data.doc, item.expression);
+    PyObject* ne = create_named_exp_object(*data.doc, &item.expression);
+    ++iter;
     if (!ne)
     {
         Py_DECREF(name);
@@ -201,7 +198,7 @@ PyTypeObject named_exps_type =
 } // anonymous namespace
 
 PyObject* create_named_expressions_object(
-    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, ixion::named_expressions_iterator iter)
+    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, ixion::named_expressions_range names)
 {
     PyTypeObject* type = get_named_exps_type();
 
@@ -213,7 +210,7 @@ PyObject* create_named_expressions_object(
         return nullptr;
 
     named_exps_data& data = *t(obj.get())->data;
-    data.src = iter;
+    data.src = std::move(names);
     data.origin_sheet = origin_sheet;
     data.doc = &doc;
 

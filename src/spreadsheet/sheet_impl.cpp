@@ -42,7 +42,7 @@ const detail::merge_size* sheet_impl::get_merge_size(row_t row, col_t col) const
     return &it_row->second;
 }
 
-ixion::abs_range_t sheet_impl::get_data_range() const
+ixion::abs_rc_range_t sheet_impl::get_data_range() const
 {
     const ixion::model_context& cxt = doc.get_model_context();
     return cxt.get_data_range(sheet_id);

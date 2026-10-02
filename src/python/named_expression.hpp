@@ -14,7 +14,7 @@
 
 namespace ixion {
 
-class named_expressions_iterator;
+class named_expressions_range;
 
 }
 
@@ -30,7 +30,8 @@ namespace python {
 
 PyObject* create_named_exp_object(const spreadsheet::document& doc, const ixion::named_expression_t* exp);
 
-PyObject* create_named_exp_dict(const spreadsheet::document& doc, ixion::named_expressions_iterator iter);
+PyObject* create_named_exp_dict(
+    const spreadsheet::document& doc, const ixion::named_expressions_range& names);
 
 PyTypeObject* get_named_exp_type();
 

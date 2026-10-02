@@ -82,7 +82,7 @@ void check_dumper::dump(std::ostream& os) const
 
 void check_dumper::dump_cell_values(std::ostream& os) const
 {
-    ixion::abs_range_t range = m_sheet.get_data_range();
+    ixion::abs_rc_range_t range = m_sheet.get_data_range();
     if (!range.valid())
         // Sheet is empty.  Nothing to print.
         return;

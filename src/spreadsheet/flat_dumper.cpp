@@ -33,7 +33,7 @@ flat_dumper::flat_dumper(const document& doc) : m_doc(doc) {}
 void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
     const ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::abs_range_t range = cxt.get_data_range(sheet_id);
+    ixion::abs_rc_range_t range = cxt.get_data_range(sheet_id);
     if (!range.valid())
         // Sheet is empty.  Nothing to print.
         return;

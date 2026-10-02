@@ -19,7 +19,7 @@ namespace orcus { namespace python {
 sheet_rows_data::sheet_rows_data() :
     m_doc(nullptr),
     m_sheet(nullptr),
-    m_range(ixion::abs_range_t::invalid),
+    m_range(ixion::abs_rc_range_t::invalid),
     m_current_row(-1) {}
 
 sheet_rows_data::~sheet_rows_data() {}
@@ -59,16 +59,15 @@ PyObject* sheet_rows_iter(PyObject* self)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
 
-    const ixion::abs_range_t& range = data->m_range;
+    const ixion::abs_rc_range_t& range = data->m_range;
     if (range.valid())
     {
         data->m_current_row = 0;
 
-        ixion::abs_rc_range_t sheet_range;
+        // Always start at the top-left corner.
+        ixion::abs_rc_range_t sheet_range = range;
         sheet_range.first.column = 0;
         sheet_range.first.row = 0;
-        sheet_range.last.column = range.last.column;
-        sheet_range.last.row = range.last.row;
 
         data->m_range_cells = data->m_doc->get_model_context().iterate_cells(
             data->m_sheet->get_index(), ixion::rc_direction_t::horizontal, sheet_range);

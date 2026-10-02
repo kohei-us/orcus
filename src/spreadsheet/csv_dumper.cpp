@@ -63,7 +63,7 @@ csv_dumper::csv_dumper(const document& doc) :
 void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
     const ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::abs_range_t data_range = cxt.get_data_range(sheet_id);
+    ixion::abs_rc_range_t data_range = cxt.get_data_range(sheet_id);
     if (!data_range.valid())
         return;
 
