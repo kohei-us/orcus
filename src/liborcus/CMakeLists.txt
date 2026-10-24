@@ -245,6 +245,7 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     ooxml_tokens.cpp
     ooxml_types.cpp
     session_context.cpp
+    string_helper.cpp
     xlsx_autofilter_context.cpp
     xlsx_conditional_format_context.cpp
     xlsx_helper.cpp

@@ -390,7 +390,7 @@ iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)
     return &m_auto_filter;
 }
 
-iface::import_conditional_format* import_sheet::get_conditional_format()
+iface::import_cond_format* import_sheet::start_cond_format()
 {
     return nullptr;
 }

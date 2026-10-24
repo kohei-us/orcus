@@ -18,7 +18,9 @@ Classes
    class-import_border_style.rst
    class-import_cell_protection.rst
    class-import_cell_style.rst
-   class-import_conditional_format.rst
+   class-import_cond_format.rst
+   class-import_cond_format_entry.rst
+   class-import_cond_format_value.rst
    class-import_data_table.rst
    class-import_factory.rst
    class-import_fill_style.rst

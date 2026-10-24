@@ -203,7 +203,7 @@ public:
 
     virtual iface::import_sheet_view* get_sheet_view() override;
     virtual iface::import_auto_filter* start_auto_filter(const range_t& range) override;
-    virtual iface::import_conditional_format* get_conditional_format() override;
+    virtual iface::import_cond_format* start_cond_format() override;
     virtual iface::import_data_table* get_data_table() override;
     virtual iface::import_named_expression* get_named_expression() override;
     virtual iface::import_sheet_properties* get_sheet_properties() override;

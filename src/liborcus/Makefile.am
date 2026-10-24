@@ -203,6 +203,7 @@ xlsx_sheet_context_test_SOURCES = \
 	number_utils.cpp \
 	session_context.cpp \
 	spreadsheet_interface.cpp \
+	string_helper.cpp \
 	xlsx_autofilter_context.cpp \
 	xlsx_conditional_format_context.cpp \
 	xlsx_helper.cpp \

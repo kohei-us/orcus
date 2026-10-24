@@ -7,6 +7,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
+#include <orcus/spreadsheet/import_interface_cond_format.hpp>
 #include <orcus/spreadsheet/import_interface_pivot.hpp>
 #include <orcus/spreadsheet/import_interface_pivot_table_def.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
@@ -101,7 +102,11 @@ import_auto_filter::~import_auto_filter() = default;
 
 import_table::~import_table() {}
 
-import_conditional_format::~import_conditional_format() {}
+import_cond_format_value::~import_cond_format_value() = default;
+
+import_cond_format_entry::~import_cond_format_entry() = default;
+
+import_cond_format::~import_cond_format() = default;
 
 import_auto_filter* import_table::start_auto_filter(const range_t& /*range*/)
 {
@@ -141,7 +146,7 @@ import_table* import_sheet::start_table()
     return nullptr;
 }
 
-import_conditional_format* import_sheet::get_conditional_format()
+import_cond_format* import_sheet::start_cond_format()
 {
     return nullptr;
 }

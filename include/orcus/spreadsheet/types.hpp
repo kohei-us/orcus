@@ -484,9 +484,9 @@ enum class auto_filter_op_t
 };
 
 /**
- * Type of conditional format.
+ * Type of a conditional format rule entry.
  */
-enum class conditional_format_t
+enum class cond_format_rule_t
 {
     unknown = 0,
     condition,
@@ -500,7 +500,7 @@ enum class conditional_format_t
 /**
  * Operator type associated with a conditional format rule.
  */
-enum class condition_operator_t
+enum class cond_format_operator_t
 {
     unknown = 0,
     equal,
@@ -530,14 +530,14 @@ enum class condition_operator_t
 };
 
 /**
- * Type of a condition in a conditional format rule.  This is applicable only
+ * Type of a value in a conditional format rule.  This is applicable only
  * when the type of a conditional format entry is either:
  *
  * @li @p colorscale,
  * @li @p databar or
  * @li @p iconset.
  */
-enum class condition_type_t
+enum class cond_format_value_type_t
 {
     unknown = 0,
     value,
@@ -553,7 +553,7 @@ enum class condition_type_t
  * Type of a date condition when the type of a conditional format entry is
  * @p date.
  */
-enum class condition_date_t
+enum class cond_format_date_t
 {
     unknown = 0,
     today,

@@ -19,7 +19,10 @@ namespace orcus {
 struct session_context;
 
 namespace spreadsheet { namespace iface {
-    class import_conditional_format;
+    class import_cond_format;
+    class import_cond_format_entry;
+    class import_reference_resolver;
+    class import_sheet;
 } }
 
 struct cfvo_values;
@@ -35,10 +38,10 @@ struct argb_color
 class xlsx_conditional_format_context : public xml_context_base
 {
 public:
-    
     xlsx_conditional_format_context(
             session_context& session_cxt, const tokens& tokens,
-            spreadsheet::iface::import_conditional_format* import_cond_format);
+            spreadsheet::iface::import_reference_resolver& resolver,
+            spreadsheet::iface::import_sheet& sheet);
     virtual ~xlsx_conditional_format_context() override;
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
@@ -51,7 +54,11 @@ public:
     void reset();
 
 private:
-    spreadsheet::iface::import_conditional_format* m_cond_format;
+    spreadsheet::iface::import_reference_resolver& m_resolver;
+    spreadsheet::iface::import_sheet& m_sheet;
+
+    spreadsheet::iface::import_cond_format* mp_cond_format = nullptr;
+    spreadsheet::iface::import_cond_format_entry* mp_entry = nullptr;
 
     string_pool m_pool;
     std::string_view m_cur_str;

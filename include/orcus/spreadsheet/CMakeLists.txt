@@ -8,6 +8,7 @@ list(APPEND _HEADERS
     factory.hpp
     import_interface.hpp
     import_interface_auto_filter.hpp
+    import_interface_cond_format.hpp
     import_interface_pivot.hpp
     import_interface_pivot_table_def.hpp
     import_interface_strikethrough.hpp

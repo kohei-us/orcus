@@ -506,89 +506,89 @@ void test_orcus_spreadsheet_border_style_t()
     { bool result = verify_stream_value(orcus::spreadsheet::border_style_t::fine_dashed, "fine-dashed"); assert(result); }
 }
 
-void test_orcus_spreadsheet_condition_date_t()
+void test_orcus_spreadsheet_cond_format_date_t()
 {
 #if 0
     ORCUS_TEST_FUNC_SCOPE;
 
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::unknown, "unknown"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::today, "today"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::yesterday, "yesterday"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::tomorrow, "tomorrow"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::last_7_days, "last-7-days"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::this_week, "this-week"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::next_week, "next-week"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::last_week, "last-week"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::this_month, "this-month"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::next_month, "next-month"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::last_month, "last-month"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::this_year, "this-year"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::next_year, "next-year"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_date_t::last_year, "last-year"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::today, "today"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::yesterday, "yesterday"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::tomorrow, "tomorrow"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::last_7_days, "last-7-days"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::this_week, "this-week"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::next_week, "next-week"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::last_week, "last-week"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::this_month, "this-month"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::next_month, "next-month"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::last_month, "last-month"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::this_year, "this-year"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::next_year, "next-year"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::last_year, "last-year"); assert(result); }
 #endif
 }
 
-void test_orcus_spreadsheet_condition_operator_t()
+void test_orcus_spreadsheet_cond_format_operator_t()
 {
 #if 0
     ORCUS_TEST_FUNC_SCOPE;
 
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::unknown, "unknown"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::equal, "equal"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::less, "less"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::greater, "greater"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::greater_equal, "greater-equal"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::less_equal, "less-equal"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::not_equal, "not-equal"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::between, "between"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::not_between, "not-between"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::duplicate, "duplicate"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::unique, "unique"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::top_n, "top-n"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::bottom_n, "bottom-n"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::above_average, "above-average"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::below_average, "below-average"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::above_equal_average, "above-equal-average"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::below_equal_average, "below-equal-average"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::contains_error, "contains-error"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::contains_no_error, "contains-no-error"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::begins_with, "begins-with"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::ends_with, "ends-with"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::contains, "contains"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::contains_blanks, "contains-blanks"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::not_contains, "not-contains"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_operator_t::expression, "expression"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::equal, "equal"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::less, "less"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::greater, "greater"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::greater_equal, "greater-equal"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::less_equal, "less-equal"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::not_equal, "not-equal"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::between, "between"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::not_between, "not-between"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::duplicate, "duplicate"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::unique, "unique"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::top_n, "top-n"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::bottom_n, "bottom-n"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::above_average, "above-average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::below_average, "below-average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::above_equal_average, "above-equal-average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::below_equal_average, "below-equal-average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::contains_error, "contains-error"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::contains_no_error, "contains-no-error"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::begins_with, "begins-with"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::ends_with, "ends-with"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::contains, "contains"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::contains_blanks, "contains-blanks"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::not_contains, "not-contains"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::expression, "expression"); assert(result); }
 #endif
 }
 
-void test_orcus_spreadsheet_condition_type_t()
+void test_orcus_spreadsheet_cond_format_value_type_t()
 {
 #if 0
     ORCUS_TEST_FUNC_SCOPE;
 
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::unknown, "unknown"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::value, "value"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::automatic, "automatic"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::max, "max"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::min, "min"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::formula, "formula"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::percent, "percent"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::condition_type_t::percentile, "percentile"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::value, "value"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::automatic, "automatic"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::max, "max"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::min, "min"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::formula, "formula"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::percent, "percent"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::percentile, "percentile"); assert(result); }
 #endif
 }
 
-void test_orcus_spreadsheet_conditional_format_t()
+void test_orcus_spreadsheet_cond_format_rule_t()
 {
 #if 0
     ORCUS_TEST_FUNC_SCOPE;
 
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::unknown, "unknown"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::condition, "condition"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::date, "date"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::formula, "formula"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::colorscale, "colorscale"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::databar, "databar"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::conditional_format_t::iconset, "iconset"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::condition, "condition"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::date, "date"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::formula, "formula"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::colorscale, "colorscale"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::databar, "databar"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::iconset, "iconset"); assert(result); }
 #endif
 }
 
@@ -961,10 +961,10 @@ int main()
     test_orcus_spreadsheet_auto_filter_op_t();
     test_orcus_spreadsheet_border_direction_t();
     test_orcus_spreadsheet_border_style_t();
-    test_orcus_spreadsheet_condition_date_t();
-    test_orcus_spreadsheet_condition_operator_t();
-    test_orcus_spreadsheet_condition_type_t();
-    test_orcus_spreadsheet_conditional_format_t();
+    test_orcus_spreadsheet_cond_format_date_t();
+    test_orcus_spreadsheet_cond_format_operator_t();
+    test_orcus_spreadsheet_cond_format_value_type_t();
+    test_orcus_spreadsheet_cond_format_rule_t();
     test_orcus_spreadsheet_data_table_type_t();
     test_orcus_spreadsheet_databar_axis_t();
     test_orcus_spreadsheet_fill_pattern_t();

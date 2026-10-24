@@ -20,6 +20,7 @@
 namespace orcus { namespace spreadsheet { namespace iface {
 
 class import_auto_filter;
+class import_cond_format;
 class import_styles;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
@@ -391,161 +392,6 @@ public:
 };
 
 /**
- * This is an optional interface to import conditional formatting.
- *
- * In general, a single conditional format consists of:
- *
- * @li a cell range the format is applied to, and
- * @li one or more rule entries.
- *
- * Each rule entry consists of:
- *
- * @li a type of rule,
- * @li zero or more rule properties, and
- * @li zero or more conditions depending on the rule type.
- *
- * Lastly, each condition consists of:
- *
- * @li a formula, value, or string,
- * @li an optional color.
- *
- * The flow of the import process varies depending on the type of the
- * conditional formatting being imported.  The following is an example of
- * importing a conditional formatting that consists of a rule that applies a
- * format when the cell value is greather than 2:
- *
- * @code{.cpp}
- * import_conditional_format* iface = ... ;
- *
- * iface->set_range("A2:A13");
- * iface->set_xf_id(14); // apply differential format (dxf) whose ID is 14
- * iface->set_type(conditional_format_t::condition); // rule entry type
- * iface->set_operator(condition_operator_t::expression);
- * iface->set_operator(condition_operator_t::greater);
- *
- * iface->set_formula("2");
- * iface->commit_condition();
- *
- * iface->commit_entry();
- *
- * iface->commit_format();
- * @endcode
- *
- * @todo Revise this API for simplification.
- */
-class ORCUS_DLLPUBLIC import_conditional_format
-{
-public:
-    virtual ~import_conditional_format();
-
-    /**
-     * Sets the color of the current condition.
-     * only valid for type == databar or type == colorscale.
-     */
-    virtual void set_color(color_elem_t alpha, color_elem_t red,
-            color_elem_t green, color_elem_t blue) = 0;
-
-    /**
-     * Sets the formula, value or string of the current condition.
-     */
-    virtual void set_formula(std::string_view formula) = 0;
-
-    /**
-     * Sets the type for the formula, value or string of the current condition.
-     * Only valid for type = iconset, databar or colorscale.
-     */
-    virtual void set_condition_type(condition_type_t type) = 0;
-
-    /**
-     * Only valid for type = date.
-     */
-    virtual void set_date(condition_date_t date) = 0;
-
-    /**
-     * commits the current condition to the current entry.
-     */
-    virtual void commit_condition() = 0;
-
-    /**
-     * Name of the icons to use in the current entry.
-     * only valid for type = iconset
-     */
-    virtual void set_icon_name(std::string_view name) = 0;
-
-    /**
-     * Use a gradient for the current entry.
-     * only valid for type == databar
-     */
-    virtual void set_databar_gradient(bool gradient) = 0;
-
-    /**
-     * Position of the 0 axis in the current entry.
-     * only valid for type == databar.
-     */
-    virtual void set_databar_axis(databar_axis_t axis) = 0;
-
-    /**
-     * Databar color for positive values.
-     * only valid for type == databar.
-     */
-    virtual void set_databar_color_positive(color_elem_t alpha, color_elem_t red,
-            color_elem_t green, color_elem_t blue) = 0;
-
-    /**
-     * Databar color for negative values.
-     * only valid for type == databar.
-     */
-    virtual void set_databar_color_negative(color_elem_t alpha, color_elem_t red,
-            color_elem_t green, color_elem_t blue) = 0;
-
-    /**
-     * Sets the minimum length for a databar.
-     * only valid for type == databar.
-     */
-    virtual void set_min_databar_length(double length) = 0;
-
-    /**
-     * Sets the maximum length for a databar.
-     * only valid for type == databar.
-     */
-    virtual void set_max_databar_length(double length) = 0;
-
-    /**
-     * Don't show the value in the cell.
-     * only valid for type = databar, iconset, colorscale.
-     */
-    virtual void set_show_value(bool show) = 0;
-
-    /**
-     * Use the icons in reverse order.
-     * only valid for type == iconset.
-     */
-    virtual void set_iconset_reverse(bool reverse) = 0;
-
-    /**
-     * TODO: In OOXML the style is stored as dxf and in ODF as named style.
-     */
-    virtual void set_xf_id(size_t xf) = 0;
-
-    /**
-     * Sets the current operation used for the current entry.
-     * only valid for type == condition
-     */
-    virtual void set_operator(condition_operator_t condition_type) = 0;
-
-    virtual void set_type(conditional_format_t type) = 0;
-
-    virtual void commit_entry() = 0;
-
-    virtual void set_range(std::string_view range) = 0;
-
-    virtual void set_range(row_t row_start, col_t col_start,
-            row_t row_end, col_t col_end) = 0;
-
-    virtual void commit_format() = 0;
-};
-
-/**
  * Interface for table.  A table is a range of cells within a sheet that
  * consists of one or more data columns with a header row that contains their
  * labels.
@@ -898,13 +744,16 @@ public:
     virtual import_table* start_table();
 
     /**
-     * Get an optional interface for importing conditional formats.
+     * Get an optional interface for importing a conditional format.
+     *
+     * The implementor should initialize the internal buffer to store the
+     * conditional format data when this method is called.
      *
      * @return pointer to the conditional format interface object, or @p nullptr
      *          if the implementer doesn't support importing conditional
      *          formats.
      */
-    virtual import_conditional_format* get_conditional_format();
+    virtual import_cond_format* start_cond_format();
 
     /**
      * Get an optional interface for importing sheet-local named expressions.

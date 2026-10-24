@@ -13,10 +13,10 @@ Enum
    enum-auto_filter_op_t.rst
    enum-border_direction_t.rst
    enum-border_style_t.rst
-   enum-condition_date_t.rst
-   enum-condition_operator_t.rst
-   enum-condition_type_t.rst
-   enum-conditional_format_t.rst
+   enum-cond_format_date_t.rst
+   enum-cond_format_operator_t.rst
+   enum-cond_format_rule_t.rst
+   enum-cond_format_value_type_t.rst
    enum-data_table_type_t.rst
    enum-databar_axis_t.rst
    enum-error_value_t.rst
@@ -101,6 +101,9 @@ Struct
    struct-cell_style_t.rst
    struct-color_rgb_t.rst
    struct-color_t.rst
+   struct-cond_format_entry_t.rst
+   struct-cond_format_t.rst
+   struct-cond_format_value_t.rst
    struct-document_config.rst
    struct-fill_t.rst
    struct-font_t.rst

@@ -12,6 +12,7 @@
 #include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_cond_format.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_underline.hpp>
 #include <orcus/measurement.hpp>
@@ -22,28 +23,28 @@ namespace orcus {
 
 namespace {
 
-ss::condition_operator_t get_condition_operator(int val)
+ss::cond_format_operator_t get_condition_operator(int val)
 {
     switch (val)
     {
         case 0:
-            return ss::condition_operator_t::between;
+            return ss::cond_format_operator_t::between;
         case 1:
-            return ss::condition_operator_t::not_between;
+            return ss::cond_format_operator_t::not_between;
         case 2:
-            return ss::condition_operator_t::equal;
+            return ss::cond_format_operator_t::equal;
         case 3:
-            return ss::condition_operator_t::not_equal;
+            return ss::cond_format_operator_t::not_equal;
         case 4:
-            return ss::condition_operator_t::greater;
+            return ss::cond_format_operator_t::greater;
         case 5:
-            return ss::condition_operator_t::less;
+            return ss::cond_format_operator_t::less;
         case 6:
-            return ss::condition_operator_t::greater_equal;
+            return ss::cond_format_operator_t::greater_equal;
         case 7:
-            return ss::condition_operator_t::less_equal;
+            return ss::cond_format_operator_t::less_equal;
         case 8:
-            return ss::condition_operator_t::expression;
+            return ss::cond_format_operator_t::expression;
         case 9:
         case 10:
         case 11:
@@ -53,25 +54,25 @@ ss::condition_operator_t get_condition_operator(int val)
         case 15:
             break;
         case 16:
-            return ss::condition_operator_t::contains;
+            return ss::cond_format_operator_t::contains;
         case 17:
-            return ss::condition_operator_t::not_contains;
+            return ss::cond_format_operator_t::not_contains;
         case 18:
-            return ss::condition_operator_t::begins_with;
+            return ss::cond_format_operator_t::begins_with;
         case 19:
             break;
         case 20:
-            return ss::condition_operator_t::ends_with;
+            return ss::cond_format_operator_t::ends_with;
         case 21:
             break;
         case 22:
-            return ss::condition_operator_t::contains_error;
+            return ss::cond_format_operator_t::contains_error;
         case 23:
-            return ss::condition_operator_t::contains_no_error;
+            return ss::cond_format_operator_t::contains_no_error;
         default:
             break;
     }
-    return ss::condition_operator_t::unknown;
+    return ss::cond_format_operator_t::unknown;
 }
 
 } // anonymous namespace
@@ -301,6 +302,8 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet)
 {
     mp_sheet = nullptr;
     mp_xf = nullptr;
+    mp_cond_format = nullptr;
+    mp_cond_entry = nullptr;
     m_sheet = sheet;
 
     m_region_data.reset();
@@ -622,11 +625,17 @@ void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
     if (!mp_sheet)
         return;
 
-    ss::iface::import_conditional_format* cond_format =
-        mp_sheet->get_conditional_format();
+    // the format is opened on the first condition in the region
+    if (!mp_cond_format)
+        mp_cond_format = mp_sheet->start_cond_format();
 
-    if (!cond_format)
+    if (!mp_cond_format)
         return;
+
+    mp_cond_entry = mp_cond_format->start_entry();
+    ENSURE_INTERFACE(mp_cond_entry, import_cond_format_entry);
+
+    mp_cond_entry->set_type(ss::cond_format_rule_t::condition);
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -635,8 +644,8 @@ void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
             case XML_Operator:
             {
                 int val = to_long(attr.value);
-                ss::condition_operator_t op = get_condition_operator(val);
-                cond_format->set_operator(op);
+                ss::cond_format_operator_t op = get_condition_operator(val);
+                mp_cond_entry->set_operator(op);
                 break;
             }
         }
@@ -677,14 +686,9 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
     {
         m_region_data->xf_id = xf_id;
     }
-    else if (mp_sheet)
+    else if (mp_cond_entry)
     {
-        ss::iface::import_conditional_format* cond_format =
-            mp_sheet->get_conditional_format();
-        if (cond_format)
-        {
-            cond_format->set_xf_id(xf_id);
-        }
+        mp_cond_entry->set_xf_id(xf_id);
     }
 }
 
@@ -696,45 +700,39 @@ void gnumeric_sheet_context::end_style_region()
     mp_sheet->set_format(m_region_data->start_row, m_region_data->start_col,
             m_region_data->end_row, m_region_data->end_col, m_region_data->xf_id);
 
-    if (m_region_data->contains_conditional_format)
+    if (m_region_data->contains_conditional_format && mp_cond_format)
     {
-        ss::iface::import_conditional_format* cond_format =
-            mp_sheet->get_conditional_format();
-        if (cond_format)
-        {
-            cond_format->set_range(m_region_data->start_row, m_region_data->start_col,
-                    m_region_data->end_row, m_region_data->end_col);
-            cond_format->commit_format();
-        }
+        ss::range_t range;
+        range.first.row = m_region_data->start_row;
+        range.first.column = m_region_data->start_col;
+        range.last.row = m_region_data->end_row;
+        range.last.column = m_region_data->end_col;
+        mp_cond_format->append_range(range);
+        mp_cond_format->commit();
     }
+    mp_cond_format = nullptr;
+    mp_cond_entry = nullptr;
     m_region_data.reset();
 }
 
 void gnumeric_sheet_context::end_condition()
 {
-    if (!mp_sheet)
-        return;
+    if (mp_cond_entry)
+        mp_cond_entry->commit();
 
-    ss::iface::import_conditional_format* cond_format =
-        mp_sheet->get_conditional_format();
-    if (cond_format)
-    {
-        cond_format->commit_entry();
-    }
+    mp_cond_entry = nullptr;
 }
 
 void gnumeric_sheet_context::end_expression()
 {
-    if (!mp_sheet)
+    if (!mp_cond_entry)
         return;
 
-    ss::iface::import_conditional_format* cond_format =
-        mp_sheet->get_conditional_format();
-    if (cond_format)
-    {
-        cond_format->set_formula(m_chars);
-        cond_format->commit_condition();
-    }
+    auto* value = mp_cond_entry->start_value();
+    ENSURE_INTERFACE(value, import_cond_format_value);
+
+    value->set_formula(m_chars);
+    value->commit();
 }
 
 void gnumeric_sheet_context::end_merge()

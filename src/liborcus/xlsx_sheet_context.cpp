@@ -126,7 +126,7 @@ xlsx_sheet_context::xlsx_sheet_context(
     m_cur_cell_type(xlsx_ct_numeric),
     m_cur_cell_xf(0),
     m_cxt_autofilter(session_cxt, tokens, m_resolver),
-    m_cxt_cond_format(session_cxt, tokens, m_sheet.get_conditional_format())
+    m_cxt_cond_format(session_cxt, tokens, m_resolver, m_sheet)
 {
     register_child(&m_cxt_autofilter);
     register_child(&m_cxt_cond_format);
