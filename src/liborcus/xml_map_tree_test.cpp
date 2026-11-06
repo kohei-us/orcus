@@ -304,6 +304,47 @@ void test_default_namespace()
     assert(child->ref_type == xml_map_tree::reference_type::cell);
 }
 
+void test_range_without_row_group()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    struct check
+    {
+        std::string_view description;
+        std::string_view row_group;
+    };
+
+    const check checks[] = {
+        { "no row group", std::string_view{} },
+        { "row group at the root element", "/data" },
+    };
+
+    for (const check& c : checks)
+    {
+        xmlns_repository repo;
+        xml_map_tree tree(repo);
+        xml_map_tree::cell_position ref;
+        ref.sheet = std::string_view{"test"};
+        ref.row = 0;
+        ref.col = 0;
+
+        tree.start_range(ref);
+        tree.append_range_field_link("/data/entry/id", std::string_view{});
+        tree.append_range_field_link("/data/entry/name", std::string_view{});
+        tree.set_range_row_group(c.row_group);
+
+        try
+        {
+            tree.commit_range();
+            assert(!"an exception was expected but was not thrown");
+        }
+        catch (const xpath_error& e)
+        {
+            std::cout << c.description << ": '" << e.what() << "'" << std::endl;
+        }
+    }
+}
+
 int main()
 {
     test_path_insertion();
@@ -311,6 +352,7 @@ int main()
     test_tree_walk();
     test_tree_walk_namespace();
     test_default_namespace();
+    test_range_without_row_group();
 
     return EXIT_SUCCESS;
 }

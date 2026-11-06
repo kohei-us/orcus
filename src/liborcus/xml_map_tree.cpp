@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <iterator>
 #include <iostream>
 #include <sstream>
 
@@ -387,6 +388,9 @@ void xml_map_tree::insert_range_field_link(
         auto rit = linked_node.elem_stack.rbegin();
         while (rit != linked_node.elem_stack.rend() && !(*rit)->row_group)
             ++rit;
+
+        if (rit == linked_node.elem_stack.rend() || std::next(rit) == linked_node.elem_stack.rend())
+            throw xpath_error("Range field link must have a row group element below the root element.");
 
         ++rit; // parent of the raw group
         auto it_end = rit.base();
