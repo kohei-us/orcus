@@ -100,14 +100,14 @@ def test_sheets_refcount_balance():
     with filepath.open("rb") as f:
         doc = xlsx.read(f)
 
-    # The tuple itself should hold exactly one reference to each sheet.
-    # doc.sheets[0] places one transient reference on the evaluation stack;
-    # getrefcount sees that plus the tuple's owned reference.
+    # The tuple itself should hold exactly one reference to each sheet, the
+    # same as an object held only by a tuple built in Python.
+    expected = (object(),)
     refs_via_tuple_only = sys.getrefcount(doc.sheets[0])
-    assert refs_via_tuple_only == 2, (
-        f"sheet refcount is {refs_via_tuple_only}; expected 2 "
-        f"(1 owned by the tuple, 1 transient on the eval stack); a "
-        f"larger value indicates store_document leaks a reference")
+    refs_expected = sys.getrefcount(expected[0])
+    assert refs_via_tuple_only == refs_expected, (
+        f"sheet refcount is {refs_via_tuple_only}; expected {refs_expected}; "
+        f"a larger value indicates store_document leaks a reference")
 
     sheet = doc.sheets[0]
     before = sys.getrefcount(sheet)
@@ -134,14 +134,14 @@ def test_row_cells_refcount_balance():
     # iteration yields a fresh tuple of cell objects.
     first_row = next(iter(sheet.get_rows()))
 
-    # The row tuple should hold exactly one reference to each cell.
-    # first_row[0] places one transient reference on the evaluation stack;
-    # getrefcount sees that plus the tuple's owned reference.
+    # The row tuple should hold exactly one reference to each cell, the same
+    # as an object held only by a tuple built in Python.
+    expected = (object(),)
     refs_via_tuple_only = sys.getrefcount(first_row[0])
-    assert refs_via_tuple_only == 2, (
-        f"cell refcount is {refs_via_tuple_only}; expected 2 "
-        f"(1 owned by the row tuple, 1 transient on the eval stack); a "
-        f"larger value indicates the row builder leaks a reference")
+    refs_expected = sys.getrefcount(expected[0])
+    assert refs_via_tuple_only == refs_expected, (
+        f"cell refcount is {refs_via_tuple_only}; expected {refs_expected}; "
+        f"a larger value indicates the row builder leaks a reference")
 
     # Use a multi-cell row so a per-slot leak on column N>0 can't hide behind
     # a balanced column 0.
@@ -166,16 +166,19 @@ def test_document_refcount_balance():
     # xlsx.read returns a new-reference document object built by the document
     # factory; the caller must receive exactly one owned reference.
     filepath = TESTDIR / "raw-values-1" / "input.xlsx"
+    # The 'doc' binding owns the only reference. The expected count comes from
+    # a Python object bound at the same place, because the count getrefcount
+    # reports for a local differs between Python versions and with where the
+    # local was assigned.
     with filepath.open("rb") as f:
         doc = xlsx.read(f)
+        expected = object()
 
-    # the 'doc' binding owns the only reference; getrefcount also sees the
-    # transient reference on the evaluation stack
     refs = sys.getrefcount(doc)
-    assert refs == 2, (
-        f"document refcount is {refs}; expected 2 (1 owned by the caller, "
-        f"1 transient on the eval stack); a larger value indicates the "
-        f"document factory leaks a reference")
+    refs_expected = sys.getrefcount(expected)
+    assert refs == refs_expected, (
+        f"document refcount is {refs}; expected {refs_expected}; a larger "
+        f"value indicates the document factory leaks a reference")
 
 
 def test_named_expressions_refcount_balance():
@@ -187,11 +190,13 @@ def test_named_expressions_refcount_balance():
         doc = xlsx.read(f)
 
     named_exps = doc.get_named_expressions()
+    expected = object()
     refs = sys.getrefcount(named_exps)
-    assert refs == 2, (
-        f"named expressions object refcount is {refs}; expected 2 (1 owned "
-        f"by the caller, 1 transient on the eval stack); a larger value "
-        f"indicates the factory leaks a reference")
+    refs_expected = sys.getrefcount(expected)
+    assert refs == refs_expected, (
+        f"named expressions object refcount is {refs}; expected "
+        f"{refs_expected}; a larger value indicates the factory leaks a "
+        f"reference")
 
     # repeatedly creating and dropping the object must not leak a reference to
     # the document it borrows from

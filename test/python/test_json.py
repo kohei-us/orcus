@@ -43,12 +43,17 @@ def test_loads():
 def test_loads_value_refcount_balance():
     # Array/object values were appended without releasing the handler's own
     # reference, leaking one ref per scalar. A freshly parsed float is held
-    # only by its container, so a leak shows up as an extra count here.
+    # only by its container, so a leak shows up as an extra count here. The
+    # expected count comes from a float built the same way in Python, because
+    # the count getrefcount reports for the same code differs between Python
+    # versions.
     o = json.loads('[1.5]')
-    assert sys.getrefcount(o[0]) == 3
+    expected = [float("1.5")]
+    assert sys.getrefcount(o[0]) == sys.getrefcount(expected[0])
 
     d = json.loads('{"k": 2.5}')
-    assert sys.getrefcount(d["k"]) == 3
+    expected = {"k": float("2.5")}
+    assert sys.getrefcount(d["k"]) == sys.getrefcount(expected["k"])
 
 
 def test_loads_invalid_unicode_key():
