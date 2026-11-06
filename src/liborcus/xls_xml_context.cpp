@@ -1242,6 +1242,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_t
                         m_current_style->cell_protection.locked = to_bool(attr.value);
                     }
                 }
+                break;
             }
             default:
                 warn_unhandled();
