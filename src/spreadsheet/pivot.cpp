@@ -383,12 +383,12 @@ void pivot_table::set_data_fields(pivot_ref_data_fields_t fields)
 
 void pivot_table::set_row_items(pivot_ref_rc_items_t items)
 {
-    mp_impl->row_items = items;
+    mp_impl->row_items = std::move(items);
 }
 
 void pivot_table::set_column_items(pivot_ref_rc_items_t items)
 {
-    mp_impl->column_items = items;
+    mp_impl->column_items = std::move(items);
 }
 
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}

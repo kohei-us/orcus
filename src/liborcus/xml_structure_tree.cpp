@@ -645,7 +645,7 @@ xml_structure_tree::walker xml_structure_tree::get_walker() const
 
 void xml_structure_tree::process_ranges(range_handler_type rh) const
 {
-    detail::xml_structure_mapper mapper(rh, get_walker());
+    detail::xml_structure_mapper mapper(std::move(rh), get_walker());
     mapper.run();
 }
 

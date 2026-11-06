@@ -159,8 +159,7 @@ void test_xml_sax_parser_read_only()
     for (size_t i = 0; i < n; ++i)
     {
         const char* dir = sax_parser_parse_only_test_dirs[i];
-        std::string dir_path(dir);
-        std::string file = dir_path;
+        std::string file(dir);
         file.append("input.xml");
 
         xmlns_repository repo;

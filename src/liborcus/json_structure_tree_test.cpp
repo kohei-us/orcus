@@ -191,7 +191,7 @@ void test_automatic_range_detection()
             observed_groups.push_back(std::move(observed));
         };
 
-        tree.process_ranges(rh);
+        tree.process_ranges(std::move(rh));
 
         assert(observed_groups == c.expected_groups);
     }

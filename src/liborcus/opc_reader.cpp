@@ -144,7 +144,7 @@ void opc_reader::read_part(std::string_view path, const schema_t type, opc_rel_e
         }
         else if (m_handler.handle_part(type, cur_dir, file_name, data))
         {
-            m_handled_parts.insert(full_path);
+            m_handled_parts.insert(std::move(full_path));
         }
         else if (m_config.debug)
         {

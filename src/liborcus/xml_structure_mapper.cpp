@@ -50,12 +50,12 @@ void xml_structure_mapper::traverse()
         for (const auto& attr_name : attr_names)
         {
             std::string attr_path = path + "/@" + m_walker.to_string(attr_name);
-            m_current_range.paths.push_back(attr_path);
+            m_current_range.paths.push_back(std::move(attr_path));
         }
 
         if (children.empty() && elem.has_content)
             // Only add leaf elements to the range, and only those with contents.
-            m_current_range.paths.push_back(path);
+            m_current_range.paths.push_back(std::move(path));
     }
 
     for (const auto& child_name : children)

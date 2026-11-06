@@ -192,7 +192,7 @@ struct import_font_style::impl
         strikethrough_import() {}
 
     impl(std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp) :
-        config(_config),
+        config(std::move(_config)),
         styles_model(_styles_model),
         str_pool(sp),
         strikethrough_import() {}
@@ -733,7 +733,7 @@ struct import_styles::impl
     impl(std::shared_ptr<import_factory_config> config, styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model),
         str_pool(sp),
-        font_style(config, _styles_model, sp),
+        font_style(std::move(config), _styles_model, sp),
         fill_style(_styles_model, sp),
         border_style(_styles_model, sp),
         cell_protection(_styles_model, sp),

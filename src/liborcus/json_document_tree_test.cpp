@@ -334,7 +334,7 @@ void dump_and_load(
     std::cout << dumped << std::endl;
     doc2.load(dumped, json_config());
     json::const_node node = doc2.get_document_root();
-    test_func(node);
+    test_func(std::move(node));
 }
 
 void test_json_const_node_unset()
@@ -365,7 +365,7 @@ void test_json_traverse_basic1()
     const char* filepath = SRCDIR"/test/json/basic1/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 
@@ -397,7 +397,7 @@ void test_json_traverse_basic2()
     const char* filepath = SRCDIR"/test/json/basic2/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 
@@ -424,7 +424,7 @@ void test_json_traverse_basic3()
     const char* filepath = SRCDIR"/test/json/basic3/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 
@@ -455,7 +455,7 @@ void test_json_traverse_basic4()
     const char* filepath = SRCDIR"/test/json/basic4/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 
@@ -485,7 +485,7 @@ void test_json_traverse_nested1()
     const char* filepath = SRCDIR"/test/json/nested1/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 
@@ -517,7 +517,7 @@ void test_json_traverse_nested2()
     const char* filepath = SRCDIR"/test/json/nested2/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::const_node node = doc->get_document_root();
-    test_func(node);
+    test_func(std::move(node));
     dump_and_load(*doc, test_func);
 }
 

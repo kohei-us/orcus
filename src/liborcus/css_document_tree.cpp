@@ -91,7 +91,7 @@ public:
             css_chained_simple_selector_t css;
             css.combinator = m_cur_combinator;
             css.simple_selector = m_cur_simple_selector;
-            m_cur_selector.chained.push_back(css);
+            m_cur_selector.chained.push_back(std::move(css));
         }
 
         m_cur_simple_selector.clear();
@@ -105,7 +105,7 @@ public:
         selector_type sel;
         sel.selector = m_cur_selector;
         sel.pseudo_element = m_cur_pseudo_element;
-        m_cur_selector_group.push_back(sel);
+        m_cur_selector_group.push_back(std::move(sel));
         m_cur_selector.clear();
         m_cur_pseudo_element = 0;
     }
@@ -289,7 +289,7 @@ css_selector_t intern(string_pool& sp, const css_selector_t& sel)
         css_chained_simple_selector_t cs_interned;
         cs_interned.combinator = cs.combinator;
         cs_interned.simple_selector = intern(sp, cs.simple_selector);
-        interned.chained.push_back(cs_interned);
+        interned.chained.push_back(std::move(cs_interned));
     }
 
     return interned;
@@ -350,7 +350,7 @@ void store_properties(
         std::string_view key = sp.intern(it->first).first;
         std::vector<css_property_value_t> vals;
         for_each(it->second.begin(), it->second.end(), intern_inserter(sp, vals));
-        prop_store[key] = vals;
+        prop_store[key] = std::move(vals);
     }
 }
 
@@ -480,7 +480,7 @@ void dump_chained_recursive(
         css_chained_simple_selector_t chained_ss;
         chained_ss.combinator = op;
         chained_ss.simple_selector = it_ss->first;
-        selector.chained.push_back(chained_ss);
+        selector.chained.push_back(std::move(chained_ss));
 
         const simple_selector_node& node = it_ss->second;
         dump_all_properties(selector, node.properties);

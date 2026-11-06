@@ -658,7 +658,7 @@ void test_css_parse_utf8_1()
         { "mso-font-charset", "0" },
     };
 
-    assert(check_props(*props, expected));
+    assert(check_props(*props, std::move(expected)));
 }
 
 int main()

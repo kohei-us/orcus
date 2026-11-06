@@ -619,7 +619,7 @@ void orcus_json::detect_map_definition(std::string_view stream)
 
     json::structure_tree structure;
     structure.parse(stream);
-    structure.process_ranges(rh);
+    structure.process_ranges(std::move(rh));
 }
 
 void orcus_json::write_map_definition(std::string_view stream, std::ostream& out) const
@@ -636,7 +636,7 @@ void orcus_json::write_map_definition(std::string_view stream, std::ostream& out
 
     json::structure_tree tree;
     tree.parse(stream);
-    tree.process_ranges(rh);
+    tree.process_ranges(std::move(rh));
 
     json::document_tree map_doc = {
         {"sheets", json::array()},

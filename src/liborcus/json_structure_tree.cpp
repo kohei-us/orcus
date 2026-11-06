@@ -704,7 +704,7 @@ structure_tree::walker structure_tree::get_walker() const
 
 void structure_tree::process_ranges(range_handler_type rh) const
 {
-    detail::structure_mapper mapper(rh, get_walker());
+    detail::structure_mapper mapper(std::move(rh), get_walker());
     mapper.run();
 }
 

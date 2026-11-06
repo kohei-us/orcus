@@ -268,7 +268,7 @@ void orcus_xml::detect_map_definition(std::string_view stream)
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
         set_namespace_alias(cxt.get_short_name(ns), std::string_view(ns));
 
-    structure.process_ranges(rh);
+    structure.process_ranges(std::move(rh));
 }
 
 void orcus_xml::write_map_definition(std::string_view stream, std::ostream& out) const
@@ -320,7 +320,7 @@ void orcus_xml::write_map_definition(std::string_view stream, std::ostream& out)
         ++range_count;
     };
 
-    tree.process_ranges(rh);
+    tree.process_ranges(std::move(rh));
 }
 
 }

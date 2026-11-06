@@ -936,7 +936,7 @@ std::string const_node::dump(std::size_t indent) const
         return {};
 
     dump_context cxt(indent);
-    return json::dump_json_tree(cxt, mp_impl->node, indent);
+    return json::dump_json_tree(std::move(cxt), mp_impl->node, indent);
 }
 
 node_t const_node::type() const
@@ -1846,7 +1846,7 @@ std::string document_tree::dump(std::size_t indent) const
         return std::string();
 
     dump_context cxt(indent);
-    return json::dump_json_tree(cxt, mp_impl->root, indent);
+    return json::dump_json_tree(std::move(cxt), mp_impl->root, indent);
 }
 
 std::string document_tree::dump_xml() const
@@ -2044,7 +2044,7 @@ std::string subtree::dump(std::size_t indent) const
         return {};
 
     dump_context cxt(indent);
-    return json::dump_json_tree(cxt, mp_impl->root, indent);
+    return json::dump_json_tree(std::move(cxt), mp_impl->root, indent);
 }
 
 }}
