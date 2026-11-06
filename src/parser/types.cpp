@@ -64,7 +64,7 @@ std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type)
 {
     if (ns)
     {
-        std::string_view ns_str;
+        std::string ns_str;
         switch (type)
         {
             case use_alias:
