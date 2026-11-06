@@ -445,6 +445,7 @@ void xlsx_autofilter_context::start_top10(const xml_token_attrs_t& attrs)
                 break;
             case XML_top:
                 top = to_bool(attr.value);
+                break;
             case XML_val:
             {
                 val = to_double_checked(attr.value);
