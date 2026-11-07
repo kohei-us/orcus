@@ -1115,6 +1115,12 @@ node& node::operator=(const node& other)
     return *this;
 }
 
+node& node::operator=(node&& other)
+{
+    mp_impl.swap(other.mp_impl);
+    return *this;
+}
+
 node& node::operator=(const detail::init::node& v)
 {
     document_resource& res =
@@ -1285,6 +1291,12 @@ const_node_iterator& const_node_iterator::operator= (const const_node_iterator& 
     mp_impl->end = other.mp_impl->end;
     mp_impl->update_current();
 
+    return *this;
+}
+
+const_node_iterator& const_node_iterator::operator= (const_node_iterator&& other)
+{
+    mp_impl.swap(other.mp_impl);
     return *this;
 }
 

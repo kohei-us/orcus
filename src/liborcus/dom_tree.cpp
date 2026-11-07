@@ -228,6 +228,12 @@ const_node& const_node::operator= (const const_node& other)
     return *this;
 }
 
+const_node& const_node::operator= (const_node&& other)
+{
+    swap(other);
+    return *this;
+}
+
 bool const_node::operator== (const const_node& other) const
 {
     return mp_impl->type == other.mp_impl->type && mp_impl->value == other.mp_impl->value;

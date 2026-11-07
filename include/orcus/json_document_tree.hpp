@@ -110,6 +110,7 @@ public:
     bool operator!= (const const_node_iterator& other) const;
 
     const_node_iterator& operator= (const const_node_iterator& other);
+    const_node_iterator& operator= (const_node_iterator&& other);
 };
 
 /**
@@ -318,6 +319,7 @@ public:
     ~node();
 
     node& operator=(const node& other);
+    node& operator=(node&& other);
     node& operator=(const detail::init::node& v);
     node operator[](std::string_view key);
 
