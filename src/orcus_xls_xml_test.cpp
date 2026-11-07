@@ -2645,6 +2645,7 @@ void test_xls_xml_double_bom()
     assert(doc->get_sheet_name(4) == "Distributions");
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_xls_xml_detection();

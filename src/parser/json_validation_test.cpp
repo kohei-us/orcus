@@ -428,6 +428,7 @@ void test_indeterminate()
 
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_pass();

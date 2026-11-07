@@ -274,6 +274,7 @@ void test_invalids()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_empty();

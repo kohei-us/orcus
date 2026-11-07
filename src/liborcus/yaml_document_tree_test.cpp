@@ -614,6 +614,7 @@ void test_yaml_map_key_1()
     assert(string_expected(node.child(1), "value"));
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_yaml_invalids();

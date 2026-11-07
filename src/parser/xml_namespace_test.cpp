@@ -267,6 +267,7 @@ void test_unknown_alias_returns_unknown_id()
 
 } // anonymous namespace
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_basic();

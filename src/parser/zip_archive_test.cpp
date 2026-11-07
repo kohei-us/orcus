@@ -623,6 +623,7 @@ void test_seek_central_dir_window()
     assert(threw);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_zip_archive_stream_blob();

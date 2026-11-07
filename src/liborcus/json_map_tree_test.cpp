@@ -180,6 +180,7 @@ void test_bracket_wildcard()
     assert(p->row_group != nullptr);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_link_array_values();

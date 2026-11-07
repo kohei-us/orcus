@@ -230,6 +230,7 @@ void test_trim()
 
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_parse_numbers();

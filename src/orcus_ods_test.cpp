@@ -936,6 +936,7 @@ void test_ods_import_styles_text_underlines()
     assert(*font->underline.spacing == ss::underline_spacing_t::skip_white_space);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_ods_detection();

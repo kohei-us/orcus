@@ -2482,6 +2482,7 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_config.debug = false;

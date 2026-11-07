@@ -81,6 +81,7 @@ void test_unicode_escape_surrogates()
     assert(parse_rejects("[\"\\t\\uD83D\"]"));     // lone high surrogate on the buffered path
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

@@ -478,6 +478,7 @@ void test_orcus_xml_functions()
 
 } // anonymous namespace
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_mapped_xml_import();

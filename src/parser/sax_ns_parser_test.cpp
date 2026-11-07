@@ -113,6 +113,7 @@ void test_builtin_xml_ns()
     assert(hdl.ns_decl_seen);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

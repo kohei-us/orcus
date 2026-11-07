@@ -229,6 +229,7 @@ void test_spreadsheet_types()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_date_time_conversion();

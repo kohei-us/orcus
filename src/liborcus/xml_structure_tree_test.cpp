@@ -347,6 +347,7 @@ void test_callback()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_basic();

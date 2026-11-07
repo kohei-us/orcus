@@ -54,6 +54,7 @@ void test_truncated_quoted_cell()
     assert(hdl.cells[0] == "abc");
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

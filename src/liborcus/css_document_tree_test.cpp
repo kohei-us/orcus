@@ -661,6 +661,7 @@ void test_css_parse_utf8_1()
     assert(check_props(*props, std::move(expected)));
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_css_invalids();

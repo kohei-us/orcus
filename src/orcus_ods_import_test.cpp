@@ -1053,6 +1053,7 @@ void test_cell_protection_styles()
 
 } // anonymous namespace
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_cell_styles();

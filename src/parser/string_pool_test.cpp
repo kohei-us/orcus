@@ -123,6 +123,7 @@ void test_move()
     assert(pool2.size() == 5);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_basic();

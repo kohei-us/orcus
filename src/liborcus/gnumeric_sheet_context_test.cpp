@@ -110,6 +110,7 @@ void test_column_width()
     context.end_element(ns, parent);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_column_width();

@@ -60,6 +60,7 @@ void test_filter_node()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_filter_value();

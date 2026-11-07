@@ -136,6 +136,7 @@ void test_move()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_encoded_content();

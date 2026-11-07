@@ -272,6 +272,7 @@ void test_set_auto_numeric_bounds()
     assert(cxt.get_numeric_value(pos) == 12.0);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_sheet();

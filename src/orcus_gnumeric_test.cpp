@@ -1525,6 +1525,7 @@ void test_gnumeric_number_format()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_gnumeric_detection();

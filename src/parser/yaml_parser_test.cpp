@@ -22,6 +22,7 @@ void test_handler()
     parser.parse();
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

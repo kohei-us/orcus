@@ -358,6 +358,7 @@ void test_mutable_reset_then_load()
     assert(tree.root().child_count() == 1);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_encoded_attr();

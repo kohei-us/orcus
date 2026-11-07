@@ -306,6 +306,7 @@ void test_xml_lint()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_xml_sax_parser();

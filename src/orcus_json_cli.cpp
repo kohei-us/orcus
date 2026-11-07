@@ -358,6 +358,7 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
 
 } // anonymous namespace
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main(int argc, char** argv)
 {
     file_content content;

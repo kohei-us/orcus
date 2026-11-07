@@ -345,6 +345,7 @@ void test_range_without_row_group()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_path_insertion();

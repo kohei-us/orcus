@@ -53,6 +53,7 @@ void test_truncated_percent_in_hsl()
     assert(!hdl.hsl_called);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

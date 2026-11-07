@@ -113,6 +113,7 @@ void test_decode_xml_unicode_char()
     assert(decode("#abc").empty());
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_handler();

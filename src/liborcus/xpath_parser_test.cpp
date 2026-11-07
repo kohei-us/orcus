@@ -62,6 +62,7 @@ void test_attributes()
     assert(token.attribute);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_elements();

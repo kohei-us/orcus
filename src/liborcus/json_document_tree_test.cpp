@@ -1072,6 +1072,7 @@ void test_json_subtree()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     try

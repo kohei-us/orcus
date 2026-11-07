@@ -218,6 +218,7 @@ void test_has_range()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_mapped_json_import();

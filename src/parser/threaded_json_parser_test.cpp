@@ -176,6 +176,7 @@ void test_threaded_json_parser_invalid()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_threaded_json_parser_basic();

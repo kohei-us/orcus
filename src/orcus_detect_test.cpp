@@ -299,6 +299,7 @@ void test_xml_detect_negative()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     orcus::bootstrap_program();

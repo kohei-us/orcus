@@ -249,6 +249,7 @@ void test_stream_convert_utf16_to_utf8()
     assert(le.str() == expected);
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_stream_create_error_output();
