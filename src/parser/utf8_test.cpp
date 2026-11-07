@@ -13,7 +13,7 @@
 #include <string>
 #include <cassert>
 #include <functional>
-#include <iomanip>
+#include <format>
 #include <limits>
 
 using namespace orcus;
@@ -43,8 +43,7 @@ bool check_cp_ranges(parse_func_t parse, std::vector<cp_range_t> ranges)
             }
             catch (const std::exception& e)
             {
-                cout << "failed to encode 0x" << std::hex << std::uppercase << cp
-                     << " as utf-8: " << e.what() << endl;
+                cout << std::format("failed to encode 0x{:X} as utf-8: {}", cp, e.what()) << endl;
                 return false;
             }
 
@@ -54,11 +53,10 @@ bool check_cp_ranges(parse_func_t parse, std::vector<cp_range_t> ranges)
 
             if ((ret == p_end) != range.valid)
             {
-                cout << "failed to parse 0x" << std::hex << std::uppercase << cp
-                    << " (utf-8:";
+                cout << std::format("failed to parse 0x{:X} (utf-8:", cp);
 
                 for (char b : buf)
-                    cout << ' ' << short(0xFF & b);
+                    cout << std::format(" {:X}", 0xFF & b);
                 cout << ")" << endl;
                 cout << "expected to be " << (range.valid ? "valid" : "invalid")
                      << ", but was " << (range.valid ? "invalid" : "valid") << endl;

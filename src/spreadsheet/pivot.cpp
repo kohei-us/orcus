@@ -532,7 +532,7 @@ std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item)
             os << "(unknown)";
             break;
         case pivot_cache_item_t::item_type::boolean:
-            os << std::boolalpha << std::get<bool>(item.value);
+            os << (std::get<bool>(item.value) ? "true" : "false");
             break;
         case pivot_cache_item_t::item_type::date_time:
             os << std::get<date_time_t>(item.value).to_string();
@@ -566,7 +566,7 @@ std::ostream& operator<<(std::ostream& os, const pivot_cache_record_value_t& v)
         }
         case pivot_cache_record_value_t::record_type::boolean:
         {
-            os << std::boolalpha << std::get<bool>(v.value);
+            os << (std::get<bool>(v.value) ? "true" : "false");
             break;
         }
         case pivot_cache_record_value_t::record_type::date_time:
@@ -624,7 +624,7 @@ std::ostream& operator<<(std::ostream& os, const pivot_item_t& v)
         }
     }
 
-    os << "; hidden: " << std::boolalpha << v.hidden << ")";
+    os << "; hidden: " << (v.hidden ? "true" : "false") << ")";
     return os;
 }
 

@@ -22,7 +22,7 @@
 #include <limits>
 #include <iostream>
 #include <deque>
-#include <iomanip>
+#include <format>
 #include <filesystem>
 #include <ranges>
 
@@ -335,7 +335,7 @@ void dump_string_xml(std::ostringstream& os, std::string_view s)
             {
                 if (std::iscntrl(c))
                 {
-                    os << "&#x" << std::setw(4) << std::setfill('0') << std::hex << short(c) << ';';
+                    os << std::format("&#x{:04x};", short(c));
                     break;
                 }
 

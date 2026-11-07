@@ -11,7 +11,7 @@
 #include "orcus/xml_namespace.hpp"
 
 #include <cstring>
-#include <iomanip>
+#include <format>
 
 std::string_view sv_from_u8(std::u8string_view s) noexcept
 {
@@ -22,8 +22,8 @@ void print_with_bytes(std::string_view label, std::string_view s)
 {
     std::cout << label << ": '" << s << "' (bytes:";
     for (uint8_t c : s)
-        std::cout << ' ' << std::hex << std::setw(2) << std::setfill('0') << (int)c;
-    std::cout << ")" << std::dec << '\n';
+        std::cout << std::format(" {:02x}", c);
+    std::cout << ")" << '\n';
 }
 
 using namespace orcus;

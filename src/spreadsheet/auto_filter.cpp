@@ -322,7 +322,7 @@ std::ostream& operator<<(std::ostream& os, const filter_item_t& v)
             break;
     }
 
-    os << "; regex=" << std::boolalpha << v.regex() << ")";
+    os << "; regex=" << (v.regex() ? "true" : "false") << ")";
 
     return os;
 }
