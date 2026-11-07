@@ -74,7 +74,7 @@ typedef std::unordered_set<entity_name, entity_name::hash> entity_names_type;
 
 struct elem_scope
 {
-    xmlns_id_t ns;
+    xmlns_id_t ns = XMLNS_UNKNOWN_ID;
     std::string_view name;
     ns_keys_type ns_keys;
 

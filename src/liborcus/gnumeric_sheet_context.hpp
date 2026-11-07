@@ -88,7 +88,7 @@ private:
 
     std::optional<style_region> m_region_data;
 
-    spreadsheet::color_rgb_t m_front_color;
+    spreadsheet::color_rgb_t m_front_color = { 0, 0, 0 };
 
     /**
      * Used for temporary storage of characters
