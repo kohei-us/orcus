@@ -75,7 +75,7 @@ void test_yaml_invalids()
 
     for (fs::directory_iterator it(dirpath); it != it_end; ++it)
     {
-        auto path = it->path();
+        const auto& path = it->path();
         if (!fs::is_regular_file(path))
             continue;
 

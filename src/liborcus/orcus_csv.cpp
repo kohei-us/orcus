@@ -62,7 +62,7 @@ public:
         // 0.
         if (m_row >= mp_sheet->get_sheet_size().rows)
         {
-            auto csv = std::get<config::csv_config>(m_app_config.data);
+            const auto& csv = std::get<config::csv_config>(m_app_config.data);
 
             if (!csv.split_to_multiple_sheets)
                 throw max_row_size_reached();
@@ -92,7 +92,7 @@ public:
 
     void cell(std::string_view v, bool transient)
     {
-        auto csv = std::get<config::csv_config>(m_app_config.data);
+        const auto& csv = std::get<config::csv_config>(m_app_config.data);
 
         if (m_sheet == 0 && size_t(m_row) < csv.header_row_size)
         {
@@ -146,7 +146,7 @@ struct orcus_csv::impl
 
         orcus_csv_handler handler(*factory, conf);
         csv::parser_config config;
-        auto format_config = std::get<config::csv_config>(conf.data);
+        const auto& format_config = std::get<config::csv_config>(conf.data);
         config.delimiters = format_config.delimiters;
         config.text_qualifier = format_config.text_qualifier;
         csv_parser<orcus_csv_handler> parser(stream, handler, config);

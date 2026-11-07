@@ -127,8 +127,8 @@ void test_format_detection()
             if (!input_entry.is_regular_file())
                 continue;
 
-            auto input = input_entry.path();
-            auto input_s = input.native();
+            const auto& input = input_entry.path();
+            const auto& input_s = input.native();
             orcus::test::print_path(input_s);
 
             auto fc = orcus::test::to_file_content(input_s);

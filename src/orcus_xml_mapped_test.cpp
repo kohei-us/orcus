@@ -265,7 +265,7 @@ void test_mapped_xml_import_auto_mapping()
         if (!entry.is_directory())
             continue;
 
-        auto test_dir = entry.path();
+        const auto& test_dir = entry.path();
         std::cout << test_dir << std::endl;
 
         fs::path input_file = test_dir / "input.xml";
@@ -385,7 +385,7 @@ void test_map_gen()
         if (!entry.is_directory())
             continue;
 
-        auto test_dir = entry.path();
+        const auto& test_dir = entry.path();
         std::cout << test_dir << std::endl;
 
         fs::path input_file = test_dir / "input.xml";
