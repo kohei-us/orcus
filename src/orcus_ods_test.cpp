@@ -220,6 +220,7 @@ void test_ods_import_formatted_text()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
+    assert(font_data);
     fmt = ss.get_format_runs(str_id);
     assert(fmt); // This string should be formatted.
 

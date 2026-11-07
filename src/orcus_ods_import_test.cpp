@@ -418,6 +418,7 @@ void test_odf_border(const ss::styles &styles)
     assert(cell_format);
 
     const ss::border_t* cell_border = styles.get_border(cell_format->border);
+    assert(cell_border);
     assert(cell_border->top.style);
     assert(*cell_border->top.style == ss::border_style_t::dotted);
     assert(cell_border->bottom.style);
@@ -588,6 +589,7 @@ void test_odf_font(const ss::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
+    assert(cell_font);
     assert(*cell_font->name == "Tahoma");
     assert(*cell_font->size == 00);
     assert(*cell_font->bold == true);
@@ -637,6 +639,7 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
+    assert(cell_font);
     assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
     assert(!cell_font->strikethrough.width); // not set
     assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);

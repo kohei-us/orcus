@@ -1204,6 +1204,7 @@ void test_xlsx_formatted_text_basic()
         assert(check_cell_text(*sheet, row, col, "Only partially underlined"));
         si = sheet->get_string_identifier(row, col);
         runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
         assert(runs->size() == 1);
         // Only partially underlined
         //                ^^^^^^^^^^

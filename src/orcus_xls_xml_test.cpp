@@ -1245,6 +1245,7 @@ void test_xls_xml_named_colors()
 
             size_t xf = sh->get_cell_format(row, 0);
             const ss::fill_t* fill_data = styles.get_fill(xf);
+            assert(fill_data);
             assert(fill_data->fg_color);
             const ss::color_t& actual = *fill_data->fg_color;
             assert(expected.red == actual.red);
