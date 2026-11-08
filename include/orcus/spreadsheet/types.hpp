@@ -583,6 +583,35 @@ enum class databar_axis_t
 };
 
 /**
+ * Set of icons used by an icon set rule of a conditional format.
+ */
+enum class icon_set_t
+{
+    unknown = 0,
+    three_arrows,
+    three_arrows_gray,
+    three_flags,
+    three_traffic_lights_1,
+    three_traffic_lights_2,
+    three_signs,
+    three_symbols,
+    three_symbols_2,
+    three_stars,
+    three_triangles,
+    four_arrows,
+    four_arrows_gray,
+    four_red_to_black,
+    four_rating,
+    four_traffic_lights,
+    five_arrows,
+    five_arrows_gray,
+    five_rating,
+    five_quarters,
+    five_boxes,
+    no_icons
+};
+
+/**
  * Type of range grouping in a group field of a pivot table cache.
  */
 enum class pivot_cache_group_by_t

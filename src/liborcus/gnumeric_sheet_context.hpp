@@ -27,7 +27,7 @@ class import_factory;
 class import_sheet;
 class import_auto_filter;
 class import_cond_format;
-class import_cond_format_entry;
+class import_cond_format_condition;
 class import_xf;
 
 }}
@@ -87,7 +87,7 @@ private:
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
     spreadsheet::iface::import_cond_format* mp_cond_format = nullptr;
-    spreadsheet::iface::import_cond_format_entry* mp_cond_entry = nullptr;
+    spreadsheet::iface::import_cond_format_condition* mp_cond_entry = nullptr;
     spreadsheet::sheet_t m_sheet = -1;
 
     std::optional<style_region> m_region_data;

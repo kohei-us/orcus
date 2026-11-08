@@ -470,7 +470,12 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
     auto* number_format = styles->start_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
-    mp_xf = styles->start_xf(ss::xf_category_t::cell);
+    // a style nested in a condition is a differential format
+    ss::xf_category_t category = ss::xf_category_t::cell;
+    if (get_parent_element().second == XML_Condition)
+        category = ss::xf_category_t::differential;
+
+    mp_xf = styles->start_xf(category);
     ENSURE_INTERFACE(mp_xf, import_xf);
 
     bool fill_set = false;
@@ -632,10 +637,8 @@ void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
     if (!mp_cond_format)
         return;
 
-    mp_cond_entry = mp_cond_format->start_entry();
-    ENSURE_INTERFACE(mp_cond_entry, import_cond_format_entry);
-
-    mp_cond_entry->set_type(ss::cond_format_rule_t::condition);
+    mp_cond_entry = mp_cond_format->start_condition();
+    ENSURE_INTERFACE(mp_cond_entry, import_cond_format_condition);
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -688,7 +691,7 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
     }
     else if (mp_cond_entry)
     {
-        mp_cond_entry->set_xf_id(xf_id);
+        mp_cond_entry->set_dxf_id(xf_id);
     }
 }
 

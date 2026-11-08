@@ -20,6 +20,8 @@
 
 #include <mdds/sorted_string_map.hpp>
 
+#include <optional>
+
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -169,11 +171,11 @@ const map_type& get()
 
 } // namespace cond_date
 
+} // anonymous namespace
+
 struct cfRule_attr_parser
 {
-
-    cfRule_attr_parser(ss::iface::import_cond_format_entry& entry):
-        m_entry(entry),
+    cfRule_attr_parser():
         m_type(none),
         m_operator(operator_default),
         m_date(date_default),
@@ -192,11 +194,7 @@ struct cfRule_attr_parser
                 m_type = cond_type::get().find(attr.value);
             break;
             case XML_dxfId:
-            {
-                // TODO: actually we need to translate between dxf id and xf id
-                size_t dxf_id = to_long(attr.value);
-                m_entry.set_xf_id(dxf_id);
-            }
+                m_dxf_id = to_long(attr.value);
             break;
             case XML_aboveAverage:
             {
@@ -235,192 +233,127 @@ struct cfRule_attr_parser
         }
     }
 
-    void set_type()
+    ss::cond_format_rule_t get_rule_type() const
+    {
+        switch (m_type)
+        {
+            case none:
+                return ss::cond_format_rule_t::unknown;
+            case colorScale:
+                return ss::cond_format_rule_t::colorscale;
+            case dataBar:
+                return ss::cond_format_rule_t::databar;
+            case iconSet:
+                return ss::cond_format_rule_t::iconset;
+            case timePeriod:
+                return ss::cond_format_rule_t::date;
+            default:
+                return ss::cond_format_rule_t::condition;
+        }
+    }
+
+    ss::cond_format_operator_t get_operator() const
     {
         switch (m_type)
         {
             case expression:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::expression);
-            break;
+                return ss::cond_format_operator_t::expression;
             case cellIs:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::expression);
                 switch (m_operator)
                 {
                     case operator_beginsWith:
-                        m_entry.set_operator(ss::cond_format_operator_t::begins_with);
-                    break;
+                        return ss::cond_format_operator_t::begins_with;
                     case operator_between:
-                        m_entry.set_operator(ss::cond_format_operator_t::between);
-                    break;
+                        return ss::cond_format_operator_t::between;
                     case operator_containsText:
-                        m_entry.set_operator(ss::cond_format_operator_t::contains);
-                    break;
+                        return ss::cond_format_operator_t::contains;
                     case operator_endsWith:
-                        m_entry.set_operator(ss::cond_format_operator_t::ends_with);
-                    break;
+                        return ss::cond_format_operator_t::ends_with;
                     case operator_equal:
-                        m_entry.set_operator(ss::cond_format_operator_t::equal);
-                    break;
+                        return ss::cond_format_operator_t::equal;
                     case operator_greaterThan:
-                        m_entry.set_operator(ss::cond_format_operator_t::greater);
-                    break;
+                        return ss::cond_format_operator_t::greater;
                     case operator_greaterThanOrEqual:
-                        m_entry.set_operator(ss::cond_format_operator_t::greater_equal);
-                    break;
+                        return ss::cond_format_operator_t::greater_equal;
                     case operator_lessThan:
-                        m_entry.set_operator(ss::cond_format_operator_t::less);
-                    break;
+                        return ss::cond_format_operator_t::less;
                     case operator_lessThanOrEqual:
-                        m_entry.set_operator(ss::cond_format_operator_t::less_equal);
-                    break;
+                        return ss::cond_format_operator_t::less_equal;
                     case operator_notBetween:
-                        m_entry.set_operator(ss::cond_format_operator_t::not_between);
-                    break;
+                        return ss::cond_format_operator_t::not_between;
                     case operator_notContains:
-                        m_entry.set_operator(ss::cond_format_operator_t::not_contains);
-                    break;
+                        return ss::cond_format_operator_t::not_contains;
                     case operator_notEqual:
-                        m_entry.set_operator(ss::cond_format_operator_t::not_equal);
-                    break;
+                        return ss::cond_format_operator_t::not_equal;
                     default:
-                    break;
+                        return ss::cond_format_operator_t::expression;
                 }
-            break;
-            case colorScale:
-                m_entry.set_type(ss::cond_format_rule_t::colorscale);
-            break;
-            case dataBar:
-                m_entry.set_type(ss::cond_format_rule_t::databar);
-            break;
-            case iconSet:
-                m_entry.set_type(ss::cond_format_rule_t::iconset);
-            break;
             case top10:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                if (m_bottom)
-                {
-                    m_entry.set_operator(ss::cond_format_operator_t::bottom_n);
-                }
-                else
-                {
-                    m_entry.set_operator(ss::cond_format_operator_t::top_n);
-                }
-                m_entry.set_rank(m_rank);
-            break;
+                return m_bottom ? ss::cond_format_operator_t::bottom_n : ss::cond_format_operator_t::top_n;
             case uniqueValues:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::unique);
-            break;
+                return ss::cond_format_operator_t::unique;
             case duplicateValues:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::duplicate);
-            break;
+                return ss::cond_format_operator_t::duplicate;
             case containsText:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::contains);
-                m_entry.set_text(m_text);
-            break;
+                return ss::cond_format_operator_t::contains;
             case notContainsText:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::not_contains);
-                m_entry.set_text(m_text);
-            break;
+                return ss::cond_format_operator_t::not_contains;
             case beginsWith:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::begins_with);
-                m_entry.set_text(m_text);
-            break;
+                return ss::cond_format_operator_t::begins_with;
             case endsWith:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::ends_with);
-                m_entry.set_text(m_text);
-            break;
+                return ss::cond_format_operator_t::ends_with;
             case containsBlanks:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::contains_blanks);
-            break;
+                return ss::cond_format_operator_t::contains_blanks;
             case containsErrors:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::contains_error);
-            break;
+                return ss::cond_format_operator_t::contains_error;
             case notContainsErrors:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                m_entry.set_operator(ss::cond_format_operator_t::contains_no_error);
-            break;
-            case timePeriod:
-                m_entry.set_type(ss::cond_format_rule_t::date);
-                switch (m_date)
-                {
-                    case date_last7Days:
-                        m_entry.set_date(ss::cond_format_date_t::last_7_days);
-                    break;
-                    case date_lastMonth:
-                        m_entry.set_date(ss::cond_format_date_t::last_month);
-                    break;
-                    case date_lastWeek:
-                        m_entry.set_date(ss::cond_format_date_t::last_week);
-                    break;
-                    case date_nextMonth:
-                        m_entry.set_date(ss::cond_format_date_t::next_month);
-                    break;
-                    case date_thisMonth:
-                        m_entry.set_date(ss::cond_format_date_t::this_month);
-                    break;
-                    case date_thisWeek:
-                        m_entry.set_date(ss::cond_format_date_t::this_week);
-                    break;
-                    case date_today:
-                        m_entry.set_date(ss::cond_format_date_t::today);
-                    break;
-                    case date_tomorrow:
-                        m_entry.set_date(ss::cond_format_date_t::tomorrow);
-                    break;
-                    case date_yesterday:
-                        m_entry.set_date(ss::cond_format_date_t::yesterday);
-                    break;
-                    default:
-                    break;
-                }
-            break;
+                return ss::cond_format_operator_t::contains_no_error;
             case aboveAverage:
-                m_entry.set_type(ss::cond_format_rule_t::condition);
-                if (!m_std_dev.empty())
-                    m_entry.set_std_dev(m_std_dev);
                 if (m_above_average)
-                {
-                    if (m_equal_average)
-                    {
-                        m_entry.set_operator(ss::cond_format_operator_t::above_equal_average);
-                    }
-                    else
-                    {
-                        m_entry.set_operator(ss::cond_format_operator_t::above_average);
-                    }
-                }
-                else
-                {
-                    if (m_equal_average)
-                    {
-                        m_entry.set_operator(ss::cond_format_operator_t::below_equal_average);
-                    }
-                    else
-                    {
-                        m_entry.set_operator(ss::cond_format_operator_t::below_average);
-                    }
-                }
-            break;
+                    return m_equal_average ? ss::cond_format_operator_t::above_equal_average : ss::cond_format_operator_t::above_average;
+                return m_equal_average ? ss::cond_format_operator_t::below_equal_average : ss::cond_format_operator_t::below_average;
             default:
-            break;
+                return ss::cond_format_operator_t::unknown;
         }
     }
 
+    ss::cond_format_date_t get_period() const
+    {
+        switch (m_date)
+        {
+            case date_last7Days:
+                return ss::cond_format_date_t::last_7_days;
+            case date_lastMonth:
+                return ss::cond_format_date_t::last_month;
+            case date_lastWeek:
+                return ss::cond_format_date_t::last_week;
+            case date_nextMonth:
+                return ss::cond_format_date_t::next_month;
+            case date_thisMonth:
+                return ss::cond_format_date_t::this_month;
+            case date_thisWeek:
+                return ss::cond_format_date_t::this_week;
+            case date_today:
+                return ss::cond_format_date_t::today;
+            case date_tomorrow:
+                return ss::cond_format_date_t::tomorrow;
+            case date_yesterday:
+                return ss::cond_format_date_t::yesterday;
+            default:
+                return ss::cond_format_date_t::unknown;
+        }
+    }
+
+    const std::optional<std::size_t>& get_dxf_id() const { return m_dxf_id; }
+    std::string_view get_text() const { return m_text; }
+    std::string_view get_std_dev() const { return m_std_dev; }
+    std::string_view get_rank() const { return m_rank; }
+
 private:
-    ss::iface::import_cond_format_entry& m_entry;
     xlsx_cond_format_type m_type;
     xlsx_cond_format_operator m_operator;
     xlsx_cond_format_date m_date;
+    std::optional<std::size_t> m_dxf_id;
     bool m_above_average;
     bool m_equal_average;
     bool m_percent;
@@ -429,6 +362,8 @@ private:
     std::string_view m_std_dev;
     std::string_view m_rank;
 };
+
+namespace {
 
 struct conditional_formatting_attr_parser
 {
@@ -497,6 +432,43 @@ const map_type& get()
 }
 
 } // namespace cfvo_type
+
+namespace icon_set {
+
+using map_type = mdds::sorted_string_map<ss::icon_set_t>;
+
+// keys must be sorted
+constexpr map_type::entry_type entries[] = {
+    { "3Arrows",         ss::icon_set_t::three_arrows           },
+    { "3ArrowsGray",     ss::icon_set_t::three_arrows_gray      },
+    { "3Flags",          ss::icon_set_t::three_flags            },
+    { "3Signs",          ss::icon_set_t::three_signs            },
+    { "3Stars",          ss::icon_set_t::three_stars            },
+    { "3Symbols",        ss::icon_set_t::three_symbols          },
+    { "3Symbols2",       ss::icon_set_t::three_symbols_2        },
+    { "3TrafficLights1", ss::icon_set_t::three_traffic_lights_1 },
+    { "3TrafficLights2", ss::icon_set_t::three_traffic_lights_2 },
+    { "3Triangles",      ss::icon_set_t::three_triangles        },
+    { "4Arrows",         ss::icon_set_t::four_arrows            },
+    { "4ArrowsGray",     ss::icon_set_t::four_arrows_gray       },
+    { "4Rating",         ss::icon_set_t::four_rating            },
+    { "4RedToBlack",     ss::icon_set_t::four_red_to_black      },
+    { "4TrafficLights",  ss::icon_set_t::four_traffic_lights    },
+    { "5Arrows",         ss::icon_set_t::five_arrows            },
+    { "5ArrowsGray",     ss::icon_set_t::five_arrows_gray       },
+    { "5Boxes",          ss::icon_set_t::five_boxes             },
+    { "5Quarters",       ss::icon_set_t::five_quarters          },
+    { "5Rating",         ss::icon_set_t::five_rating            },
+    { "NoIcons",         ss::icon_set_t::no_icons               },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, ss::icon_set_t::unknown);
+    return mt;
+}
+
+} // namespace icon_set
 
 }
 
@@ -584,11 +556,11 @@ struct data_bar_attr_parser
         }
     }
 
-    void import_data(ss::iface::import_cond_format_entry& entry)
+    void import_data(ss::iface::import_cond_format_databar& rule)
     {
-        entry.set_show_value(m_show_value);
-        entry.set_databar_min_length(m_min_length);
-        entry.set_databar_max_length(m_max_length);
+        rule.set_show_value(m_show_value);
+        rule.set_min_length(m_min_length);
+        rule.set_max_length(m_max_length);
     }
 
 private:
@@ -603,7 +575,7 @@ struct icon_set_attr_parser
         m_reverse(false),
         m_percent(true),
         m_show_value(true),
-        icon_name("3Arrows")
+        m_icon_set(ss::icon_set_t::three_arrows)
     {
     }
 
@@ -612,7 +584,7 @@ struct icon_set_attr_parser
         switch (attr.name)
         {
             case XML_iconSet:
-                icon_name = attr.value;
+                m_icon_set = icon_set::get().find(attr.value);
             break;
             case XML_percent:
                 m_percent = to_bool(attr.value);
@@ -628,18 +600,18 @@ struct icon_set_attr_parser
         }
     }
 
-    void import_data(ss::iface::import_cond_format_entry& entry)
+    void import_data(ss::iface::import_cond_format_iconset& rule)
     {
-        entry.set_show_value(m_show_value);
-        entry.set_iconset_reverse(m_reverse);
-        entry.set_icon_name(icon_name);
+        rule.set_show_value(m_show_value);
+        rule.set_reverse(m_reverse);
+        rule.set_icon_set(m_icon_set);
     }
 
 private:
     bool m_reverse;
     bool m_percent;
     bool m_show_value;
-    std::string_view icon_name;
+    ss::icon_set_t m_icon_set;
 };
 
 }
@@ -686,11 +658,8 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
             xml_element_expected(parent, NS_ooxml_xlsx, XML_conditionalFormatting);
             if (mp_cond_format)
             {
-                mp_entry = mp_cond_format->start_entry();
-                ENSURE_INTERFACE(mp_entry, import_cond_format_entry);
-
-                cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser(*mp_entry));
-                parser.set_type();
+                cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser());
+                start_rule(parser);
             }
             break;
         }
@@ -704,16 +673,16 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             data_bar_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), data_bar_attr_parser());
-            if (mp_entry)
-                parser.import_data(*mp_entry);
+            if (mp_databar)
+                parser.import_data(*mp_databar);
             break;
         }
         case XML_iconSet:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             icon_set_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), icon_set_attr_parser());
-            if (mp_entry)
-                parser.import_data(*mp_entry);
+            if (mp_iconset)
+                parser.import_data(*mp_iconset);
             break;
         }
         case XML_color:
@@ -791,10 +760,7 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
         }
         case XML_cfRule:
         {
-            if (mp_entry)
-                mp_entry->commit();
-
-            mp_entry = nullptr;
+            commit_rule();
             m_cfvo_values.clear();
             m_colors.clear();
             break;
@@ -805,9 +771,9 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
             break;
         case XML_formula:
         {
-            if (mp_entry)
+            if (mp_condition)
             {
-                auto* value = mp_entry->start_value();
+                auto* value = mp_condition->start_value();
                 ENSURE_INTERFACE(value, import_cond_format_value);
 
                 value->set_formula(m_cur_str);
@@ -823,17 +789,15 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
             if (m_cfvo_values.size() != 2)
                 throw general_error("invalid dataBar record");
 
-            if (mp_entry)
+            if (mp_databar)
             {
-                argb_color& color = m_colors[0];
-                mp_entry->set_databar_color_positive(color.alpha, color.red,
-                        color.green, color.blue);
-                mp_entry->set_databar_color_negative(color.alpha, color.red,
-                        color.green, color.blue);
+                const argb_color& color = m_colors[0];
+                mp_databar->set_color_positive(color.alpha, color.red, color.green, color.blue);
+                mp_databar->set_color_negative(color.alpha, color.red, color.green, color.blue);
 
                 for (const auto& cfvo : m_cfvo_values)
                 {
-                    auto* value = mp_entry->start_value();
+                    auto* value = mp_databar->start_value();
                     ENSURE_INTERFACE(value, import_cond_format_value);
 
                     import_cfvo(cfvo, *value);
@@ -847,11 +811,11 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
             if (m_cfvo_values.size() < 2)
                 throw general_error("invalid iconSet record");
 
-            if (mp_entry)
+            if (mp_iconset)
             {
                 for (const auto& cfvo : m_cfvo_values)
                 {
-                    auto* value = mp_entry->start_value();
+                    auto* value = mp_iconset->start_value();
                     ENSURE_INTERFACE(value, import_cond_format_value);
 
                     import_cfvo(cfvo, *value);
@@ -868,17 +832,16 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
             if (m_cfvo_values.size() != m_colors.size())
                 throw general_error("invalid colorScale record");
 
-            if (mp_entry)
+            if (mp_colorscale)
             {
                 std::vector<argb_color>::const_iterator itrColor = m_colors.begin();
                 for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr, ++itrColor)
                 {
-                    auto* value = mp_entry->start_value();
+                    auto* value = mp_colorscale->start_value();
                     ENSURE_INTERFACE(value, import_cond_format_value);
 
                     import_cfvo(*itr, *value);
-                    value->set_color(itrColor->alpha, itrColor->red,
-                            itrColor->green, itrColor->blue);
+                    value->set_color(itrColor->alpha, itrColor->red, itrColor->green, itrColor->blue);
                     value->commit();
                 }
             }
@@ -897,10 +860,88 @@ void xlsx_conditional_format_context::characters(std::string_view str, bool tran
         m_cur_str = m_pool.intern(m_cur_str).first;
 }
 
+void xlsx_conditional_format_context::start_rule(const cfRule_attr_parser& attrs)
+{
+    switch (attrs.get_rule_type())
+    {
+        case ss::cond_format_rule_t::condition:
+        {
+            mp_condition = mp_cond_format->start_condition();
+            ENSURE_INTERFACE(mp_condition, import_cond_format_condition);
+
+            mp_condition->set_operator(attrs.get_operator());
+
+            if (attrs.get_dxf_id())
+                mp_condition->set_dxf_id(*attrs.get_dxf_id());
+
+            if (!attrs.get_rank().empty())
+                mp_condition->set_rank(attrs.get_rank());
+
+            if (!attrs.get_text().empty())
+                mp_condition->set_text(attrs.get_text());
+
+            if (!attrs.get_std_dev().empty())
+                mp_condition->set_std_dev(attrs.get_std_dev());
+            break;
+        }
+        case ss::cond_format_rule_t::date:
+        {
+            mp_date = mp_cond_format->start_date();
+            ENSURE_INTERFACE(mp_date, import_cond_format_date);
+
+            mp_date->set_period(attrs.get_period());
+
+            if (attrs.get_dxf_id())
+                mp_date->set_dxf_id(*attrs.get_dxf_id());
+            break;
+        }
+        case ss::cond_format_rule_t::colorscale:
+        {
+            mp_colorscale = mp_cond_format->start_colorscale();
+            ENSURE_INTERFACE(mp_colorscale, import_cond_format_colorscale);
+            break;
+        }
+        case ss::cond_format_rule_t::databar:
+        {
+            mp_databar = mp_cond_format->start_databar();
+            ENSURE_INTERFACE(mp_databar, import_cond_format_databar);
+            break;
+        }
+        case ss::cond_format_rule_t::iconset:
+        {
+            mp_iconset = mp_cond_format->start_iconset();
+            ENSURE_INTERFACE(mp_iconset, import_cond_format_iconset);
+            break;
+        }
+        default:
+            warn("unknown conditional format rule type");
+    }
+}
+
+void xlsx_conditional_format_context::commit_rule()
+{
+    if (mp_condition)
+        mp_condition->commit();
+    else if (mp_date)
+        mp_date->commit();
+    else if (mp_colorscale)
+        mp_colorscale->commit();
+    else if (mp_databar)
+        mp_databar->commit();
+    else if (mp_iconset)
+        mp_iconset->commit();
+
+    mp_condition = nullptr;
+    mp_date = nullptr;
+    mp_colorscale = nullptr;
+    mp_databar = nullptr;
+    mp_iconset = nullptr;
+}
+
 void xlsx_conditional_format_context::reset()
 {
     mp_cond_format = nullptr;
-    mp_entry = nullptr;
+    commit_rule();
 
     m_pool.clear();
     m_cur_str = std::string_view{};

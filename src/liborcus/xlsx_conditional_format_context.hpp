@@ -20,12 +20,17 @@ struct session_context;
 
 namespace spreadsheet { namespace iface {
     class import_cond_format;
-    class import_cond_format_entry;
+    class import_cond_format_condition;
+    class import_cond_format_date;
+    class import_cond_format_colorscale;
+    class import_cond_format_databar;
+    class import_cond_format_iconset;
     class import_reference_resolver;
     class import_sheet;
 } }
 
 struct cfvo_values;
+struct cfRule_attr_parser;
 
 struct argb_color
 {
@@ -54,11 +59,18 @@ public:
     void reset();
 
 private:
+    void start_rule(const cfRule_attr_parser& attrs);
+    void commit_rule();
+
     spreadsheet::iface::import_reference_resolver& m_resolver;
     spreadsheet::iface::import_sheet& m_sheet;
 
     spreadsheet::iface::import_cond_format* mp_cond_format = nullptr;
-    spreadsheet::iface::import_cond_format_entry* mp_entry = nullptr;
+    spreadsheet::iface::import_cond_format_condition* mp_condition = nullptr;
+    spreadsheet::iface::import_cond_format_date* mp_date = nullptr;
+    spreadsheet::iface::import_cond_format_colorscale* mp_colorscale = nullptr;
+    spreadsheet::iface::import_cond_format_databar* mp_databar = nullptr;
+    spreadsheet::iface::import_cond_format_iconset* mp_iconset = nullptr;
 
     string_pool m_pool;
     std::string_view m_cur_str;

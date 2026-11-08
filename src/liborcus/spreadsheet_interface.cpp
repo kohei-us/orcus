@@ -104,7 +104,15 @@ import_table::~import_table() {}
 
 import_cond_format_value::~import_cond_format_value() = default;
 
-import_cond_format_entry::~import_cond_format_entry() = default;
+import_cond_format_condition::~import_cond_format_condition() = default;
+
+import_cond_format_date::~import_cond_format_date() = default;
+
+import_cond_format_colorscale::~import_cond_format_colorscale() = default;
+
+import_cond_format_databar::~import_cond_format_databar() = default;
+
+import_cond_format_iconset::~import_cond_format_iconset() = default;
 
 import_cond_format::~import_cond_format() = default;
 

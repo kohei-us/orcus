@@ -19,7 +19,11 @@ Classes
    class-import_cell_protection.rst
    class-import_cell_style.rst
    class-import_cond_format.rst
-   class-import_cond_format_entry.rst
+   class-import_cond_format_colorscale.rst
+   class-import_cond_format_condition.rst
+   class-import_cond_format_databar.rst
+   class-import_cond_format_date.rst
+   class-import_cond_format_iconset.rst
    class-import_cond_format_value.rst
    class-import_data_table.rst
    class-import_factory.rst

@@ -26,6 +26,7 @@ Enum
    enum-formula_ref_context_t.rst
    enum-formula_t.rst
    enum-hor_alignment_t.rst
+   enum-icon_set_t.rst
    enum-pane_state_t.rst
    enum-pivot_axis_t.rst
    enum-pivot_cache_group_by_t.rst
