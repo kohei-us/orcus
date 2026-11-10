@@ -11,7 +11,7 @@
 
 namespace orcus {
 
-formula_result::formula_result() : type(result_type::empty) {}
+formula_result::formula_result() : type(result_type::empty), value_numeric(0.0) {}
 formula_result::formula_result(const formula_result& r) :
     type(r.type)
 {
