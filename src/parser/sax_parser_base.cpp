@@ -358,12 +358,12 @@ void parser_base::name(std::string_view& str)
         }
 
     }
-    cur_char_checked(); // check end of xml stream
+    (void)cur_char_checked(); // check end of xml stream
 
 #else
     for(;;)
     {
-        cur_char_checked(); // check end of xml stream
+        (void)cur_char_checked(); // check end of xml stream
         const char* p = parse_utf8_xml_name_char(mp_char, mp_end);
 
         if (p == mp_char)
