@@ -521,10 +521,11 @@ void test_odf_cell_protection(const ss::styles& styles)
     assert(style);
     size_t  xf = style->xf;
     const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
-    size_t protection = cell_format->protection;
     assert(cell_format);
+    size_t protection = cell_format->protection;
 
     const ss::protection_t* cell_protection = styles.get_protection(protection);
+    assert(cell_protection);
     assert(*cell_protection->locked == true);
     assert(*cell_protection->hidden == true);
     assert(*cell_protection->print_content == true);
@@ -535,10 +536,11 @@ void test_odf_cell_protection(const ss::styles& styles)
     assert(style);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
-    protection = cell_format->protection;
     assert(cell_format);
+    protection = cell_format->protection;
 
     cell_protection = styles.get_protection(protection);
+    assert(cell_protection);
     assert(*cell_protection->locked == true);
     assert(!cell_protection->hidden); // not set
     assert(*cell_protection->print_content == false);
@@ -549,10 +551,11 @@ void test_odf_cell_protection(const ss::styles& styles)
     assert(style);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
-    protection = cell_format->protection;
     assert(cell_format);
+    protection = cell_format->protection;
 
     cell_protection = styles.get_protection(protection);
+    assert(cell_protection);
     assert(*cell_protection->locked == false);
     assert(*cell_protection->hidden == false);
     assert(*cell_protection->print_content == true);
