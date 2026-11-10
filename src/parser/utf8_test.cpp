@@ -170,9 +170,17 @@ void test_calc_utf8_byte_length()
 
 int main()
 {
-    test_xml_name_start_char();
-    test_xml_name_char();
-    test_calc_utf8_byte_length();
+    try
+    {
+        test_xml_name_start_char();
+        test_xml_name_char();
+        test_calc_utf8_byte_length();
+    }
+    catch (const std::exception& e)
+    {
+        cout << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
