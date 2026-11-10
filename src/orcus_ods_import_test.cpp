@@ -565,10 +565,11 @@ void test_odf_font(const ss::styles& styles)
     assert(style);
     size_t xf = style->xf;
     const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
-    size_t font = cell_format->font;
     assert(cell_format);
+    size_t font = cell_format->font;
 
     const ss::font_t* cell_font = styles.get_font(font);
+    assert(cell_font);
     assert(*cell_font->name == "Liberation Sans");
     assert(*cell_font->size == 24);
     assert(*cell_font->bold == true);
@@ -585,8 +586,8 @@ void test_odf_font(const ss::styles& styles)
     assert(style);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
-    font = cell_format->font;
     assert(cell_format);
+    font = cell_format->font;
 
     cell_font = styles.get_font(font);
     assert(cell_font);
@@ -609,10 +610,11 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(style);
     size_t xf = style->xf;
     const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
-    size_t font = cell_format->font;
     assert(cell_format);
+    size_t font = cell_format->font;
 
     const ss::font_t* cell_font = styles.get_font(font);
+    assert(cell_font);
     assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
     assert(!cell_font->strikethrough.width); // not set
     assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);
@@ -622,10 +624,11 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(style);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
-    font = cell_format->font;
     assert(cell_format);
+    font = cell_format->font;
 
     cell_font = styles.get_font(font);
+    assert(cell_font);
     assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
     assert(*cell_font->strikethrough.width == ss::strikethrough_width_t::bold);
     assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);
@@ -635,8 +638,8 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(style);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
-    font = cell_format->font;
     assert(cell_format);
+    font = cell_format->font;
 
     cell_font = styles.get_font(font);
     assert(cell_font);
