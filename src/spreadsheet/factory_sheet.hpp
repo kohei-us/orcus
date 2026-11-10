@@ -16,6 +16,7 @@
 
 #include "factory_table.hpp"
 #include "factory_auto_filter.hpp"
+#include "factory_cond_format.hpp"
 #include "shared_formula.hpp"
 
 #include <memory>
@@ -189,6 +190,7 @@ class import_sheet : public iface::import_sheet
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
     import_auto_filter m_auto_filter;
+    import_cond_format m_cond_format;
     import_table m_table;
     character_set_t m_charset;
 

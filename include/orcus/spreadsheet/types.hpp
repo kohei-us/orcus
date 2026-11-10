@@ -484,20 +484,6 @@ enum class auto_filter_op_t
 };
 
 /**
- * Type of a conditional format rule entry.
- */
-enum class cond_format_rule_t
-{
-    unknown = 0,
-    condition,
-    date,
-    formula,
-    colorscale,
-    databar,
-    iconset
-};
-
-/**
  * Operator type associated with a conditional format rule.
  */
 enum class cond_format_operator_t

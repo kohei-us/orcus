@@ -9,6 +9,7 @@
 
 #include "impl_types.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
+#include "orcus/spreadsheet/cond_format.hpp"
 
 namespace orcus { namespace spreadsheet {
 
@@ -46,6 +47,7 @@ struct sheet_impl
     detail::col_merge_size_type merge_ranges; /// 2-dimensional merged cell ranges.
 
     std::unique_ptr<auto_filter_t> auto_filter;
+    std::vector<cond_format_t> cond_formats;
 
     cell_format_type cell_formats;
     segment_col_index_type column_formats;

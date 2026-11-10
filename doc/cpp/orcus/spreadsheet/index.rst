@@ -15,7 +15,6 @@ Enum
    enum-border_style_t.rst
    enum-cond_format_date_t.rst
    enum-cond_format_operator_t.rst
-   enum-cond_format_rule_t.rst
    enum-cond_format_value_type_t.rst
    enum-data_table_type_t.rst
    enum-databar_axis_t.rst
@@ -102,7 +101,11 @@ Struct
    struct-cell_style_t.rst
    struct-color_rgb_t.rst
    struct-color_t.rst
-   struct-cond_format_entry_t.rst
+   struct-cond_format_colorscale_rule_t.rst
+   struct-cond_format_condition_rule_t.rst
+   struct-cond_format_databar_rule_t.rst
+   struct-cond_format_date_rule_t.rst
+   struct-cond_format_iconset_rule_t.rst
    struct-cond_format_t.rst
    struct-cond_format_value_t.rst
    struct-document_config.rst

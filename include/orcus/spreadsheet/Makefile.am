@@ -18,6 +18,7 @@ if BUILD_SPREADSHEET_MODEL
 
 liborcus_HEADERS += \
 	auto_filter.hpp \
+	cond_format.hpp \
 	config.hpp \
 	document.hpp \
 	document_types.hpp \

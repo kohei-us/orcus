@@ -362,6 +362,7 @@ import_sheet::import_sheet(document& doc, sheet& sh, ixion::model_context_loader
     m_sheet_properties(doc, sh),
     m_data_table(sh),
     m_auto_filter(doc.get_string_pool()),
+    m_cond_format(doc.get_string_pool(), sh),
     m_table(doc, sh),
     m_charset(character_set_t::unspecified),
     m_fill_missing_formula_results(false)
@@ -392,7 +393,8 @@ iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)
 
 iface::import_cond_format* import_sheet::start_cond_format()
 {
-    return nullptr;
+    m_cond_format.reset();
+    return &m_cond_format;
 }
 
 iface::import_data_table* import_sheet::get_data_table()

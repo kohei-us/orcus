@@ -25,6 +25,7 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	auto_filter.cpp \
 	check_dumper.hpp \
 	check_dumper.cpp \
+	cond_format.cpp \
 	config.cpp \
 	debug_state_context.hpp \
 	debug_state_context.cpp \
@@ -41,6 +42,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory.cpp \
 	factory_auto_filter.hpp \
 	factory_auto_filter.cpp \
+	factory_cond_format.hpp \
+	factory_cond_format.cpp \
 	factory_pivot.hpp \
 	factory_pivot.cpp \
 	factory_pivot_table_def.hpp \

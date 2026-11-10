@@ -413,6 +413,16 @@ const auto_filter_t* sheet::get_auto_filter() const
     return mp_impl->auto_filter.get();
 }
 
+void sheet::append_cond_format(cond_format_t format)
+{
+    mp_impl->cond_formats.push_back(std::move(format));
+}
+
+const std::vector<cond_format_t>& sheet::get_cond_formats() const
+{
+    return mp_impl->cond_formats;
+}
+
 ixion::abs_rc_range_t sheet::get_data_range() const
 {
     return mp_impl->get_data_range();

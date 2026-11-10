@@ -233,24 +233,7 @@ struct cfRule_attr_parser
         }
     }
 
-    ss::cond_format_rule_t get_rule_type() const
-    {
-        switch (m_type)
-        {
-            case none:
-                return ss::cond_format_rule_t::unknown;
-            case colorScale:
-                return ss::cond_format_rule_t::colorscale;
-            case dataBar:
-                return ss::cond_format_rule_t::databar;
-            case iconSet:
-                return ss::cond_format_rule_t::iconset;
-            case timePeriod:
-                return ss::cond_format_rule_t::date;
-            default:
-                return ss::cond_format_rule_t::condition;
-        }
-    }
+    xlsx_cond_format_type get_type() const { return m_type; }
 
     ss::cond_format_operator_t get_operator() const
     {
@@ -862,9 +845,41 @@ void xlsx_conditional_format_context::characters(std::string_view str, bool tran
 
 void xlsx_conditional_format_context::start_rule(const cfRule_attr_parser& attrs)
 {
-    switch (attrs.get_rule_type())
+    switch (attrs.get_type())
     {
-        case ss::cond_format_rule_t::condition:
+        case timePeriod:
+        {
+            mp_date = mp_cond_format->start_date();
+            ENSURE_INTERFACE(mp_date, import_cond_format_date);
+
+            mp_date->set_period(attrs.get_period());
+
+            if (attrs.get_dxf_id())
+                mp_date->set_dxf_id(*attrs.get_dxf_id());
+            break;
+        }
+        case colorScale:
+        {
+            mp_colorscale = mp_cond_format->start_colorscale();
+            ENSURE_INTERFACE(mp_colorscale, import_cond_format_colorscale);
+            break;
+        }
+        case dataBar:
+        {
+            mp_databar = mp_cond_format->start_databar();
+            ENSURE_INTERFACE(mp_databar, import_cond_format_databar);
+            break;
+        }
+        case iconSet:
+        {
+            mp_iconset = mp_cond_format->start_iconset();
+            ENSURE_INTERFACE(mp_iconset, import_cond_format_iconset);
+            break;
+        }
+        case none:
+            warn("unknown conditional format rule type");
+            break;
+        default:
         {
             mp_condition = mp_cond_format->start_condition();
             ENSURE_INTERFACE(mp_condition, import_cond_format_condition);
@@ -884,37 +899,6 @@ void xlsx_conditional_format_context::start_rule(const cfRule_attr_parser& attrs
                 mp_condition->set_std_dev(attrs.get_std_dev());
             break;
         }
-        case ss::cond_format_rule_t::date:
-        {
-            mp_date = mp_cond_format->start_date();
-            ENSURE_INTERFACE(mp_date, import_cond_format_date);
-
-            mp_date->set_period(attrs.get_period());
-
-            if (attrs.get_dxf_id())
-                mp_date->set_dxf_id(*attrs.get_dxf_id());
-            break;
-        }
-        case ss::cond_format_rule_t::colorscale:
-        {
-            mp_colorscale = mp_cond_format->start_colorscale();
-            ENSURE_INTERFACE(mp_colorscale, import_cond_format_colorscale);
-            break;
-        }
-        case ss::cond_format_rule_t::databar:
-        {
-            mp_databar = mp_cond_format->start_databar();
-            ENSURE_INTERFACE(mp_databar, import_cond_format_databar);
-            break;
-        }
-        case ss::cond_format_rule_t::iconset:
-        {
-            mp_iconset = mp_cond_format->start_iconset();
-            ENSURE_INTERFACE(mp_iconset, import_cond_format_iconset);
-            break;
-        }
-        default:
-            warn("unknown conditional format rule type");
     }
 }
 

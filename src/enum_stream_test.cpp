@@ -577,21 +577,6 @@ void test_orcus_spreadsheet_cond_format_value_type_t()
 #endif
 }
 
-void test_orcus_spreadsheet_cond_format_rule_t()
-{
-#if 0
-    ORCUS_TEST_FUNC_SCOPE;
-
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::unknown, "unknown"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::condition, "condition"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::date, "date"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::formula, "formula"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::colorscale, "colorscale"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::databar, "databar"); assert(result); }
-    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_rule_t::iconset, "iconset"); assert(result); }
-#endif
-}
-
 void test_orcus_spreadsheet_data_table_type_t()
 {
 #if 0
@@ -964,7 +949,6 @@ int main()
     test_orcus_spreadsheet_cond_format_date_t();
     test_orcus_spreadsheet_cond_format_operator_t();
     test_orcus_spreadsheet_cond_format_value_type_t();
-    test_orcus_spreadsheet_cond_format_rule_t();
     test_orcus_spreadsheet_data_table_type_t();
     test_orcus_spreadsheet_databar_axis_t();
     test_orcus_spreadsheet_fill_pattern_t();

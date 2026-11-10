@@ -13,6 +13,7 @@
 #include <ostream>
 #include <memory>
 #include <filesystem>
+#include <vector>
 
 #include <ixion/address.hpp>
 #include <ixion/formula_tokens.hpp>
@@ -27,6 +28,7 @@ namespace spreadsheet {
 class document;
 
 struct auto_filter_t;
+struct cond_format_t;
 
 namespace detail {
 
@@ -118,6 +120,9 @@ public:
 
     void set_auto_filter(std::unique_ptr<auto_filter_t> filter);
     const auto_filter_t* get_auto_filter() const;
+
+    void append_cond_format(cond_format_t format);
+    const std::vector<cond_format_t>& get_cond_formats() const;
 
     // Sheet dimension methods
 

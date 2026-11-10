@@ -2,6 +2,7 @@
 add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     auto_filter.cpp
     check_dumper.cpp
+    cond_format.cpp
     config.cpp
     csv_dumper.cpp
     debug_state_context.cpp
@@ -13,6 +14,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     dumper_global.cpp
     factory.cpp
     factory_auto_filter.cpp
+    factory_cond_format.cpp
     factory_pivot.cpp
     factory_pivot_table_def.cpp
     factory_shared_strings.cpp

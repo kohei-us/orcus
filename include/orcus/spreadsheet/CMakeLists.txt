@@ -1,6 +1,7 @@
 
 list(APPEND _HEADERS
     auto_filter.hpp
+    cond_format.hpp
     config.hpp
     document.hpp
     document_types.hpp
