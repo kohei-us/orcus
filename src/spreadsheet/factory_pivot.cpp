@@ -129,6 +129,7 @@ import_pivot_cache_def::~import_pivot_cache_def() {}
 void import_pivot_cache_def::create_cache(pivot_cache_id_t cache_id)
 {
     m_src_type = unknown;
+    m_current_fields.clear();
     m_cache = std::make_unique<pivot_cache>(cache_id, m_doc.get_string_pool());
 }
 
@@ -239,7 +240,6 @@ void import_pivot_cache_def::commit_field_item()
 void import_pivot_cache_def::commit()
 {
     m_cache->insert_fields(std::move(m_current_fields));
-    assert(m_current_fields.empty());
 
     if (!m_src_table_name.empty())
     {
