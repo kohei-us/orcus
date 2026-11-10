@@ -98,9 +98,10 @@ public:
             wait_until_tokens_empty();
         }
 
-        std::unique_lock<std::mutex> lock(m_mtx_tokens);
-        m_tokens.swap(parser_tokens);
-        lock.unlock();
+        {
+            std::lock_guard<std::mutex> lock(m_mtx_tokens);
+            m_tokens.swap(parser_tokens);
+        }
         m_cv_tokens_ready.notify_one();
     }
 
@@ -149,16 +150,17 @@ public:
     {
         tokens.clear();
 
-        // Wait until the parser passes a new set of tokens.
-        std::unique_lock<std::mutex> lock(m_mtx_tokens);
-        while (m_tokens.empty() && m_state == state_type::parsing_progress)
-            m_cv_tokens_ready.wait(lock);
+        state_type parsing_progress;
+        {
+            // Wait until the parser passes a new set of tokens.
+            std::unique_lock<std::mutex> lock(m_mtx_tokens);
+            while (m_tokens.empty() && m_state == state_type::parsing_progress)
+                m_cv_tokens_ready.wait(lock);
 
-        // Get the new tokens and notify the parser.
-        tokens.swap(m_tokens);
-        state_type parsing_progress = m_state; // Make a copy so that lock can be released safely.
-
-        lock.unlock();
+            // Get the new tokens and notify the parser.
+            tokens.swap(m_tokens);
+            parsing_progress = m_state; // Make a copy so that lock can be released safely.
+        }
 
         m_cv_tokens_empty.notify_one();
 
