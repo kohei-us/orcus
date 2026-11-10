@@ -2357,48 +2357,29 @@ void xls_xml_context::commit_styles()
 
         std::size_t xfid = xf->commit();
 
-        switch (category)
+        if (category == ss::xf_category_t::cell)
         {
-            case ss::xf_category_t::cell:
-            {
-                m_style_map_cell.insert({style->id, xfid});
-                break;
-            }
-            case ss::xf_category_t::cell_style:
-            {
-                m_style_map_named_style.insert({style->id, xfid});
+            m_style_map_cell.insert({style->id, xfid});
+        }
+        else
+        {
+            m_style_map_named_style.insert({style->id, xfid});
 
-                // Push the named cell style record.
-                auto* cell_style = styles->start_cell_style();
-                ENSURE_INTERFACE(cell_style, import_cell_style);
-                cell_style->set_name(style->name);
-                cell_style->set_xf(xfid);
-                cell_style->commit();
+            // Push the named cell style record.
+            auto* cell_style = styles->start_cell_style();
+            ENSURE_INTERFACE(cell_style, import_cell_style);
+            cell_style->set_name(style->name);
+            cell_style->set_xf(xfid);
+            cell_style->commit();
 
-                // Since we don't allow directly referencing a named cell style,
-                // we will create a regular cell style that references the named
-                // style instead.
-                auto* xf_cell = styles->start_xf(ss::xf_category_t::cell);
-                ENSURE_INTERFACE(xf_cell, import_xf);
-                xf_cell->set_style_xf(xfid); // reference the named style
-                xfid = xf_cell->commit();
-                m_style_map_cell.insert({style->id, xfid});
-                break;
-            }
-            case ss::xf_category_t::differential:
-            {
-                std::ostringstream os;
-                os << "differential cell format type is not supported";
-                warn(os.str());
-                break;
-            }
-            case ss::xf_category_t::unknown:
-            {
-                std::ostringstream os;
-                os << "cell format type is unknown";
-                warn(os.str());
-                break;
-            }
+            // Since we don't allow directly referencing a named cell style,
+            // we will create a regular cell style that references the named
+            // style instead.
+            auto* xf_cell = styles->start_xf(ss::xf_category_t::cell);
+            ENSURE_INTERFACE(xf_cell, import_xf);
+            xf_cell->set_style_xf(xfid); // reference the named style
+            xfid = xf_cell->commit();
+            m_style_map_cell.insert({style->id, xfid});
         }
     }
 }
