@@ -42,7 +42,8 @@ bool decompress_gzip(const char* buffer, size_t size, std::string& decompressed)
         boost::iostreams::filtering_ostream os;
         os.push(boost::iostreams::gzip_decompressor());
         os.push(boost::iostreams::back_inserter(buf));
-        boost::iostreams::write(os, buffer, size);
+        if (boost::iostreams::write(os, buffer, size) != std::streamsize(size))
+            return false;
         os.flush();
     }
     catch (const std::exception&)
