@@ -175,6 +175,7 @@ public:
      */
     size_t token_size_threshold() const
     {
+        std::lock_guard<std::mutex> lock(m_mtx_tokens);
         if (m_state == state_type::parsing_progress)
             return 0;
 
