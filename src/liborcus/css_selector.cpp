@@ -10,7 +10,7 @@
 namespace orcus {
 
 css_simple_selector_t::css_simple_selector_t() :
-    pseudo_classes(0) {}
+    classes(), pseudo_classes(0) {}
 
 void css_simple_selector_t::clear()
 {
