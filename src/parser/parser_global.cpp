@@ -550,7 +550,7 @@ parse_quoted_string_state parse_double_quoted_string(
                     {
                         // Start the buffer with the string we've parsed so far.
                         buffer.reset();
-                        if (ret.str && ret.length > 1)
+                        if (ret.length > 1)
                             buffer.append({ret.str, ret.length-1});
 
                         // add the escaped char to the buffer too
@@ -597,7 +597,7 @@ parse_quoted_string_state parse_double_quoted_string(
 
                 // Start the buffer with the parsed segment prior to '\u'
                 buffer.reset();
-                if (ret.str && ret.length > 6)
+                if (ret.length > 6)
                     buffer.append({ret.str, ret.length-6});
 
                 uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
