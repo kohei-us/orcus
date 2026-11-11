@@ -8,6 +8,7 @@
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/spreadsheet/view_types.hpp>
 #include <orcus/types.hpp>
+#include <orcus/unnamed_buffer.hpp>
 
 using orcus::test::verify_stream_value;
 
@@ -508,7 +509,6 @@ void test_orcus_spreadsheet_border_style_t()
 
 void test_orcus_spreadsheet_cond_format_date_t()
 {
-#if 0
     ORCUS_TEST_FUNC_SCOPE;
 
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::unknown, "unknown"); assert(result); }
@@ -525,12 +525,10 @@ void test_orcus_spreadsheet_cond_format_date_t()
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::this_year, "this-year"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::next_year, "next-year"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_date_t::last_year, "last-year"); assert(result); }
-#endif
 }
 
 void test_orcus_spreadsheet_cond_format_operator_t()
 {
-#if 0
     ORCUS_TEST_FUNC_SCOPE;
 
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::unknown, "unknown"); assert(result); }
@@ -558,12 +556,10 @@ void test_orcus_spreadsheet_cond_format_operator_t()
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::contains_blanks, "contains-blanks"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::not_contains, "not-contains"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::expression, "expression"); assert(result); }
-#endif
 }
 
 void test_orcus_spreadsheet_cond_format_value_type_t()
 {
-#if 0
     ORCUS_TEST_FUNC_SCOPE;
 
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::unknown, "unknown"); assert(result); }
@@ -574,7 +570,6 @@ void test_orcus_spreadsheet_cond_format_value_type_t()
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::formula, "formula"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::percent, "percent"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_value_type_t::percentile, "percentile"); assert(result); }
-#endif
 }
 
 void test_orcus_spreadsheet_data_table_type_t()
@@ -684,6 +679,34 @@ void test_orcus_spreadsheet_hor_alignment_t()
     { bool result = verify_stream_value(orcus::spreadsheet::hor_alignment_t::justified, "justified"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::hor_alignment_t::distributed, "distributed"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::hor_alignment_t::filled, "filled"); assert(result); }
+}
+
+void test_orcus_spreadsheet_icon_set_t()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_arrows, "three-arrows"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_arrows_gray, "three-arrows-gray"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_flags, "three-flags"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_traffic_lights_1, "three-traffic-lights-1"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_traffic_lights_2, "three-traffic-lights-2"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_signs, "three-signs"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_symbols, "three-symbols"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_symbols_2, "three-symbols-2"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_stars, "three-stars"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::three_triangles, "three-triangles"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::four_arrows, "four-arrows"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::four_arrows_gray, "four-arrows-gray"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::four_red_to_black, "four-red-to-black"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::four_rating, "four-rating"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::four_traffic_lights, "four-traffic-lights"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::five_arrows, "five-arrows"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::five_arrows_gray, "five-arrows-gray"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::five_rating, "five-rating"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::five_quarters, "five-quarters"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::five_boxes, "five-boxes"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::icon_set_t::no_icons, "no-icons"); assert(result); }
 }
 
 void test_orcus_spreadsheet_pane_state_t()
@@ -928,6 +951,29 @@ void test_orcus_spreadsheet_xf_category_t()
 #endif
 }
 
+void test_orcus_unnamed_buffer_store_t()
+{
+#if 0
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::unnamed_buffer_store_t::uninitialized, "uninitialized"); assert(result); }
+    { bool result = verify_stream_value(orcus::unnamed_buffer_store_t::heap_allocated, "heap-allocated"); assert(result); }
+    { bool result = verify_stream_value(orcus::unnamed_buffer_store_t::memory_mapped, "memory-mapped"); assert(result); }
+#endif
+}
+
+void test_orcus_xml_encode_context_t()
+{
+#if 0
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::xml_encode_context_t::unspecified, "unspecified"); assert(result); }
+    { bool result = verify_stream_value(orcus::xml_encode_context_t::text, "text"); assert(result); }
+    { bool result = verify_stream_value(orcus::xml_encode_context_t::attr_double_quoted, "attr-double-quoted"); assert(result); }
+    { bool result = verify_stream_value(orcus::xml_encode_context_t::attr_single_quoted, "attr-single-quoted"); assert(result); }
+#endif
+}
+
 
 int main()
 {
@@ -957,6 +1003,7 @@ int main()
     test_orcus_spreadsheet_formula_ref_context_t();
     test_orcus_spreadsheet_formula_t();
     test_orcus_spreadsheet_hor_alignment_t();
+    test_orcus_spreadsheet_icon_set_t();
     test_orcus_spreadsheet_pane_state_t();
     test_orcus_spreadsheet_pivot_axis_t();
     test_orcus_spreadsheet_pivot_cache_group_by_t();
@@ -975,6 +1022,8 @@ int main()
     test_orcus_spreadsheet_underline_thickness_t();
     test_orcus_spreadsheet_ver_alignment_t();
     test_orcus_spreadsheet_xf_category_t();
+    test_orcus_unnamed_buffer_store_t();
+    test_orcus_xml_encode_context_t();
 
     return EXIT_SUCCESS;
 }

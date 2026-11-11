@@ -743,6 +743,107 @@ std::ostream& operator<< (std::ostream& os, auto_filter_op_t op)
     return write_name_for_pos(os, names, std::size(names), op);
 }
 
+std::ostream& operator<< (std::ostream& os, cond_format_operator_t op)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "equal",
+        "less",
+        "greater",
+        "greater-equal",
+        "less-equal",
+        "not-equal",
+        "between",
+        "not-between",
+        "duplicate",
+        "unique",
+        "top-n",
+        "bottom-n",
+        "above-average",
+        "below-average",
+        "above-equal-average",
+        "below-equal-average",
+        "contains-error",
+        "contains-no-error",
+        "begins-with",
+        "ends-with",
+        "contains",
+        "contains-blanks",
+        "not-contains",
+        "expression",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), op);
+}
+
+std::ostream& operator<< (std::ostream& os, cond_format_value_type_t type)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "value",
+        "automatic",
+        "max",
+        "min",
+        "formula",
+        "percent",
+        "percentile",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), type);
+}
+
+std::ostream& operator<< (std::ostream& os, cond_format_date_t period)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "today",
+        "yesterday",
+        "tomorrow",
+        "last-7-days",
+        "this-week",
+        "next-week",
+        "last-week",
+        "this-month",
+        "next-month",
+        "last-month",
+        "this-year",
+        "next-year",
+        "last-year",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), period);
+}
+
+std::ostream& operator<< (std::ostream& os, icon_set_t icons)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "three-arrows",
+        "three-arrows-gray",
+        "three-flags",
+        "three-traffic-lights-1",
+        "three-traffic-lights-2",
+        "three-signs",
+        "three-symbols",
+        "three-symbols-2",
+        "three-stars",
+        "three-triangles",
+        "four-arrows",
+        "four-arrows-gray",
+        "four-red-to-black",
+        "four-rating",
+        "four-traffic-lights",
+        "five-arrows",
+        "five-arrows-gray",
+        "five-rating",
+        "five-quarters",
+        "five-boxes",
+        "no-icons",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), icons);
+}
+
 std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
 {
     os << "(r=" << (int)color.red << ",g=" << (int)color.green << ",b=" << (int)color.blue << ")";
