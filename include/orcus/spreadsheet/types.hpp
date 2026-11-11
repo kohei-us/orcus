@@ -898,6 +898,7 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, auto_filter_op_t op)
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, cond_format_operator_t op);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, cond_format_value_type_t type);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, cond_format_date_t period);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, databar_axis_t axis);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, icon_set_t icons);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill);

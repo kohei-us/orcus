@@ -269,6 +269,7 @@ def create_enum_stream_test(rootdir, output_dir):
         "orcus::spreadsheet::cond_format_date_t",
         "orcus::spreadsheet::cond_format_operator_t",
         "orcus::spreadsheet::cond_format_value_type_t",
+        "orcus::spreadsheet::databar_axis_t",
         "orcus::spreadsheet::formula_grammar_t",
         "orcus::spreadsheet::hor_alignment_t",
         "orcus::spreadsheet::icon_set_t",

@@ -118,6 +118,131 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
     _print_node(filter.root, 0);
 }
 
+/**
+ * Prints a single rule of a conditional format as a YAML list item, at the
+ * indent level of the rules of a format.
+ */
+class cond_format_rule_printer
+{
+    /** Indentation of the list of rules within a format. */
+    static constexpr std::string_view indent = "    ";
+
+    const debug_state_context& m_cxt;
+    std::ostream& m_os;
+
+    void print_string(std::string_view name, std::string_view v) const
+    {
+        if (v.empty())
+            return;
+
+        m_os << indent << "  " << name << ": ";
+        m_cxt.ensure_yaml_string(m_os, v);
+        m_os << "\n";
+    }
+
+    void print_color(std::string_view padding, std::string_view name, const std::optional<color_t>& v) const
+    {
+        m_os << indent << padding << name << ": ";
+
+        if (v)
+        {
+            std::ostringstream os;
+            os << *v;
+            m_cxt.ensure_yaml_string(m_os, os.str());
+        }
+        else
+            m_os << "(unset)";
+
+        m_os << "\n";
+    }
+
+    void print_dxf_id(const std::optional<std::size_t>& v) const
+    {
+        m_os << indent << "  dxf-id: ";
+
+        if (v)
+            m_os << *v;
+        else
+            m_os << "(unset)";
+
+        m_os << "\n";
+    }
+
+    void print_values(const std::vector<cond_format_value_t>& values, bool with_color) const
+    {
+        if (values.empty())
+            return;
+
+        m_os << indent << "  values:\n";
+
+        for (const auto& value : values)
+        {
+            m_os << indent << "    - type: " << value.type << "\n";
+
+            if (!value.formula.empty())
+            {
+                m_os << indent << "      formula: ";
+                m_cxt.ensure_yaml_string(m_os, value.formula);
+                m_os << "\n";
+            }
+
+            if (with_color)
+                print_color("      ", "color", value.color);
+        }
+    }
+
+public:
+    cond_format_rule_printer(const debug_state_context& cxt, std::ostream& os) :
+        m_cxt(cxt), m_os(os) {}
+
+    void operator()(const cond_format_condition_rule_t& rule) const
+    {
+        m_os << indent << "- type: condition\n";
+        m_os << indent << "  operator: " << rule.op << "\n";
+        print_dxf_id(rule.dxf_id);
+        print_string("rank", rule.rank);
+        print_string("text", rule.text);
+        print_string("std-dev", rule.std_dev);
+        print_values(rule.values, false);
+    }
+
+    void operator()(const cond_format_date_rule_t& rule) const
+    {
+        m_os << indent << "- type: date\n";
+        m_os << indent << "  period: " << rule.period << "\n";
+        print_dxf_id(rule.dxf_id);
+    }
+
+    void operator()(const cond_format_colorscale_rule_t& rule) const
+    {
+        m_os << indent << "- type: colorscale\n";
+        m_os << indent << "  show-value: " << rule.show_value << "\n";
+        print_values(rule.values, true);
+    }
+
+    void operator()(const cond_format_databar_rule_t& rule) const
+    {
+        m_os << indent << "- type: databar\n";
+        m_os << indent << "  show-value: " << rule.show_value << "\n";
+        m_os << indent << "  gradient: " << rule.gradient << "\n";
+        m_os << indent << "  axis: " << rule.axis << "\n";
+        print_color("  ", "color-positive", rule.color_positive);
+        print_color("  ", "color-negative", rule.color_negative);
+        m_os << indent << "  min-length: " << rule.min_length << "\n";
+        m_os << indent << "  max-length: " << rule.max_length << "\n";
+        print_values(rule.values, false);
+    }
+
+    void operator()(const cond_format_iconset_rule_t& rule) const
+    {
+        m_os << indent << "- type: iconset\n";
+        m_os << indent << "  show-value: " << rule.show_value << "\n";
+        m_os << indent << "  icon-set: " << rule.icon_set << "\n";
+        m_os << indent << "  reverse: " << rule.reverse << "\n";
+        print_values(rule.values, false);
+    }
+};
+
 } // anonymous namespace
 
 doc_debug_state_dumper::doc_debug_state_dumper(const debug_state_context& cxt, const document_impl& doc) :
@@ -369,6 +494,7 @@ void sheet_debug_state_dumper::dump(const fs::path& outdir) const
     dump_column_widths(outdir);
     dump_row_heights(outdir);
     dump_auto_filter(outdir);
+    dump_cond_formats(outdir);
     dump_named_expressions(outdir);
 }
 
@@ -494,6 +620,34 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
     const auto& filter = *m_sheet.auto_filter;
     of << "range: " << m_cxt.print_range(filter.range) << "\n";
     print_auto_filter(filter, of);
+}
+
+void sheet_debug_state_dumper::dump_cond_formats(const fs::path& outdir) const
+{
+    if (m_sheet.cond_formats.empty())
+        return;
+
+    fs::path outpath = outdir / "cond-formats.yaml";
+    std::ofstream of{outpath};
+    if (!of)
+        return;
+
+    of << std::boolalpha;
+
+    cond_format_rule_printer printer{m_cxt, of};
+
+    for (const auto& format : m_sheet.cond_formats)
+    {
+        of << "- ranges:\n";
+
+        for (const auto& range : format.ranges)
+            of << "    - " << m_cxt.print_range(range) << "\n";
+
+        of << "  rules:\n";
+
+        for (const auto& rule : format.rules)
+            std::visit(printer, rule);
+    }
 }
 
 void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const

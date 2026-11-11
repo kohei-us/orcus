@@ -585,13 +585,11 @@ void test_orcus_spreadsheet_data_table_type_t()
 
 void test_orcus_spreadsheet_databar_axis_t()
 {
-#if 0
     ORCUS_TEST_FUNC_SCOPE;
 
     { bool result = verify_stream_value(orcus::spreadsheet::databar_axis_t::none, "none"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::databar_axis_t::middle, "middle"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::databar_axis_t::automatic, "automatic"); assert(result); }
-#endif
 }
 
 void test_orcus_spreadsheet_fill_pattern_t()

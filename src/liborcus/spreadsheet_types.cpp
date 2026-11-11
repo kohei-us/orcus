@@ -814,6 +814,17 @@ std::ostream& operator<< (std::ostream& os, cond_format_date_t period)
     return write_name_for_pos(os, names, std::size(names), period);
 }
 
+std::ostream& operator<< (std::ostream& os, databar_axis_t axis)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "middle",
+        "automatic",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), axis);
+}
+
 std::ostream& operator<< (std::ostream& os, icon_set_t icons)
 {
     static constexpr std::string_view names[] = {

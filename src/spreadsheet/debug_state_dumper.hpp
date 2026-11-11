@@ -58,6 +58,7 @@ private:
     void dump_column_widths(const fs::path& outdir) const;
     void dump_row_heights(const fs::path& outdir) const;
     void dump_auto_filter(const fs::path& outdir) const;
+    void dump_cond_formats(const fs::path& outdir) const;
     void dump_named_expressions(const fs::path& outdir) const;
 };
 
