@@ -610,6 +610,25 @@ xlsx_conditional_format_context::xlsx_conditional_format_context(
     m_resolver(resolver),
     m_sheet(sheet)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_conditionalFormatting }, // root element
+        { NS_ooxml_xlsx, XML_conditionalFormatting, NS_ooxml_xlsx, XML_cfRule },
+        { NS_ooxml_xlsx, XML_cfRule, NS_ooxml_xlsx, XML_formula },
+        { NS_ooxml_xlsx, XML_cfRule, NS_ooxml_xlsx, XML_colorScale },
+        { NS_ooxml_xlsx, XML_cfRule, NS_ooxml_xlsx, XML_dataBar },
+        { NS_ooxml_xlsx, XML_cfRule, NS_ooxml_xlsx, XML_iconSet },
+        { NS_ooxml_xlsx, XML_cfRule, NS_ooxml_xlsx, XML_extLst },
+        { NS_ooxml_xlsx, XML_colorScale, NS_ooxml_xlsx, XML_cfvo },
+        { NS_ooxml_xlsx, XML_colorScale, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_dataBar, NS_ooxml_xlsx, XML_cfvo },
+        { NS_ooxml_xlsx, XML_dataBar, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_iconSet, NS_ooxml_xlsx, XML_cfvo },
+        { NS_ooxml_xlsx, XML_extLst, NS_ooxml_xlsx, XML_ext },
+        { NS_ooxml_xlsx, XML_ext, NS_mso_x14, XML_id },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 xlsx_conditional_format_context::~xlsx_conditional_format_context()
@@ -627,13 +646,12 @@ void xlsx_conditional_format_context::end_child_context(xmlns_id_t /*ns*/, xml_t
 
 void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     switch (name)
     {
         case XML_conditionalFormatting:
         {
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             mp_cond_format = m_sheet.start_cond_format();
             if (mp_cond_format)
                 std::for_each(attrs.begin(), attrs.end(), conditional_formatting_attr_parser(*mp_cond_format, m_resolver));
@@ -641,7 +659,6 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         }
         case XML_cfRule:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_conditionalFormatting);
             if (mp_cond_format)
             {
                 cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser());
@@ -657,7 +674,6 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         }
         case XML_dataBar:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             data_bar_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), data_bar_attr_parser());
             if (mp_databar)
                 parser.import_data(*mp_databar);
@@ -665,7 +681,6 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         }
         case XML_iconSet:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             icon_set_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), icon_set_attr_parser());
             if (mp_iconset)
                 parser.import_data(*mp_iconset);
