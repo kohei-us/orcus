@@ -58,7 +58,7 @@ struct ORCUS_SPM_DLLPUBLIC cond_format_condition_rule_t
     /** ID of the differential cell format to apply when the condition is met. */
     std::optional<std::size_t> dxf_id;
 
-    /** Rank value, when the operator is either top_n or bottom_n. */
+    /** Rank value, when the operator is one of the top or bottom operators. */
     std::string_view rank;
 
     /** Text value, when the operator is one of the text operators. */
@@ -108,9 +108,6 @@ struct ORCUS_SPM_DLLPUBLIC cond_format_date_rule_t
  */
 struct ORCUS_SPM_DLLPUBLIC cond_format_colorscale_rule_t
 {
-    /** Whether or not to show the value in the cell. */
-    bool show_value = true;
-
     /** Thresholds of the color scale, each with a color. */
     std::vector<cond_format_value_t> values;
 

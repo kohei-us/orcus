@@ -272,6 +272,9 @@ struct cfRule_attr_parser
                         return ss::cond_format_operator_t::expression;
                 }
             case top10:
+                if (m_percent)
+                    return m_bottom ? ss::cond_format_operator_t::bottom_percent : ss::cond_format_operator_t::top_percent;
+
                 return m_bottom ? ss::cond_format_operator_t::bottom_n : ss::cond_format_operator_t::top_n;
             case uniqueValues:
                 return ss::cond_format_operator_t::unique;
@@ -776,7 +779,6 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
             {
                 const argb_color& color = m_colors[0];
                 mp_databar->set_color_positive(color.alpha, color.red, color.green, color.blue);
-                mp_databar->set_color_negative(color.alpha, color.red, color.green, color.blue);
 
                 for (const auto& cfvo : m_cfvo_values)
                 {

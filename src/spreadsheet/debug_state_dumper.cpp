@@ -216,7 +216,6 @@ public:
     void operator()(const cond_format_colorscale_rule_t& rule) const
     {
         m_os << indent << "- type: colorscale\n";
-        m_os << indent << "  show-value: " << rule.show_value << "\n";
         print_values(rule.values, true);
     }
 

@@ -501,6 +501,8 @@ enum class cond_format_operator_t
     unique,
     top_n,
     bottom_n,
+    top_percent,
+    bottom_percent,
     above_average,
     below_average,
     above_equal_average,

@@ -91,7 +91,6 @@ public:
     import_cond_format_colorscale(const import_cond_format_colorscale&) = delete;
     ~import_cond_format_colorscale();
 
-    virtual void set_show_value(bool show) override;
     virtual iface::import_cond_format_value* start_value() override;
     virtual void commit() override;
 

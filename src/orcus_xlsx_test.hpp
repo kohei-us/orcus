@@ -62,6 +62,15 @@ void test_xlsx_table_autofilter_basic_number();
 void test_xlsx_table_autofilter_basic_text();
 void test_xlsx_table();
 
+// conditional format
+void test_xlsx_cond_format_basic();
+void test_xlsx_cond_format_data_bars();
+void test_xlsx_cond_format_color_scales();
+void test_xlsx_cond_format_icon_sets();
+void test_xlsx_cond_format_dates();
+void test_xlsx_cond_format_multi_range();
+void test_xlsx_cond_format_formula();
+
 // view import
 void test_xlsx_view_cursor_per_sheet();
 void test_xlsx_view_cursor_split_pane();

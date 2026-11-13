@@ -118,11 +118,6 @@ import_cond_format_colorscale::import_cond_format_colorscale(string_pool& sp, co
 
 import_cond_format_colorscale::~import_cond_format_colorscale() = default;
 
-void import_cond_format_colorscale::set_show_value(bool show)
-{
-    m_rule.show_value = show;
-}
-
 iface::import_cond_format_value* import_cond_format_colorscale::start_value()
 {
     m_import_value.reset();

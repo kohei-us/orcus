@@ -796,7 +796,12 @@ test_data = \
 	test/xlsx/cell-properties/wrap-and-shrink.xlsx \
 	test/xlsx/column-width-row-height/input.xlsx \
 	test/xlsx/conditional-format/basic.xlsx \
+	test/xlsx/conditional-format/color-scales.xlsx \
 	test/xlsx/conditional-format/data-bars.xlsx \
+	test/xlsx/conditional-format/dates.xlsx \
+	test/xlsx/conditional-format/formula.xlsx \
+	test/xlsx/conditional-format/icon-sets.xlsx \
+	test/xlsx/conditional-format/multi-range.xlsx \
 	test/xlsx/data-table/multi-table.xlsx \
 	test/xlsx/data-table/one-variable.xlsx \
 	test/xlsx/date-cell/input.xlsx \

@@ -82,8 +82,8 @@ public:
     virtual void set_dxf_id(std::size_t dxf) = 0;
 
     /**
-     * Set the rank value.  This is only applicable when the operator is
-     * either @p top_n or @p bottom_n.
+     * Set the rank value.  This is only applicable when the operator is one
+     * of @p top_n, @p bottom_n, @p top_percent or @p bottom_percent.
      *
      * @param rank Rank value.
      */
@@ -164,13 +164,6 @@ class ORCUS_DLLPUBLIC import_cond_format_colorscale
 {
 public:
     virtual ~import_cond_format_colorscale();
-
-    /**
-     * Set whether or not to show the value in the cell.
-     *
-     * @param show Whether or not to show the value in the cell.
-     */
-    virtual void set_show_value(bool show) = 0;
 
     /**
      * Start importing a new threshold of the color scale.

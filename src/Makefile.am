@@ -522,6 +522,7 @@ EXTRA_PROGRAMS += \
 orcus_xlsx_test_SOURCES = \
 	orcus_xlsx_test.hpp \
 	orcus_xlsx_test.cpp \
+	orcus_xlsx_test_cond_format.cpp \
 	orcus_xlsx_test_table.cpp \
 	orcus_test_global.cpp
 

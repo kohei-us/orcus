@@ -544,6 +544,8 @@ void test_orcus_spreadsheet_cond_format_operator_t()
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::unique, "unique"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::top_n, "top-n"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::bottom_n, "bottom-n"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::top_percent, "top-percent"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::bottom_percent, "bottom-percent"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::above_average, "above-average"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::below_average, "below-average"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::cond_format_operator_t::above_equal_average, "above-equal-average"); assert(result); }

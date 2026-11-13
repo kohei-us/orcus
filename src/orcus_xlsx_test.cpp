@@ -2521,6 +2521,15 @@ int main()
     test_xlsx_table_autofilter_basic_text();
     test_xlsx_table();
 
+    // conditional format
+    test_xlsx_cond_format_basic();
+    test_xlsx_cond_format_data_bars();
+    test_xlsx_cond_format_color_scales();
+    test_xlsx_cond_format_icon_sets();
+    test_xlsx_cond_format_dates();
+    test_xlsx_cond_format_multi_range();
+    test_xlsx_cond_format_formula();
+
     // view import
     test_xlsx_view_cursor_per_sheet();
     test_xlsx_view_cursor_split_pane();

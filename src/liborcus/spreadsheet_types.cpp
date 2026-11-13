@@ -759,6 +759,8 @@ std::ostream& operator<< (std::ostream& os, cond_format_operator_t op)
         "unique",
         "top-n",
         "bottom-n",
+        "top-percent",
+        "bottom-percent",
         "above-average",
         "below-average",
         "above-equal-average",

@@ -80,7 +80,6 @@ cond_format_colorscale_rule_t& cond_format_colorscale_rule_t::operator=(cond_for
 
 void cond_format_colorscale_rule_t::swap(cond_format_colorscale_rule_t& other) noexcept
 {
-    std::swap(show_value, other.show_value);
     std::swap(values, other.values);
 }
 
