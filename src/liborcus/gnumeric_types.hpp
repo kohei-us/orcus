@@ -11,6 +11,7 @@
 
 #include <string_view>
 #include <optional>
+#include <vector>
 
 #include <mdds/segment_tree.hpp>
 
@@ -103,6 +104,8 @@ struct gnumeric_named_exp
     void reset();
 };
 
+struct gnumeric_condition;
+
 struct gnumeric_style
 {
     struct border_type
@@ -140,8 +143,29 @@ struct gnumeric_style
     border_type border_bl_tr; // bottom-left to top-right  (diagonal)
     border_type border_br_tl; // top-left to bottom-right (rev-diagonal)
 
+    std::vector<gnumeric_condition> conditions;
+
     bool valid() const;
 };
+
+/**
+ * Stores a single condition of a conditional format, which is stored as a
+ * child of the style of the region the condition is applied to.
+ */
+struct gnumeric_condition
+{
+    spreadsheet::cond_format_operator_t op = spreadsheet::cond_format_operator_t::unknown;
+    std::vector<std::string_view> expressions;
+
+    /** style to apply when the condition is met */
+    gnumeric_style style;
+};
+
+/**
+ * Convert a numeric value of the operator of a condition to its standard
+ * type.
+ */
+spreadsheet::cond_format_operator_t get_condition_operator(int val);
 
 /**
  * Parse an RGB color encoded as 'RRRR:GGGG:BBBB', each element being a 16-bit

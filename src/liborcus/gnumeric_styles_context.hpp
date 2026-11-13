@@ -43,8 +43,17 @@ private:
     void start_style_region(const std::vector<xml_token_attr_t>& attrs);
     void start_style(const std::vector<xml_token_attr_t>& attrs);
     void start_font(const std::vector<xml_token_attr_t>& attrs);
+    void start_condition(const std::vector<xml_token_attr_t>& attrs);
 
     void end_style_region();
+    void end_expression();
+
+    /**
+     * Get the style that the style attributes and child elements currently
+     * being parsed belong to.  It is the style of the current condition when
+     * a condition is being parsed, else the style of the current region.
+     */
+    gnumeric_style& get_target_style();
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
@@ -52,6 +61,9 @@ private:
 
     std::vector<gnumeric_style> m_styles;
     gnumeric_style m_current_style;
+    bool m_in_condition = false;
+
+    std::string_view m_chars;
 };
 
 } // namespace orcus

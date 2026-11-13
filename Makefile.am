@@ -186,6 +186,7 @@ test_data = \
 	test/gnumeric/cell-value-types/input.gnumeric \
 	test/gnumeric/colored-text/input.gnumeric \
 	test/gnumeric/column-width-row-height/input.gnumeric \
+	test/gnumeric/conditional-format/basic.gnumeric \
 	test/gnumeric/detect/文件名是中文.gnumeric \
 	test/gnumeric/formula-cells/check.txt \
 	test/gnumeric/formula-cells/input.gnumeric \

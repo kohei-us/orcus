@@ -12,6 +12,7 @@
 #include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_cond_format.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/import_interface_underline.hpp>
@@ -162,6 +163,84 @@ std::optional<std::size_t> import_number_format(
 
     inumfmt->set_code(*style.number_format);
     return inumfmt->commit();
+}
+
+std::size_t import_xf(
+    ss::iface::import_styles& istyles, const gnumeric_style& style, ss::xf_category_t category)
+{
+    std::size_t id_font = import_font_style(istyles, style);
+    auto id_fill = import_fill_style(istyles, style);
+    auto id_border = import_border_styles(istyles, style);
+    auto id_numfmt = import_number_format(istyles, style);
+
+    ss::iface::import_xf* ixf = istyles.start_xf(category);
+    ENSURE_INTERFACE(ixf, import_xf);
+
+    ixf->set_font(id_font);
+
+    if (id_fill)
+        ixf->set_fill(*id_fill);
+
+    if (id_border)
+        ixf->set_border(*id_border);
+
+    if (id_numfmt)
+        ixf->set_number_format(*id_numfmt);
+
+    bool apply_alignment =
+        style.hor_align != ss::hor_alignment_t::unknown ||
+        style.ver_align != ss::ver_alignment_t::unknown ||
+        style.wrap_text;
+
+    ixf->set_apply_alignment(apply_alignment);
+
+    if (style.hor_align != ss::hor_alignment_t::unknown)
+        ixf->set_horizontal_alignment(style.hor_align);
+
+    if (style.ver_align != ss::ver_alignment_t::unknown)
+        ixf->set_vertical_alignment(style.ver_align);
+
+    if (style.wrap_text)
+        ixf->set_wrap_text(*style.wrap_text);
+
+    return ixf->commit();
+}
+
+void import_cond_format(
+    ss::iface::import_styles& istyles, ss::iface::import_sheet& isheet, const gnumeric_style& style)
+{
+    if (style.conditions.empty())
+        return;
+
+    ss::iface::import_cond_format* icf = isheet.start_cond_format();
+    if (!icf)
+        return;
+
+    for (const gnumeric_condition& cond : style.conditions)
+    {
+        // the style of a condition is a differential format
+        std::size_t dxf_id = import_xf(istyles, cond.style, ss::xf_category_t::differential);
+
+        ss::iface::import_cond_format_condition* rule = icf->start_condition();
+        ENSURE_INTERFACE(rule, import_cond_format_condition);
+
+        rule->set_operator(cond.op);
+        rule->set_dxf_id(dxf_id);
+
+        for (std::string_view expr : cond.expressions)
+        {
+            ss::iface::import_cond_format_value* value = rule->start_value();
+            ENSURE_INTERFACE(value, import_cond_format_value);
+
+            value->set_formula(expr);
+            value->commit();
+        }
+
+        rule->commit();
+    }
+
+    icf->append_range(style.region);
+    icf->commit();
 }
 
 } // anonymous namespace
@@ -343,10 +422,19 @@ void gnumeric_content_xml_context::import_styles()
         return;
 
     std::size_t xf_count = 1; // one for the default style
+    std::size_t dxf_count = 0;
     for (const auto& sheet_styles : m_styles)
+    {
         xf_count += sheet_styles.size();
 
+        for (const gnumeric_style& style : sheet_styles)
+            dxf_count += style.conditions.size();
+    }
+
     istyles->set_xf_count(ss::xf_category_t::cell, xf_count);
+
+    if (dxf_count)
+        istyles->set_xf_count(ss::xf_category_t::differential, dxf_count);
 
     import_default_styles(istyles);
     import_cell_styles(istyles);
@@ -406,46 +494,13 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             if (!isheet)
                 continue;
 
-            std::size_t id_font = import_font_style(*istyles, style);
-            auto id_fill = import_fill_style(*istyles, style);
-            auto id_border = import_border_styles(*istyles, style);
-            auto id_numfmt = import_number_format(*istyles, style);
-
-            ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
-            ENSURE_INTERFACE(ixf, import_xf);
-
-            ixf->set_font(id_font);
-
-            if (id_fill)
-                ixf->set_fill(*id_fill);
-
-            if (id_border)
-                ixf->set_border(*id_border);
-
-            if (id_numfmt)
-                ixf->set_number_format(*id_numfmt);
-
-            bool apply_alignment =
-                style.hor_align != ss::hor_alignment_t::unknown ||
-                style.ver_align != ss::ver_alignment_t::unknown ||
-                style.wrap_text;
-
-            ixf->set_apply_alignment(apply_alignment);
-
-            if (style.hor_align != ss::hor_alignment_t::unknown)
-                ixf->set_horizontal_alignment(style.hor_align);
-
-            if (style.ver_align != ss::ver_alignment_t::unknown)
-                ixf->set_vertical_alignment(style.ver_align);
-
-            if (style.wrap_text)
-                ixf->set_wrap_text(*style.wrap_text);
-
-            std::size_t xfid = ixf->commit();
+            std::size_t xfid = import_xf(*istyles, style, ss::xf_category_t::cell);
             isheet->set_format(
                 style.region.first.row, style.region.first.column,
                 style.region.last.row, style.region.last.column,
                 xfid);
+
+            import_cond_format(*istyles, *isheet, style);
         }
     }
 }

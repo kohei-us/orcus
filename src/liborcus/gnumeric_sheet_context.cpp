@@ -21,62 +21,6 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-namespace {
-
-ss::cond_format_operator_t get_condition_operator(int val)
-{
-    switch (val)
-    {
-        case 0:
-            return ss::cond_format_operator_t::between;
-        case 1:
-            return ss::cond_format_operator_t::not_between;
-        case 2:
-            return ss::cond_format_operator_t::equal;
-        case 3:
-            return ss::cond_format_operator_t::not_equal;
-        case 4:
-            return ss::cond_format_operator_t::greater;
-        case 5:
-            return ss::cond_format_operator_t::less;
-        case 6:
-            return ss::cond_format_operator_t::greater_equal;
-        case 7:
-            return ss::cond_format_operator_t::less_equal;
-        case 8:
-            return ss::cond_format_operator_t::expression;
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-            break;
-        case 16:
-            return ss::cond_format_operator_t::contains;
-        case 17:
-            return ss::cond_format_operator_t::not_contains;
-        case 18:
-            return ss::cond_format_operator_t::begins_with;
-        case 19:
-            break;
-        case 20:
-            return ss::cond_format_operator_t::ends_with;
-        case 21:
-            break;
-        case 22:
-            return ss::cond_format_operator_t::contains_error;
-        case 23:
-            return ss::cond_format_operator_t::contains_no_error;
-        default:
-            break;
-    }
-    return ss::cond_format_operator_t::unknown;
-}
-
-} // anonymous namespace
-
 gnumeric_sheet_context::gnumeric_sheet_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),

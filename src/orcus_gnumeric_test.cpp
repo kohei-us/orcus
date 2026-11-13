@@ -1537,6 +1537,8 @@ int main()
     test_gnumeric_auto_filter_number();
     test_gnumeric_auto_filter_text();
 
+    test_gnumeric_cond_format_basic();
+
     return EXIT_SUCCESS;
 }
 

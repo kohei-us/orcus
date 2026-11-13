@@ -116,6 +116,41 @@ bool gnumeric_style::valid() const
     return true;
 }
 
+ss::cond_format_operator_t get_condition_operator(int val)
+{
+    static constexpr ss::cond_format_operator_t ops[] = {
+        ss::cond_format_operator_t::between, // 0
+        ss::cond_format_operator_t::not_between, // 1
+        ss::cond_format_operator_t::equal, // 2
+        ss::cond_format_operator_t::not_equal, // 3
+        ss::cond_format_operator_t::greater, // 4
+        ss::cond_format_operator_t::less, // 5
+        ss::cond_format_operator_t::greater_equal, // 6
+        ss::cond_format_operator_t::less_equal, // 7
+        ss::cond_format_operator_t::expression, // 8
+        ss::cond_format_operator_t::unknown, // 9
+        ss::cond_format_operator_t::unknown, // 10
+        ss::cond_format_operator_t::unknown, // 11
+        ss::cond_format_operator_t::unknown, // 12
+        ss::cond_format_operator_t::unknown, // 13
+        ss::cond_format_operator_t::unknown, // 14
+        ss::cond_format_operator_t::unknown, // 15
+        ss::cond_format_operator_t::contains, // 16
+        ss::cond_format_operator_t::not_contains, // 17
+        ss::cond_format_operator_t::begins_with, // 18
+        ss::cond_format_operator_t::unknown, // 19
+        ss::cond_format_operator_t::ends_with, // 20
+        ss::cond_format_operator_t::unknown, // 21
+        ss::cond_format_operator_t::contains_error, // 22
+        ss::cond_format_operator_t::contains_no_error, // 23
+    };
+
+    if (val < 0 || std::size_t(val) >= std::size(ops))
+        return ss::cond_format_operator_t::unknown;
+
+    return ops[val];
+}
+
 std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v)
 {
     ss::color_rgb_t color;

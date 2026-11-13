@@ -581,6 +581,7 @@ EXTRA_PROGRAMS += orcus-gnumeric-test
 orcus_gnumeric_test_SOURCES = \
 	orcus_gnumeric_test.hpp \
 	orcus_gnumeric_test.cpp \
+	orcus_gnumeric_test_cond_format.cpp \
 	orcus_gnumeric_test_table.cpp \
 	orcus_test_global.cpp
 

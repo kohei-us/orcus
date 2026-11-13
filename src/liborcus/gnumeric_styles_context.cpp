@@ -113,6 +113,10 @@ gnumeric_styles_context::gnumeric_styles_context(
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Styles }, // root element
+        { NS_gnumeric_gnm, XML_Condition, NS_gnumeric_gnm, XML_Expression0 },
+        { NS_gnumeric_gnm, XML_Condition, NS_gnumeric_gnm, XML_Expression1 },
+        { NS_gnumeric_gnm, XML_Condition, NS_gnumeric_gnm, XML_Style },
+        { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_Condition },
         { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_Font },
         { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_StyleBorder },
         { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Bottom },
@@ -149,36 +153,43 @@ void gnumeric_styles_context::start_element(
                 break;
             case XML_Top:
             {
-                m_current_style.border_top = parse_border_attributes(attrs);
+                get_target_style().border_top = parse_border_attributes(attrs);
                 break;
             }
             case XML_Bottom:
             {
-                m_current_style.border_bottom = parse_border_attributes(attrs);
+                get_target_style().border_bottom = parse_border_attributes(attrs);
                 break;
             }
             case XML_Left:
             {
-                m_current_style.border_left = parse_border_attributes(attrs);
+                get_target_style().border_left = parse_border_attributes(attrs);
                 break;
             }
             case XML_Right:
             {
-                m_current_style.border_right = parse_border_attributes(attrs);
+                get_target_style().border_right = parse_border_attributes(attrs);
                 break;
             }
             case XML_Diagonal:
             {
-                m_current_style.border_bl_tr = parse_border_attributes(attrs);
+                get_target_style().border_bl_tr = parse_border_attributes(attrs);
                 break;
             }
             case XML_Rev_Diagonal:
             {
-                m_current_style.border_br_tl = parse_border_attributes(attrs);
+                get_target_style().border_br_tl = parse_border_attributes(attrs);
                 break;
             }
             case XML_Font:
                 start_font(attrs);
+                break;
+            case XML_Condition:
+                start_condition(attrs);
+                break;
+            case XML_Expression0:
+            case XML_Expression1:
+                m_chars = std::string_view{};
                 break;
             default:
                 warn_unhandled();
@@ -197,6 +208,13 @@ bool gnumeric_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_StyleRegion:
                 end_style_region();
                 break;
+            case XML_Condition:
+                m_in_condition = false;
+                break;
+            case XML_Expression0:
+            case XML_Expression1:
+                end_expression();
+                break;
         }
     }
     return pop_stack(ns, name);
@@ -214,7 +232,13 @@ void gnumeric_styles_context::characters(std::string_view str, bool transient)
             {
                 if (transient)
                     str = intern(str);
-                m_current_style.font_name = str;
+                get_target_style().font_name = str;
+                break;
+            }
+            case XML_Expression0:
+            case XML_Expression1:
+            {
+                m_chars = transient ? intern(str) : str;
                 break;
             }
         }
@@ -226,6 +250,8 @@ void gnumeric_styles_context::reset(ss::sheet_t sheet)
     m_sheet = sheet;
     m_styles.clear();
     m_current_style = gnumeric_style{};
+    m_in_condition = false;
+    m_chars = std::string_view{};
 }
 
 std::vector<gnumeric_style> gnumeric_styles_context::pop_styles()
@@ -260,35 +286,37 @@ void gnumeric_styles_context::start_style_region(const std::vector<xml_token_att
 
 void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& attrs)
 {
+    gnumeric_style& style = get_target_style();
+
     for (const auto& attr : attrs)
     {
         switch (attr.name)
         {
             case XML_HAlign:
-                m_current_style.hor_align = hor_align::get().find(attr.value);
+                style.hor_align = hor_align::get().find(attr.value);
                 break;
             case XML_VAlign:
-                m_current_style.ver_align = ver_align::get().find(attr.value);
+                style.ver_align = ver_align::get().find(attr.value);
                 break;
             case XML_WrapText:
-                m_current_style.wrap_text = to_bool(attr.value);
+                style.wrap_text = to_bool(attr.value);
                 break;
             case XML_Fore:
-                m_current_style.fore = parse_gnumeric_rgb(attr.value);
+                style.fore = parse_gnumeric_rgb(attr.value);
                 break;
             case XML_Back:
-                m_current_style.back = parse_gnumeric_rgb(attr.value);
+                style.back = parse_gnumeric_rgb(attr.value);
                 break;
             case XML_PatternColor:
-                m_current_style.pattern_color = parse_gnumeric_rgb(attr.value);
+                style.pattern_color = parse_gnumeric_rgb(attr.value);
                 break;
             case XML_Shade:
-                m_current_style.pattern = to_fill_pattern(to_long(attr.value));
+                style.pattern = to_fill_pattern(to_long(attr.value));
                 break;
             case XML_Format:
             {
                 auto v = attr.transient ? intern(attr.value) : attr.value;
-                m_current_style.number_format = v;
+                style.number_format = v;
                 break;
             }
         }
@@ -297,6 +325,8 @@ void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& a
 
 void gnumeric_styles_context::start_font(const std::vector<xml_token_attr_t>& attrs)
 {
+    gnumeric_style& style = get_target_style();
+
     for (const auto& attr : attrs)
     {
         switch (attr.name)
@@ -306,35 +336,69 @@ void gnumeric_styles_context::start_font(const std::vector<xml_token_attr_t>& at
                 const char* p_end = nullptr;
                 double v = to_double(attr.value, &p_end);
                 if (attr.value.data() < p_end)
-                    m_current_style.font_unit = v;
+                    style.font_unit = v;
                 break;
             }
             case XML_Bold:
-                m_current_style.bold = to_bool(attr.value);
+                style.bold = to_bool(attr.value);
                 break;
             case XML_Italic:
-                m_current_style.italic = to_bool(attr.value);
+                style.italic = to_bool(attr.value);
                 break;
             case XML_Underline:
-                m_current_style.underline = to_long(attr.value);
+                style.underline = to_long(attr.value);
                 break;
             case XML_StrikeThrough:
-                m_current_style.strikethrough = to_bool(attr.value);
+                style.strikethrough = to_bool(attr.value);
                 break;
             case XML_Script:
             {
                 auto v = to_long(attr.value);
-                m_current_style.script = static_cast<gnumeric_script_type>(v);
+                style.script = static_cast<gnumeric_script_type>(v);
                 break;
             }
         }
     }
 }
 
+void gnumeric_styles_context::start_condition(const std::vector<xml_token_attr_t>& attrs)
+{
+    gnumeric_condition cond;
+
+    for (const auto& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Operator:
+                cond.op = get_condition_operator(to_long(attr.value));
+                break;
+        }
+    }
+
+    m_current_style.conditions.push_back(std::move(cond));
+    m_in_condition = true;
+}
+
 void gnumeric_styles_context::end_style_region()
 {
     if (m_current_style.valid())
         m_styles.push_back(m_current_style);
+}
+
+void gnumeric_styles_context::end_expression()
+{
+    if (!m_in_condition)
+        return;
+
+    m_current_style.conditions.back().expressions.push_back(m_chars);
+}
+
+gnumeric_style& gnumeric_styles_context::get_target_style()
+{
+    if (m_in_condition)
+        return m_current_style.conditions.back().style;
+
+    return m_current_style;
 }
 
 } // namespace orcus
