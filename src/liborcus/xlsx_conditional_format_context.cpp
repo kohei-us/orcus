@@ -171,219 +171,120 @@ const map_type& get()
 
 } // namespace cond_date
 
-} // anonymous namespace
-
-struct cfRule_attr_parser
+struct cf_rule_attrs
 {
-    cfRule_attr_parser():
-        m_type(none),
-        m_operator(operator_default),
-        m_date(date_default),
-        m_above_average(true),
-        m_equal_average(false),
-        m_percent(false),
-        m_bottom(false)
-    {
-    }
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_type:
-                m_type = cond_type::get().find(attr.value);
-            break;
-            case XML_dxfId:
-                m_dxf_id = to_long(attr.value);
-            break;
-            case XML_aboveAverage:
-            {
-                m_above_average = to_bool(attr.value);
-            }
-            break;
-            case XML_percent:
-                m_percent = to_bool(attr.value);
-            break;
-            case XML_bottom:
-                m_bottom = to_bool(attr.value);
-            break;
-            case XML_operator:
-                m_operator = cond_operator::get().find(attr.value);
-            break;
-            case XML_text:
-                // do we need to worry about the transient flag here?
-                m_text = attr.value;
-            break;
-            case XML_timePeriod:
-                m_date = cond_date::get().find(attr.value);
-            break;
-            case XML_rank:
-                // do we need to worry about the transient flag here?
-                m_rank = attr.value;
-            break;
-            case XML_stdDev:
-                // do we need to worry about the transient flag here?
-                m_std_dev = attr.value;
-            break;
-            case XML_equalAverage:
-                m_equal_average = to_bool(attr.value);
-            break;
-            default:
-                break;
-        }
-    }
-
-    xlsx_cond_format_type get_type() const { return m_type; }
-
-    ss::cond_format_operator_t get_operator() const
-    {
-        switch (m_type)
-        {
-            case expression:
-                return ss::cond_format_operator_t::expression;
-            case cellIs:
-                switch (m_operator)
-                {
-                    case operator_beginsWith:
-                        return ss::cond_format_operator_t::begins_with;
-                    case operator_between:
-                        return ss::cond_format_operator_t::between;
-                    case operator_containsText:
-                        return ss::cond_format_operator_t::contains;
-                    case operator_endsWith:
-                        return ss::cond_format_operator_t::ends_with;
-                    case operator_equal:
-                        return ss::cond_format_operator_t::equal;
-                    case operator_greaterThan:
-                        return ss::cond_format_operator_t::greater;
-                    case operator_greaterThanOrEqual:
-                        return ss::cond_format_operator_t::greater_equal;
-                    case operator_lessThan:
-                        return ss::cond_format_operator_t::less;
-                    case operator_lessThanOrEqual:
-                        return ss::cond_format_operator_t::less_equal;
-                    case operator_notBetween:
-                        return ss::cond_format_operator_t::not_between;
-                    case operator_notContains:
-                        return ss::cond_format_operator_t::not_contains;
-                    case operator_notEqual:
-                        return ss::cond_format_operator_t::not_equal;
-                    default:
-                        return ss::cond_format_operator_t::expression;
-                }
-            case top10:
-                if (m_percent)
-                    return m_bottom ? ss::cond_format_operator_t::bottom_percent : ss::cond_format_operator_t::top_percent;
-
-                return m_bottom ? ss::cond_format_operator_t::bottom_n : ss::cond_format_operator_t::top_n;
-            case uniqueValues:
-                return ss::cond_format_operator_t::unique;
-            case duplicateValues:
-                return ss::cond_format_operator_t::duplicate;
-            case containsText:
-                return ss::cond_format_operator_t::contains;
-            case notContainsText:
-                return ss::cond_format_operator_t::not_contains;
-            case beginsWith:
-                return ss::cond_format_operator_t::begins_with;
-            case endsWith:
-                return ss::cond_format_operator_t::ends_with;
-            case containsBlanks:
-                return ss::cond_format_operator_t::contains_blanks;
-            case containsErrors:
-                return ss::cond_format_operator_t::contains_error;
-            case notContainsErrors:
-                return ss::cond_format_operator_t::contains_no_error;
-            case aboveAverage:
-                if (m_above_average)
-                    return m_equal_average ? ss::cond_format_operator_t::above_equal_average : ss::cond_format_operator_t::above_average;
-                return m_equal_average ? ss::cond_format_operator_t::below_equal_average : ss::cond_format_operator_t::below_average;
-            default:
-                return ss::cond_format_operator_t::unknown;
-        }
-    }
-
-    ss::cond_format_date_t get_period() const
-    {
-        switch (m_date)
-        {
-            case date_last7Days:
-                return ss::cond_format_date_t::last_7_days;
-            case date_lastMonth:
-                return ss::cond_format_date_t::last_month;
-            case date_lastWeek:
-                return ss::cond_format_date_t::last_week;
-            case date_nextMonth:
-                return ss::cond_format_date_t::next_month;
-            case date_thisMonth:
-                return ss::cond_format_date_t::this_month;
-            case date_thisWeek:
-                return ss::cond_format_date_t::this_week;
-            case date_today:
-                return ss::cond_format_date_t::today;
-            case date_tomorrow:
-                return ss::cond_format_date_t::tomorrow;
-            case date_yesterday:
-                return ss::cond_format_date_t::yesterday;
-            default:
-                return ss::cond_format_date_t::unknown;
-        }
-    }
-
-    const std::optional<std::size_t>& get_dxf_id() const { return m_dxf_id; }
-    std::string_view get_text() const { return m_text; }
-    std::string_view get_std_dev() const { return m_std_dev; }
-    std::string_view get_rank() const { return m_rank; }
-
-private:
-    xlsx_cond_format_type m_type;
-    xlsx_cond_format_operator m_operator;
-    xlsx_cond_format_date m_date;
-    std::optional<std::size_t> m_dxf_id;
-    bool m_above_average;
-    bool m_equal_average;
-    bool m_percent;
-    bool m_bottom;
-    std::string_view m_text;
-    std::string_view m_std_dev;
-    std::string_view m_rank;
+    xlsx_cond_format_type type = none;
+    xlsx_cond_format_operator op = operator_default;
+    xlsx_cond_format_date date = date_default;
+    std::optional<std::size_t> dxf_id;
+    bool above_average = true;
+    bool equal_average = false;
+    bool percent = false;
+    bool bottom = false;
+    std::string_view text;
+    std::string_view std_dev;
+    std::string_view rank;
 };
 
-namespace {
-
-struct conditional_formatting_attr_parser
+ss::cond_format_operator_t to_cell_is_operator(xlsx_cond_format_operator op)
 {
-    conditional_formatting_attr_parser(
-        ss::iface::import_cond_format& cond_format, ss::iface::import_reference_resolver& resolver):
-        m_cond_format(cond_format),
-        m_resolver(resolver)
+    switch (op)
     {
+        case operator_beginsWith:
+            return ss::cond_format_operator_t::begins_with;
+        case operator_between:
+            return ss::cond_format_operator_t::between;
+        case operator_containsText:
+            return ss::cond_format_operator_t::contains;
+        case operator_endsWith:
+            return ss::cond_format_operator_t::ends_with;
+        case operator_equal:
+            return ss::cond_format_operator_t::equal;
+        case operator_greaterThan:
+            return ss::cond_format_operator_t::greater;
+        case operator_greaterThanOrEqual:
+            return ss::cond_format_operator_t::greater_equal;
+        case operator_lessThan:
+            return ss::cond_format_operator_t::less;
+        case operator_lessThanOrEqual:
+            return ss::cond_format_operator_t::less_equal;
+        case operator_notBetween:
+            return ss::cond_format_operator_t::not_between;
+        case operator_notContains:
+            return ss::cond_format_operator_t::not_contains;
+        case operator_notEqual:
+            return ss::cond_format_operator_t::not_equal;
+        default:
+            return ss::cond_format_operator_t::expression;
     }
+}
 
-    void operator()(const xml_token_attr_t& attr)
+ss::cond_format_operator_t to_operator(const cf_rule_attrs& rule)
+{
+    switch (rule.type)
     {
-        switch (attr.name)
-        {
-            case XML_sqref:
-            {
-                // sqref may contain multiple ranges separated by spaces
-                for (std::string_view token : string_helper::split_string(attr.value, ' '))
-                {
-                    if (token.empty())
-                        continue;
+        case expression:
+            return ss::cond_format_operator_t::expression;
+        case cellIs:
+            return to_cell_is_operator(rule.op);
+        case top10:
+            if (rule.percent)
+                return rule.bottom ? ss::cond_format_operator_t::bottom_percent : ss::cond_format_operator_t::top_percent;
 
-                    auto range = to_rc_range(m_resolver.resolve_range(token));
-                    m_cond_format.append_range(range);
-                }
-                break;
-            }
-        }
+            return rule.bottom ? ss::cond_format_operator_t::bottom_n : ss::cond_format_operator_t::top_n;
+        case uniqueValues:
+            return ss::cond_format_operator_t::unique;
+        case duplicateValues:
+            return ss::cond_format_operator_t::duplicate;
+        case containsText:
+            return ss::cond_format_operator_t::contains;
+        case notContainsText:
+            return ss::cond_format_operator_t::not_contains;
+        case beginsWith:
+            return ss::cond_format_operator_t::begins_with;
+        case endsWith:
+            return ss::cond_format_operator_t::ends_with;
+        case containsBlanks:
+            return ss::cond_format_operator_t::contains_blanks;
+        case containsErrors:
+            return ss::cond_format_operator_t::contains_error;
+        case notContainsErrors:
+            return ss::cond_format_operator_t::contains_no_error;
+        case aboveAverage:
+            if (rule.above_average)
+                return rule.equal_average ? ss::cond_format_operator_t::above_equal_average : ss::cond_format_operator_t::above_average;
+            return rule.equal_average ? ss::cond_format_operator_t::below_equal_average : ss::cond_format_operator_t::below_average;
+        default:
+            return ss::cond_format_operator_t::unknown;
     }
+}
 
-private:
-    ss::iface::import_cond_format& m_cond_format;
-    ss::iface::import_reference_resolver& m_resolver;
-};
+ss::cond_format_date_t to_period(xlsx_cond_format_date date)
+{
+    switch (date)
+    {
+        case date_last7Days:
+            return ss::cond_format_date_t::last_7_days;
+        case date_lastMonth:
+            return ss::cond_format_date_t::last_month;
+        case date_lastWeek:
+            return ss::cond_format_date_t::last_week;
+        case date_nextMonth:
+            return ss::cond_format_date_t::next_month;
+        case date_thisMonth:
+            return ss::cond_format_date_t::this_month;
+        case date_thisWeek:
+            return ss::cond_format_date_t::this_week;
+        case date_today:
+            return ss::cond_format_date_t::today;
+        case date_tomorrow:
+            return ss::cond_format_date_t::tomorrow;
+        case date_yesterday:
+            return ss::cond_format_date_t::yesterday;
+        default:
+            return ss::cond_format_date_t::unknown;
+    }
+}
 
 enum xlsx_cond_format_cfvo_type
 {
@@ -471,137 +372,6 @@ struct cfvo_values
     std::string_view m_value;
 };
 
-namespace {
-
-struct cfvo_attr_parser
-{
-    cfvo_attr_parser(string_pool& pool):
-        m_string_pool(pool)
-    {
-    }
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_gte:
-                m_values.m_include_equal = to_bool(attr.value);
-            break;
-            case XML_type:
-                m_values.m_type = cfvo_type::get().find(attr.value);
-            break;
-            case XML_val:
-                if (attr.transient)
-                {
-                    m_values.m_value = m_string_pool.intern(attr.value).first;
-                }
-                else
-                {
-                    m_values.m_value = attr.value;
-                }
-            break;
-            default:
-            break;
-        }
-    }
-
-    cfvo_values get_values()
-    {
-        return m_values;
-    }
-
-private:
-    cfvo_values m_values;
-    string_pool& m_string_pool;
-};
-
-struct data_bar_attr_parser
-{
-    data_bar_attr_parser():
-        m_show_value(true),
-        m_min_length(10),
-        m_max_length(90)
-    {
-    }
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_showValue:
-                m_show_value = to_bool(attr.value);
-            break;
-            case XML_maxLength:
-                m_max_length = to_long(attr.value);
-            break;
-            case XML_minLength:
-                m_min_length = to_long(attr.value);
-            break;
-            default:
-            break;
-        }
-    }
-
-    void import_data(ss::iface::import_cond_format_databar& rule)
-    {
-        rule.set_show_value(m_show_value);
-        rule.set_min_length(m_min_length);
-        rule.set_max_length(m_max_length);
-    }
-
-private:
-    bool m_show_value;
-    size_t m_min_length;
-    size_t m_max_length;
-};
-
-struct icon_set_attr_parser
-{
-    icon_set_attr_parser():
-        m_reverse(false),
-        m_percent(true),
-        m_show_value(true),
-        m_icon_set(ss::icon_set_t::three_arrows)
-    {
-    }
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_iconSet:
-                m_icon_set = icon_set::get().find(attr.value);
-            break;
-            case XML_percent:
-                m_percent = to_bool(attr.value);
-            break;
-            case XML_reverse:
-                m_reverse = to_bool(attr.value);
-            break;
-            case XML_showValue:
-                m_show_value = to_bool(attr.value);
-            break;
-            default:
-            break;
-        }
-    }
-
-    void import_data(ss::iface::import_cond_format_iconset& rule)
-    {
-        rule.set_show_value(m_show_value);
-        rule.set_reverse(m_reverse);
-        rule.set_icon_set(m_icon_set);
-    }
-
-private:
-    bool m_reverse;
-    bool m_percent;
-    bool m_show_value;
-    ss::icon_set_t m_icon_set;
-};
-
-}
-
 xlsx_conditional_format_context::xlsx_conditional_format_context(
         session_context& session_cxt, const tokens& tokens,
         ss::iface::import_reference_resolver& resolver,
@@ -651,41 +421,20 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
     switch (name)
     {
         case XML_conditionalFormatting:
-        {
-            mp_cond_format = m_sheet.start_cond_format();
-            if (mp_cond_format)
-                std::for_each(attrs.begin(), attrs.end(), conditional_formatting_attr_parser(*mp_cond_format, m_resolver));
+            start_conditional_formatting(attrs);
             break;
-        }
         case XML_cfRule:
-        {
-            if (mp_cond_format)
-            {
-                cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser());
-                start_rule(parser);
-            }
+            start_cf_rule(attrs);
             break;
-        }
         case XML_cfvo:
-        {
-            cfvo_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfvo_attr_parser(m_pool));
-            m_cfvo_values.push_back(parser.get_values());
+            start_cfvo(attrs);
             break;
-        }
         case XML_dataBar:
-        {
-            data_bar_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), data_bar_attr_parser());
-            if (mp_databar)
-                parser.import_data(*mp_databar);
+            start_data_bar(attrs);
             break;
-        }
         case XML_iconSet:
-        {
-            icon_set_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), icon_set_attr_parser());
-            if (mp_iconset)
-                parser.import_data(*mp_iconset);
+            start_icon_set(attrs);
             break;
-        }
         case XML_color:
         {
             for (const xml_token_attr_t& attr : attrs)
@@ -834,15 +583,15 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
 
             if (mp_colorscale)
             {
-                std::vector<argb_color>::const_iterator itrColor = m_colors.begin();
-                for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr, ++itrColor)
+                for (auto it_color = m_colors.begin(); const auto& cfvo : m_cfvo_values)
                 {
                     auto* value = mp_colorscale->start_value();
                     ENSURE_INTERFACE(value, import_cond_format_value);
 
-                    import_cfvo(*itr, *value);
-                    value->set_color(itrColor->alpha, itrColor->red, itrColor->green, itrColor->blue);
+                    import_cfvo(cfvo, *value);
+                    value->set_color(it_color->alpha, it_color->red, it_color->green, it_color->blue);
                     value->commit();
+                    ++it_color;
                 }
             }
             break;
@@ -860,19 +609,95 @@ void xlsx_conditional_format_context::characters(std::string_view str, bool tran
         m_cur_str = m_pool.intern(m_cur_str).first;
 }
 
-void xlsx_conditional_format_context::start_rule(const cfRule_attr_parser& attrs)
+void xlsx_conditional_format_context::start_conditional_formatting(const xml_token_attrs_t& attrs)
 {
-    switch (attrs.get_type())
+    mp_cond_format = m_sheet.start_cond_format();
+    if (!mp_cond_format)
+        return;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_sqref:
+            {
+                // sqref may contain multiple ranges separated by spaces
+                for (std::string_view token : string_helper::split_string(attr.value, ' '))
+                {
+                    if (token.empty())
+                        continue;
+
+                    auto range = to_rc_range(m_resolver.resolve_range(token));
+                    mp_cond_format->append_range(range);
+                }
+                break;
+            }
+        }
+    }
+}
+
+void xlsx_conditional_format_context::start_cf_rule(const xml_token_attrs_t& attrs)
+{
+    if (!mp_cond_format)
+        return;
+
+    // NB: The attribute values are passed on before this call returns, so there
+    // is no need to intern the transient ones.
+    cf_rule_attrs rule;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_type:
+                rule.type = cond_type::get().find(attr.value);
+                break;
+            case XML_dxfId:
+                rule.dxf_id = to_long(attr.value);
+                break;
+            case XML_aboveAverage:
+                rule.above_average = to_bool(attr.value);
+                break;
+            case XML_percent:
+                rule.percent = to_bool(attr.value);
+                break;
+            case XML_bottom:
+                rule.bottom = to_bool(attr.value);
+                break;
+            case XML_operator:
+                rule.op = cond_operator::get().find(attr.value);
+                break;
+            case XML_text:
+                rule.text = attr.value;
+                break;
+            case XML_timePeriod:
+                rule.date = cond_date::get().find(attr.value);
+                break;
+            case XML_rank:
+                rule.rank = attr.value;
+                break;
+            case XML_stdDev:
+                rule.std_dev = attr.value;
+                break;
+            case XML_equalAverage:
+                rule.equal_average = to_bool(attr.value);
+                break;
+            default:
+                ;
+        }
+    }
+
+    switch (rule.type)
     {
         case timePeriod:
         {
             mp_date = mp_cond_format->start_date();
             ENSURE_INTERFACE(mp_date, import_cond_format_date);
 
-            mp_date->set_period(attrs.get_period());
+            mp_date->set_period(to_period(rule.date));
 
-            if (attrs.get_dxf_id())
-                mp_date->set_dxf_id(*attrs.get_dxf_id());
+            if (rule.dxf_id)
+                mp_date->set_dxf_id(*rule.dxf_id);
             break;
         }
         case colorScale:
@@ -901,22 +726,114 @@ void xlsx_conditional_format_context::start_rule(const cfRule_attr_parser& attrs
             mp_condition = mp_cond_format->start_condition();
             ENSURE_INTERFACE(mp_condition, import_cond_format_condition);
 
-            mp_condition->set_operator(attrs.get_operator());
+            mp_condition->set_operator(to_operator(rule));
 
-            if (attrs.get_dxf_id())
-                mp_condition->set_dxf_id(*attrs.get_dxf_id());
+            if (rule.dxf_id)
+                mp_condition->set_dxf_id(*rule.dxf_id);
 
-            if (!attrs.get_rank().empty())
-                mp_condition->set_rank(attrs.get_rank());
+            if (!rule.rank.empty())
+                mp_condition->set_rank(rule.rank);
 
-            if (!attrs.get_text().empty())
-                mp_condition->set_text(attrs.get_text());
+            if (!rule.text.empty())
+                mp_condition->set_text(rule.text);
 
-            if (!attrs.get_std_dev().empty())
-                mp_condition->set_std_dev(attrs.get_std_dev());
-            break;
+            if (!rule.std_dev.empty())
+                mp_condition->set_std_dev(rule.std_dev);
         }
     }
+}
+
+void xlsx_conditional_format_context::start_cfvo(const xml_token_attrs_t& attrs)
+{
+    cfvo_values values;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_gte:
+                values.m_include_equal = to_bool(attr.value);
+                break;
+            case XML_type:
+                values.m_type = cfvo_type::get().find(attr.value);
+                break;
+            case XML_val:
+                if (attr.transient)
+                {
+                    values.m_value = m_pool.intern(attr.value).first;
+                }
+                else
+                {
+                    values.m_value = attr.value;
+                }
+                break;
+            default:;
+        }
+    }
+
+    m_cfvo_values.push_back(values);
+}
+
+void xlsx_conditional_format_context::start_data_bar(const xml_token_attrs_t& attrs)
+{
+    bool show_value = true;
+    std::size_t min_length = 10;
+    std::size_t max_length = 90;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_showValue:
+                show_value = to_bool(attr.value);
+                break;
+            case XML_maxLength:
+                max_length = to_long(attr.value);
+                break;
+            case XML_minLength:
+                min_length = to_long(attr.value);
+                break;
+            default:;
+        }
+    }
+
+    if (!mp_databar)
+        return;
+
+    mp_databar->set_show_value(show_value);
+    mp_databar->set_min_length(min_length);
+    mp_databar->set_max_length(max_length);
+}
+
+void xlsx_conditional_format_context::start_icon_set(const xml_token_attrs_t& attrs)
+{
+    bool reverse = false;
+    bool show_value = true;
+    ss::icon_set_t icon_set_type = ss::icon_set_t::three_arrows;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_iconSet:
+                icon_set_type = icon_set::get().find(attr.value);
+                break;
+            case XML_reverse:
+                reverse = to_bool(attr.value);
+                break;
+            case XML_showValue:
+                show_value = to_bool(attr.value);
+                break;
+            default:;
+        }
+    }
+
+    if (!mp_iconset)
+        return;
+
+    mp_iconset->set_show_value(show_value);
+    mp_iconset->set_reverse(reverse);
+    mp_iconset->set_icon_set(icon_set_type);
 }
 
 void xlsx_conditional_format_context::commit_rule()

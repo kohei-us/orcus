@@ -30,7 +30,6 @@ namespace spreadsheet { namespace iface {
 } }
 
 struct cfvo_values;
-struct cfRule_attr_parser;
 
 struct argb_color
 {
@@ -59,7 +58,11 @@ public:
     void reset();
 
 private:
-    void start_rule(const cfRule_attr_parser& attrs);
+    void start_conditional_formatting(const xml_token_attrs_t& attrs);
+    void start_cf_rule(const xml_token_attrs_t& attrs);
+    void start_cfvo(const xml_token_attrs_t& attrs);
+    void start_data_bar(const xml_token_attrs_t& attrs);
+    void start_icon_set(const xml_token_attrs_t& attrs);
     void commit_rule();
 
     spreadsheet::iface::import_reference_resolver& m_resolver;
