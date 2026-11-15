@@ -300,6 +300,10 @@ void xls_xml_auto_filter_context::end_column()
         return {};
     };
 
+    // close the implicit AND node of conditions placed directly under the column
+    if (m_filter_node_stack.size() == 2u)
+        end_filter_node();
+
     switch (m_column.type)
     {
         case filter_column_type::all:
@@ -325,11 +329,7 @@ void xls_xml_auto_filter_context::end_column()
             break;
         }
         case filter_column_type::custom:
-        {
-            if (m_filter_node_stack.size() == 2u)
-                end_filter_node();
             break;
-        }
     }
 
     assert(m_filter_node_stack.size() == 1u); // root node should still exist
@@ -420,6 +420,9 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
 
 void xls_xml_auto_filter_context::start_filter_node(ss::auto_filter_node_op_t op)
 {
+    if (!mp_auto_filter)
+        return;
+
     m_column.node_op = op;
 
     assert(!m_filter_node_stack.empty());
@@ -430,6 +433,9 @@ void xls_xml_auto_filter_context::start_filter_node(ss::auto_filter_node_op_t op
 
 void xls_xml_auto_filter_context::end_filter_node()
 {
+    if (!mp_auto_filter)
+        return;
+
     assert(!m_filter_node_stack.empty());
     m_filter_node_stack.back()->commit();
     m_filter_node_stack.pop_back();
