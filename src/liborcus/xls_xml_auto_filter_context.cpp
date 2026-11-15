@@ -153,6 +153,7 @@ void xls_xml_auto_filter_context::reset(spreadsheet::iface::import_sheet* parent
 {
     mp_sheet = parent_sheet;
     mp_auto_filter = nullptr;
+    m_column_count = 0;
     m_filter_node_stack.clear();
 }
 
@@ -182,10 +183,23 @@ void xls_xml_auto_filter_context::start_auto_filter(const xml_token_attrs_t& att
         }
     }
 
-    if (range)
-        mp_auto_filter = mp_sheet->start_auto_filter(*range);
-    else
+    if (!range)
+    {
         warn("range value did not get picked up in auto-filter context, skipping import");
+        return;
+    }
+
+    auto clamped = ss::clamp_range(*range, mp_sheet->get_sheet_size());
+    if (!clamped)
+    {
+        std::ostringstream os;
+        os << "auto-filter range " << *range << " is invalid for the sheet, skipping import";
+        warn(os.str());
+        return;
+    }
+
+    m_column_count = clamped->last.column - clamped->first.column + 1;
+    mp_auto_filter = mp_sheet->start_auto_filter(*clamped);
 }
 
 void xls_xml_auto_filter_context::end_auto_filter()
@@ -218,7 +232,17 @@ void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
                 case XML_Index:
                 {
                     if (auto v = to_long_checked(attr.value); v)
-                        m_column.index = *v - 1; // 1-based to 0-based
+                    {
+                        if (*v >= 1 && *v <= m_column_count)
+                            m_column.index = *v - 1; // 1-based to 0-based
+                        else
+                        {
+                            m_column.index.reset();
+                            std::ostringstream os;
+                            os << "auto-filter column index " << *v << " is outside the filter range";
+                            warn(os.str());
+                        }
+                    }
                     break;
                 }
                 case XML_Type:
@@ -288,12 +312,15 @@ void xls_xml_auto_filter_context::end_column()
         case filter_column_type::bottom:
         case filter_column_type::bottom_percent:
         {
+            if (!m_column.index)
+                break;
+
             auto op = to_dest_type(m_column.type);
             assert(op.has_value());
             assert(m_filter_node_stack.size() == 1u);
             auto* node = m_filter_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
             ENSURE_INTERFACE(node, import_auto_filter_node);
-            node->append_item(m_column.index, *op, m_column.value);
+            node->append_item(*m_column.index, *op, m_column.value);
             node->commit();
             break;
         }
@@ -374,9 +401,12 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
                 return;
             }
 
+            if (!m_column.index)
+                return;
+
             assert(!m_filter_node_stack.empty());
             auto* node = m_filter_node_stack.back();
-            node->append_item(m_column.index, *op, *v);
+            node->append_item(*m_column.index, *op, *v);
             break;
         }
         default:
@@ -410,11 +440,14 @@ void xls_xml_auto_filter_context::append_equal_item(ss::auto_filter_op_t op, std
     // In Excel 2003 XML format, filter condition with equality operator always
     // treats the rhs value as text.
 
+    if (!m_column.index)
+        return;
+
     assert(!m_filter_node_stack.empty());
     auto* node = m_filter_node_stack.back();
 
     auto res = m_value_parser.parse(op, value);
-    node->append_item(m_column.index, res.op, res.value, res.regex);
+    node->append_item(*m_column.index, res.op, res.value, res.regex);
 }
 
 } // namespace orcus

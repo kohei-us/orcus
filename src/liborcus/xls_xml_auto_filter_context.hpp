@@ -67,7 +67,7 @@ private:
 
     struct column_attrs
     {
-        spreadsheet::col_t index = 0;
+        std::optional<spreadsheet::col_t> index = 0; ///< empty when outside the filter range
         filter_column_type type = filter_column_type::all;
         spreadsheet::auto_filter_node_op_t node_op = spreadsheet::auto_filter_node_op_t::unspecified;
         double value = 0.0;
@@ -81,6 +81,7 @@ private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
+    spreadsheet::col_t m_column_count = 0;
     std::vector<spreadsheet::iface::import_auto_filter_node*> m_filter_node_stack;
 
     column_attrs m_column;
