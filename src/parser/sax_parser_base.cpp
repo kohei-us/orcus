@@ -152,7 +152,9 @@ std::string_view parser_base::comment()
 {
     // Parse until we reach '-->'.
     std::size_t len = available_size();
-    assert(len > 3);
+    if (len < 3)
+        throw malformed_xml_error("malformed comment.", offset());
+
     const char* p_start = mp_char;
     const char* p_end = p_start;
     char c = cur_char();
