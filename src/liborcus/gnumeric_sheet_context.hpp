@@ -16,6 +16,7 @@
 
 #include <orcus/spreadsheet/types.hpp>
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -36,10 +37,11 @@ class gnumeric_sheet_context : public xml_context_base
 {
     struct style_region
     {
-        spreadsheet::row_t start_row = 0;
-        spreadsheet::row_t end_row = 0;
-        spreadsheet::col_t start_col = 0;
-        spreadsheet::col_t end_col = 0;
+        // positions as read from the document, which may lie outside the sheet
+        std::int64_t start_row = 0;
+        std::int64_t end_row = 0;
+        std::int64_t start_col = 0;
+        std::int64_t end_col = 0;
 
         std::size_t xf_id = 0;
         bool contains_conditional_format = false;

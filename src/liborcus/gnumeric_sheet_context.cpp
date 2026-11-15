@@ -10,6 +10,7 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "impl_utils.hpp"
+#include "spreadsheet_iface_util.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_cond_format.hpp>
@@ -350,8 +351,12 @@ void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
         }
     }
 
-    sheet_props->set_column_width(col, col_span, col_width, length_unit_t::point);
-    sheet_props->set_column_hidden(col, col_span, col_hidden);
+    auto cols = clip_span(col, col_span, mp_sheet->get_sheet_size().columns);
+    if (!cols)
+        return;
+
+    sheet_props->set_column_width(cols->first, cols->second, col_width, length_unit_t::point);
+    sheet_props->set_column_hidden(cols->first, cols->second, col_hidden);
 }
 
 void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
@@ -395,8 +400,12 @@ void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
         }
     }
 
-    sheet_props->set_row_height(row, row_span, row_height, length_unit_t::point);
-    sheet_props->set_row_hidden(row, row_span, row_hidden);
+    auto rows = clip_span(row, row_span, mp_sheet->get_sheet_size().rows);
+    if (!rows)
+        return;
+
+    sheet_props->set_row_height(rows->first, rows->second, row_height, length_unit_t::point);
+    sheet_props->set_row_hidden(rows->first, rows->second, row_hidden);
 }
 
 void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
@@ -541,26 +550,22 @@ void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
         {
             case XML_startCol:
             {
-                size_t n = to_long(attr.value);
-                m_region_data->start_col = n;
+                m_region_data->start_col = to_long(attr.value);
                 break;
             }
             case XML_startRow:
             {
-                size_t n = to_long(attr.value);
-                m_region_data->start_row = n;
+                m_region_data->start_row = to_long(attr.value);
                 break;
             }
             case XML_endCol:
             {
-                size_t n = to_long(attr.value);
-                m_region_data->end_col = n;
+                m_region_data->end_col = to_long(attr.value);
                 break;
             }
             case XML_endRow:
             {
-                size_t n = to_long(attr.value);
-                m_region_data->end_row = n;
+                m_region_data->end_row = to_long(attr.value);
                 break;
             }
             default:
@@ -644,18 +649,28 @@ void gnumeric_sheet_context::end_style_region()
     if (!mp_sheet)
         return;
 
-    mp_sheet->set_format(m_region_data->start_row, m_region_data->start_col,
-            m_region_data->end_row, m_region_data->end_col, m_region_data->xf_id);
+    ss::range_size_t sheet_size = mp_sheet->get_sheet_size();
+    auto rows = clip_span(m_region_data->start_row,
+        m_region_data->end_row - m_region_data->start_row + 1, sheet_size.rows);
+    auto cols = clip_span(m_region_data->start_col,
+        m_region_data->end_col - m_region_data->start_col + 1, sheet_size.columns);
 
-    if (m_region_data->contains_conditional_format && mp_cond_format)
+    if (rows && cols)
     {
         ss::range_t range;
-        range.first.row = m_region_data->start_row;
-        range.first.column = m_region_data->start_col;
-        range.last.row = m_region_data->end_row;
-        range.last.column = m_region_data->end_col;
-        mp_cond_format->append_range(range);
-        mp_cond_format->commit();
+        range.first.row = rows->first;
+        range.first.column = cols->first;
+        range.last.row = rows->first + rows->second - 1;
+        range.last.column = cols->first + cols->second - 1;
+
+        mp_sheet->set_format(range.first.row, range.first.column,
+                range.last.row, range.last.column, m_region_data->xf_id);
+
+        if (m_region_data->contains_conditional_format && mp_cond_format)
+        {
+            mp_cond_format->append_range(range);
+            mp_cond_format->commit();
+        }
     }
     mp_cond_format = nullptr;
     mp_cond_entry = nullptr;
@@ -698,7 +713,8 @@ void gnumeric_sheet_context::end_merge()
     try
     {
         ss::range_t range = to_rc_range(resolver->resolve_range(m_merge_area));
-        sp->set_merge_cell_range(range);
+        if (auto clamped = ss::clamp_range(range, mp_sheet->get_sheet_size()); clamped)
+            sp->set_merge_cell_range(*clamped);
     }
     catch (const invalid_arg_error& e)
     {

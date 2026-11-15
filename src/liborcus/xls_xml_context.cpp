@@ -20,6 +20,7 @@
 
 #include <mdds/sorted_string_map.hpp>
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <limits>
@@ -1604,10 +1605,10 @@ void xls_xml_context::start_element_cell(const xml_token_attrs_t& attrs)
                 }
                 break;
             case XML_MergeAcross:
-                m_cur_merge_across = to_long(attr.value);
+                m_cur_merge_across = std::clamp<long>(to_long(attr.value), 0, get_sheet_size().columns);
                 break;
             case XML_MergeDown:
-                m_cur_merge_down = to_long(attr.value);
+                m_cur_merge_down = std::clamp<long>(to_long(attr.value), 0, get_sheet_size().rows);
                 break;
             case XML_StyleID:
                 m_cur_cell_style_id = intern(attr);
@@ -1631,8 +1632,11 @@ void xls_xml_context::start_element_cell(const xml_token_attrs_t& attrs)
 
     if (col_index > 0)
     {
-        // 1-based column index. Convert it to a 0-based one.
-        m_cur_col = m_table_props.pos.column + col_index - 1;
+        // 1-based column index. Convert it to a 0-based one.  A column past the
+        // end of the sheet is kept as the column count.
+        ss::col_t columns = get_sheet_size().columns;
+        auto col = clip_span(std::int64_t{m_table_props.pos.column} + col_index - 1, 1, columns);
+        m_cur_col = col ? col->first : columns;
     }
 }
 
@@ -1641,8 +1645,8 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
     if (!mp_sheet_props && !mp_cur_sheet)
         return;
 
-    ss::col_t col_index = m_cur_prop_col;
-    ss::col_t span = 0;
+    std::int64_t col_index = m_cur_prop_col;
+    std::int64_t span = 0;
     double width = 0.0;
     bool hidden = false;
     std::optional<std::string_view> style_id;
@@ -1663,7 +1667,7 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
                 const char* p_end = nullptr;
                 long v = to_long(attr.value, &p_end);
                 if (attr.value.data() < p_end)
-                    col_index = m_table_props.pos.column + v - 1;
+                    col_index = std::int64_t{m_table_props.pos.column} + v - 1;
                 break;
             }
             case XML_Width:
@@ -1685,11 +1689,14 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
         }
     }
 
-    if (mp_sheet_props)
+    ss::col_t columns = get_sheet_size().columns;
+    auto cols = clip_span(col_index, span + 1, columns);
+
+    if (mp_sheet_props && cols)
     {
         // Column widths are stored as points.
-        mp_sheet_props->set_column_width(col_index, span + 1, width, orcus::length_unit_t::point);
-        mp_sheet_props->set_column_hidden(col_index, span + 1, hidden);
+        mp_sheet_props->set_column_width(cols->first, cols->second, width, orcus::length_unit_t::point);
+        mp_sheet_props->set_column_hidden(cols->first, cols->second, hidden);
     }
 
     if (mp_cur_sheet && style_id)
@@ -1698,7 +1705,8 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
         if (it != m_style_map_cell.end())
         {
             std::size_t xfid = it->second;
-            mp_cur_sheet->set_column_format(col_index, span + 1, xfid);
+            if (cols)
+                mp_cur_sheet->set_column_format(cols->first, cols->second, xfid);
         }
         else
         {
@@ -1708,13 +1716,13 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
         }
     }
 
-    m_cur_prop_col = col_index + span + 1;
+    m_cur_prop_col = std::clamp<std::int64_t>(col_index + span + 1, 0, columns);
 }
 
 void xls_xml_context::start_element_row(const xml_token_attrs_t& attrs)
 {
     m_cur_col = m_table_props.pos.column;
-    ss::row_t row_index = -1;
+    long row_index = -1;
     bool has_height = false;
     bool hidden = false;
     double height = 0.0;
@@ -1746,11 +1754,17 @@ void xls_xml_context::start_element_row(const xml_token_attrs_t& attrs)
         }
     }
 
+    ss::row_t rows = get_sheet_size().rows;
     if (row_index > 0)
     {
-        // 1-based row index. Convert it to a 0-based one.
-        m_cur_row = row_index - 1;
+        // 1-based row index. Convert it to a 0-based one.  A row past the end
+        // of the sheet is kept as the row count.
+        auto row = clip_span(std::int64_t{row_index} - 1, 1, rows);
+        m_cur_row = row ? row->first : rows;
     }
+
+    if (m_cur_row >= rows)
+        return;
 
     if (mp_cur_sheet && style_id)
     {
@@ -1780,8 +1794,8 @@ void xls_xml_context::start_element_row(const xml_token_attrs_t& attrs)
 
 void xls_xml_context::start_element_table(const xml_token_attrs_t& attrs)
 {
-    ss::row_t row_index = -1;
-    ss::col_t col_index = -1;
+    long row_index = -1;
+    long col_index = -1;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -1804,13 +1818,16 @@ void xls_xml_context::start_element_table(const xml_token_attrs_t& attrs)
         }
     }
 
-    // Convert 1-based indices to 0-based.
+    // Convert 1-based indices to 0-based, and keep a position past the end of
+    // the sheet as the row or column count.
+
+    ss::range_size_t sheet_size = get_sheet_size();
 
     if (row_index > 0)
-        m_table_props.pos.row = row_index - 1;
+        m_table_props.pos.row = std::min<long>(row_index - 1, sheet_size.rows);
 
     if (col_index > 0)
-        m_table_props.pos.column = col_index - 1;
+        m_table_props.pos.column = std::min<long>(col_index - 1, sheet_size.columns);
 
     m_cur_row = m_table_props.pos.row;
     m_cur_prop_col = m_table_props.pos.column;
@@ -1876,7 +1893,14 @@ void xls_xml_context::end_element_cell()
         merge_range.last.column = m_cur_col + m_cur_merge_across;
         merge_range.last.row = m_cur_row + m_cur_merge_down;
 
-        mp_sheet_props->set_merge_cell_range(merge_range);
+        if (auto clamped = ss::clamp_range(merge_range, get_sheet_size()); clamped)
+            mp_sheet_props->set_merge_cell_range(*clamped);
+        else
+        {
+            std::ostringstream os;
+            os << "skipping a merged range " << merge_range << " that is invalid for the sheet";
+            warn(os.str());
+        }
     }
 
     if (mp_cur_sheet && !m_cur_cell_style_id.empty())
@@ -2409,6 +2433,11 @@ ss::iface::import_factory* xls_xml_context::get_import_factory()
 ss::iface::import_sheet* xls_xml_context::get_import_sheet()
 {
     return mp_cur_sheet;
+}
+
+ss::range_size_t xls_xml_context::get_sheet_size() const
+{
+    return mp_cur_sheet ? mp_cur_sheet->get_sheet_size() : ss::range_size_t{0, 0};
 }
 
 ss::address_t xls_xml_context::get_current_pos() const

@@ -289,6 +289,7 @@ private:
     spreadsheet::iface::import_factory* get_import_factory();
     spreadsheet::iface::import_sheet* get_import_sheet();
     spreadsheet::address_t get_current_pos() const;
+    spreadsheet::range_size_t get_sheet_size() const;
     std::string_view pop_and_clear_formula();
     bool is_array_formula() const;
     const spreadsheet::range_t& get_array_range() const;
