@@ -214,6 +214,8 @@ void json_parser<_Handler>::array()
     for (next(); has_char(); next())
     {
         skip_ws();
+        if (!has_char())
+            throw parse_error("array: stream ended prematurely before reaching ']'.", offset());
 
         if (cur_char() == ']')
         {
@@ -232,7 +234,7 @@ void json_parser<_Handler>::array()
                     end_array();
                     return;
                 case ',':
-                    if (peek_char() == ']')
+                    if (has_next() && peek_char() == ']')
                     {
                         parse_error::throw_with(
                             "array: ']' expected but '", cur_char(), "' found.", offset() );
@@ -318,6 +320,9 @@ void json_parser<_Handler>::object()
         m_handler.object_key({res.str, res.length}, res.transient);
 
         skip_ws();
+        if (!has_char())
+            throw parse_error("object: stream ended prematurely before reaching ':'.", offset());
+
         if (cur_char() != ':')
             parse_error::throw_with(
                 "object: ':' was expected, but '", cur_char(), "' found.", offset());
