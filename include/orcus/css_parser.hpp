@@ -398,7 +398,7 @@ void css_parser<_Handler>::at_rule_name()
     assert(has_char());
     assert(cur_char() == '@');
     next();
-    char c = cur_char();
+    char c = cur_char_checked();
     if (!is_alpha(c))
         throw parse_error("at_rule_name: first character of an at-rule name must be an alphabet.", offset());
 
@@ -484,7 +484,7 @@ void css_parser<_Handler>::simple_selector_name()
             {
                 // This could be either a pseudo element or pseudo class.
                 next();
-                if (cur_char() == ':')
+                if (cur_char_checked() == ':')
                 {
                     // pseudo element.
                     next();
@@ -554,7 +554,7 @@ void css_parser<_Handler>::property()
 
     m_handler.begin_property();
     property_name();
-    if (cur_char() != ':')
+    if (cur_char_checked() != ':')
         throw parse_error("property: ':' expected.", offset());
     next();
     skip_comments_and_blanks();
@@ -563,6 +563,9 @@ void css_parser<_Handler>::property()
     while (in_loop && has_char())
     {
         value();
+        if (!has_char())
+            break;
+
         char c = cur_char();
         switch (c)
         {
@@ -618,7 +621,7 @@ void css_parser<_Handler>::value()
     if (v.empty())
         return;
 
-    if (cur_char() == '(')
+    if (has_char() && cur_char() == '(')
     {
         function_value(v);
         return;
@@ -666,7 +669,7 @@ void css_parser<_Handler>::function_value(std::string_view v)
             parse_error::throw_with("function_value: unhandled function '", v, "'", offset());
     }
 
-    char c = cur_char();
+    char c = cur_char_checked();
     if (c != ')')
         parse_error::throw_with("function_value: ')' expected but '", c, "' found.", offset());
 
@@ -693,7 +696,7 @@ void css_parser<_Handler>::function_rgb(bool alpha)
         if (p == plast)
             break;
 
-        c = cur_char();
+        c = cur_char_checked();
 
         if (c != ',')
             parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.", offset());
@@ -704,7 +707,7 @@ void css_parser<_Handler>::function_rgb(bool alpha)
 
     if (alpha)
     {
-        c = cur_char();
+        c = cur_char_checked();
         if (c != ',')
             parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.", offset());
 
@@ -741,7 +744,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     hue = std::clamp(hue, 0.0, 360.0);
     skip_comments_and_blanks();
 
-    char c = cur_char();
+    char c = cur_char_checked();
     if (c != ',')
         parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
@@ -752,7 +755,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     sat = std::clamp(sat, 0.0, 100.0);
     skip_comments_and_blanks();
 
-    c = cur_char();
+    c = cur_char_checked();
     if (c != ',')
         parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
@@ -769,7 +772,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
         return;
     }
 
-    c = cur_char();
+    c = cur_char_checked();
     if (c != ',')
         parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
@@ -785,7 +788,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
 template<typename _Handler>
 void css_parser<_Handler>::function_url()
 {
-    char c = cur_char();
+    char c = cur_char_checked();
 
     if (c == '"' || c == '\'')
     {
@@ -854,15 +857,15 @@ void css_parser<_Handler>::block()
     while (has_char())
     {
         property();
-        if (cur_char() != ';')
+        if (!has_char() || cur_char() != ';')
             break;
         property_sep();
-        if (cur_char() == '}')
+        if (!has_char() || cur_char() == '}')
             // ';' after the last property.  This is optional but allowed.
             break;
     }
 
-    if (cur_char() != '}')
+    if (!has_char() || cur_char() != '}')
         throw parse_error("block: '}' expected.", offset());
 
     m_handler.end_block();

@@ -24,6 +24,12 @@ public:
 
 protected:
 
+    /**
+     * Get the current character, or throw parse_error if the stream has
+     * ended.
+     */
+    char cur_char_checked() const;
+
     void identifier(const char*& p, size_t& len, std::string_view extra = std::string_view{});
     uint8_t parse_uint8();
 

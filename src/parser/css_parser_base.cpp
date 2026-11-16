@@ -22,8 +22,19 @@ parser_base::parser_base(std::string_view content) :
     m_simple_selector_count(0),
     m_combinator(combinator_t::descendant) {}
 
+char parser_base::cur_char_checked() const
+{
+    if (!has_char())
+        throw parse_error("css stream ended prematurely.", offset());
+
+    return cur_char();
+}
+
 void parser_base::identifier(const char*& p, size_t& len, std::string_view extra)
 {
+    if (!has_char())
+        throw parse_error("identifier: css stream ended before the identifier.", offset());
+
     p = mp_char;
     len = 1;
     for (next(); has_char(); next(), ++len)
@@ -185,7 +196,7 @@ void parser_base::literal(const char*& p, size_t& len, char quote)
     next();
     skip_to(p, len, quote);
 
-    if (cur_char() != quote)
+    if (!has_char() || cur_char() != quote)
         throw parse_error("literal: end quote has never been reached.", offset());
 }
 
@@ -278,6 +289,9 @@ void parser_base::shrink_stream()
 
 bool parser_base::skip_comment()
 {
+    if (!has_char())
+        return false;
+
     char c = cur_char();
     if (c != '/')
         return false;
