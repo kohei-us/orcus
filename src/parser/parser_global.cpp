@@ -240,7 +240,7 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
 
                 if (n < 4)
                 {
-                    if (!std::isxdigit(c))
+                    if (!std::isxdigit(static_cast<unsigned char>(c)))
                     {
                         // not enough hex digits - invalid
                         ret.length = parse_quoted_string_state::error_invalid_hex_digits;
@@ -580,7 +580,7 @@ parse_quoted_string_state parse_double_quoted_string(
 
                 std::size_t n_digits = std::distance(p_head, p);
 
-                if (std::isxdigit(c))
+                if (std::isxdigit(static_cast<unsigned char>(c)))
                 {
                     if (n_digits != 4)
                         break; // need more digits - keep parsing
