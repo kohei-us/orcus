@@ -55,7 +55,7 @@ char decode_xml_encoded_char(const char* p, size_t n)
 
 std::string decode_xml_unicode_char(const char* p, size_t n)
 {
-    if (*p == '#' && n >= 2)
+    if (n >= 2 && *p == '#')
     {
         uint32_t point = 0;
         const char* digits = p + 1;
@@ -266,13 +266,13 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& st
 
             parse_encoded_char(buf);
             p0 = mp_char;
+            continue;
         }
 
         if (cur_char() == quote_char)
             break;
 
-        if (cur_char() != '&')
-            next();
+        next();
     }
 
     if (mp_char > p0)
@@ -419,13 +419,13 @@ void parser_base::characters_with_encoded_char(cell_buffer& buf)
 
             parse_encoded_char(buf);
             p0 = mp_char;
+            continue;
         }
 
         if (cur_char() == '<')
             break;
 
-        if (cur_char() != '&')
-            next();
+        next();
     }
 
     if (mp_char > p0)

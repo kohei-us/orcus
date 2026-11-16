@@ -458,7 +458,7 @@ template<typename HandlerT, typename ConfigT>
 void sax_parser<HandlerT,ConfigT>::cdata()
 {
     size_t len = available_size();
-    assert(len > 3);
+    assert(len > 0);
 
     // Parse until we reach ']]>'.
     const char* p0 = mp_char;
