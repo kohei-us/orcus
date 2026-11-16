@@ -359,12 +359,12 @@ zip_file_entry_header zip_archive::impl::get_file_entry_header(std::size_t index
     uint16_t filename_len = file_header.read_2bytes();
     uint16_t extra_field_len = file_header.read_2bytes();
 
-    if (filename_len)
-    {
-        header.filename = file_header.read_string(filename_len);
-        if (is_unsafe_zip_path(header.filename))
-            throw zip_error(std::format("unsafe zip entry name: '{}'", header.filename));
-    }
+    if (!filename_len)
+        throw zip_error("zip entry has no name");
+
+    header.filename = file_header.read_string(filename_len);
+    if (is_unsafe_zip_path(header.filename))
+        throw zip_error(std::format("unsafe zip entry name: '{}'", header.filename));
 
     if (extra_field_len)
         header.extra_field = file_header.read_bytes(extra_field_len);
@@ -439,16 +439,15 @@ void zip_archive::impl::read_file_entries()
         // Refuse impossible deflate ratios so a tiny payload cannot demand a
         // multi-GB output buffer.
         if (param.compress_method == zip_file_param::deflated &&
-            param.size_compressed > 0 &&
-            param.size_uncompressed / param.size_compressed > max_compression_ratio)
+            param.size_uncompressed > param.size_compressed * max_compression_ratio)
             throw zip_error("entry compression ratio exceeds the deflate maximum");
 
-        if (param.filename_length)
-        {
-            param.filename = central_dir.read_string(param.filename_length, m_pool);
-            if (is_unsafe_zip_path(param.filename))
-                throw zip_error(std::format("unsafe zip entry name: '{}'", param.filename));
-        }
+        if (!param.filename_length)
+            throw zip_error("zip entry has no name");
+
+        param.filename = central_dir.read_string(param.filename_length, m_pool);
+        if (is_unsafe_zip_path(param.filename))
+            throw zip_error(std::format("unsafe zip entry name: '{}'", param.filename));
 
         if (param.extra_field_length)
             // Ignore extra field for now.
