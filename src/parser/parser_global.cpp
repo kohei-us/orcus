@@ -472,11 +472,11 @@ parse_quoted_string_state parse_single_quoted_string(
 const char* parse_to_closing_single_quote(const char* p, size_t max_length)
 {
     assert(*p == '\'');
+    if (max_length < 2)
+        return nullptr;
+
     const char* p_end = p + max_length;
     ++p;
-
-    if (p == p_end)
-        return nullptr;
 
     char last = 0;
     for (; p != p_end; ++p)
@@ -652,11 +652,11 @@ parse_quoted_string_state parse_double_quoted_string(
 const char* parse_to_closing_double_quote(const char* p, size_t max_length)
 {
     assert(*p == '"');
+    if (max_length < 2)
+        return nullptr;
+
     const char* p_end = p + max_length;
     ++p;
-
-    if (p == p_end)
-        return nullptr;
 
     bool escape = false;
 

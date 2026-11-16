@@ -80,10 +80,11 @@ size_t parser_base::offset_last_char_of_line() const
     if (mp_impl->m_comment_length)
     {
         assert(mp_impl->m_comment_length < pos);
-        pos -= mp_impl->m_comment_length; // should be on the '#' character.
+        pos -= std::min(pos, mp_impl->m_comment_length); // should be on the '#' character.
     }
 
-    pos -= 1;
+    if (pos)
+        pos -= 1;
 
     // Ignore any trailing whitespaces.
     const char* p = mp_begin + pos;
@@ -133,7 +134,7 @@ std::string_view parser_base::parse_to_end_of_line()
 
                 // character immediately after the closing quote.
                 const char* p_end =
-                    parse_to_closing_single_quote(mp_char, remaining_size());
+                    parse_to_closing_single_quote(mp_char, available_size());
 
                 if (!p_end)
                     throw parse_error("parse_to_end_of_line: closing single quote was expected but not found.", offset());
@@ -153,7 +154,7 @@ std::string_view parser_base::parse_to_end_of_line()
 
                 // character immediately after the closing quote.
                 const char* p_end =
-                    parse_to_closing_double_quote(mp_char, remaining_size());
+                    parse_to_closing_double_quote(mp_char, available_size());
 
                 if (!p_end)
                     throw parse_error("parse_to_end_of_line: closing double quote was expected but not found.", offset());
@@ -504,7 +505,9 @@ void parser_base::handle_line_in_multi_line_string()
 
     std::string_view line = parse_to_end_of_line();
     line = trim(line);
-    assert(!line.empty());
+    if (line.empty())
+        return;
+
     push_line_back(line);
 }
 

@@ -324,8 +324,9 @@ void yaml_parser<_Handler>::parse()
         // Parse the rest of the line.
         std::string_view line = parse_to_end_of_line();
         line = trim(line);
+        if (line.empty())
+            continue;
 
-        assert(!line.empty());
         parse_line(line.data(), line.size());
     }
 
