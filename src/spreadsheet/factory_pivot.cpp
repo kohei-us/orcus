@@ -239,6 +239,9 @@ void import_pivot_cache_def::commit_field_item()
 
 void import_pivot_cache_def::commit()
 {
+    if (!m_cache)
+        return;
+
     m_cache->insert_fields(std::move(m_current_fields));
 
     if (!m_src_table_name.empty())
