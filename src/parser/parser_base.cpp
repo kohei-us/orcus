@@ -77,14 +77,14 @@ void parser_base::skip_bom()
 void parser_base::skip(std::string_view chars_to_skip)
 {
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i match = _mm_loadu_si128((const __m128i*)chars_to_skip.data());
+    __m128i match = detail::cpu::load_m128(chars_to_skip.data(), chars_to_skip.size());
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_EQUAL_ANY | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     int n_total = available_size();
 
     while (n_total)
     {
-        __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
+        __m128i char_block = detail::cpu::load_m128(mp_char, n_total);
 
         // Find position of the first character that is NOT any of the
         // characters to skip.
@@ -125,7 +125,7 @@ void parser_base::skip_space_and_control()
         // The 'results' stores (for each 8-bit int) 0x00 if the char is less
         // than or equal to whitespace, or the char is "negative" i.e. the
         // signed bit is on IOW greater than 127.
-        __m256i char_block = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(mp_char));
+        __m256i char_block = detail::cpu::load_m256(mp_char, n_total);
         __m256i results = _mm256_cmpgt_epi8(char_block, ws); // NB: this is a signed comparison.
         results = _mm256_or_si256(results, _mm256_and_si256(char_block, sb));
         int r = _mm256_movemask_epi8(results);
@@ -146,14 +146,14 @@ void parser_base::skip_space_and_control()
     }
 
 #elif defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
+    __m128i match = detail::cpu::load_m128("\0 ", 2);
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     size_t n_total = available_size();
 
     while (n_total)
     {
-        __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
+        __m128i char_block = detail::cpu::load_m128(mp_char, n_total);
 
         // Find position of the first character that is NOT any of the
         // characters to skip.
@@ -185,18 +185,22 @@ bool parser_base::parse_expected(std::string_view expected)
         return false;
 
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i v_expected = _mm_loadu_si128((const __m128i*)expected.data());
-    __m128i v_char_block = _mm_loadu_si128((const __m128i*)mp_char);
+    if (expected.size() <= 16)
+    {
+        __m128i v_expected = detail::cpu::load_m128(expected.data(), expected.size());
+        __m128i v_char_block = detail::cpu::load_m128(mp_char, available_size());
 
-    const int mode = _SIDD_CMP_EQUAL_ORDERED | _SIDD_UBYTE_OPS | _SIDD_BIT_MASK;
-    __m128i res = _mm_cmpestrm(v_expected, expected.size(), v_char_block, expected.size(), mode);
-    int mask = _mm_cvtsi128_si32(res);
+        const int mode = _SIDD_CMP_EQUAL_ORDERED | _SIDD_UBYTE_OPS | _SIDD_BIT_MASK;
+        __m128i res = _mm_cmpestrm(v_expected, expected.size(), v_char_block, expected.size(), mode);
+        int mask = _mm_cvtsi128_si32(res);
 
-    if (mask)
-        mp_char += expected.size();
+        if (mask)
+            mp_char += expected.size();
 
-    return mask;
-#else
+        return mask;
+    }
+#endif
+
     const char* p = expected.data();
     for (size_t i = 0; i < expected.size(); ++i, ++p, next())
     {
@@ -205,7 +209,6 @@ bool parser_base::parse_expected(std::string_view expected)
     }
 
     return true;
-#endif
 }
 
 double parser_base::parse_double()

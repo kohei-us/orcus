@@ -8,6 +8,7 @@
 #include <orcus/sax_parser_base.hpp>
 
 #include "utf8.hpp"
+#include "cpu_features.hpp"
 
 #include <charconv>
 #include <format>
@@ -330,14 +331,14 @@ void parser_base::name(std::string_view& str)
 
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
 
-    const __m128i match = _mm_loadu_si128((const __m128i*)"azAZ09--__..");
+    const __m128i match = detail::cpu::load_m128("azAZ09--__..", 12);
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     size_t n_total = available_size();
 
     while (n_total)
     {
-        __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
+        __m128i char_block = detail::cpu::load_m128(mp_char, n_total);
 
         int n = std::min<size_t>(16u, n_total);
         int r = _mm_cmpestri(match, 12, char_block, n, mode);
