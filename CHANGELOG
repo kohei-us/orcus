@@ -1,11 +1,180 @@
 orcus 0.22.0
 
-* The spreadsheet document model now stores the core properties of
-  tables - the name, the range, the column names and the totals row
-  count - in the ixion model context, which now resolves table
-  references in formula expressions natively.  The table_t struct in the
-  spreadsheet model keeps only the presentation properties of a table.
-  The public API has changed to accommodate for this change.
+* general
+
+  * C++20 is now the baseline C++ version required to build the library
+    and to use its public headers.
+
+  * ixion 0.21 and mdds 4.0 are now required.
+
+  * std::filesystem is now used across the board for file paths.  The
+    library no longer links to boost::filesystem and boost::system.
+
+  * added orcus/version.hpp header which defines the version number and
+    API version number macros.
+
+  * many of the functions and methods that previously took a const char*
+    and size_t pair now take std::string_view, or std::span for binary
+    streams.
+
+  * file_content's constructor, the dump() methods and the read_file()
+    virtual method of the import filters now take std::filesystem::path.
+
+  * the parsers and the import filters have been hardened against
+    malformed and malicious inputs.
+
+  * a number of issues reported by Coverity have been addressed.
+
+* import filters
+
+  * the interface for conditional format import has been reworked, with
+    a separate sub interface for each rule type.
+
+  * the gnumeric filter once again imports conditional formats.
+
+  * added top_percent and bottom_percent conditional format operators to
+    correctly differentiate the "top N%" rules from the "top N" rules.
+
+  * the csv filter now allows the delimiter and text qualifier
+    characters to be specified via its configuration.
+
+  * the ods filter now correctly imports cells with multiple paragraphs
+    by joining the paragraphs with linebreaks.
+
+  * cells with linebreaks imported from csv documents are now correctly
+    exported back to csv.
+
+  * fixed the xlsx filter to correctly handle shared strings with empty
+    string values.
+
+  * fixed an out-of-bound access into pivot cache items when importing
+    pivot tables from xlsx documents, and the pivot cache fields with
+    group items now correctly reference the group items.
+
+  * orcus_parquet::detect() no longer mis-detects streams due to
+    sign-extension of the bytes it reads.
+
+* document model
+
+  * The spreadsheet document model now stores the core properties of
+    tables in the ixion model context, which now resolves table
+    references in formula expressions natively.  The table_t struct in
+    the spreadsheet model keeps only the presentation properties of a
+    table.
+
+  * conditional formats are now stored in the document model, and can be
+    retrieved via sheet::get_cond_formats().  They are also included in
+    the debug state output.
+
+  * added stream operators for the conditional format enum types.
+
+  * added a variant of sheet::set_string() that takes a string value
+    directly.
+
+  * sheet::get_data_range() now returns ixion::abs_rc_range_t.
+
+* xml
+
+  * dom::document_tree now supports mutation of the tree.  Elements,
+    contents, comments, attributes and namespace declarations can now be
+    added via the newly-added dom::node class.
+
+  * dom::document_tree now takes xmlns_repository instead of
+    xmlns_context at construction.
+
+  * dom::document_tree now stores comments, including the ones in the
+    prolog and the epilog, as well as the original namespace
+    declarations and their aliases, and writes them back out when
+    dumping the tree as XML.
+
+  * the XML declaration and the processing instructions are now handled
+    separately in sax_parser and in dom::document_tree.  The handler now
+    receives start_declaration() and end_declaration() only for the XML
+    declaration, and start_processing_instruction() and
+    end_processing_instruction() for the processing instructions.
+
+  * added comment() callback to the handlers of sax_parser and
+    sax_ns_parser.
+
+  * added support for the builtin 'xml' namespace.
+
+  * sax_parser now rejects documents with multiple root elements.
+
+  * removed the default_ns flag from orcus_xml::set_namespace_alias().
+    An empty alias now signifies the default namespace.
+
+  * added a variant of orcus_xml's constructor that does not take an
+    export factory.
+
+  * orcus_xml now throws an exception when an empty XPath is given.
+
+  * xml_writer now escapes the namespace URI when writing an xmlns
+    declaration.
+
+* json
+
+  * added orcus_json::write_map_definition() which mirrors its orcus_xml
+    counterpart.
+
+  * the JSON path expression now accepts [*] as an equivalent of [].
+    The generated map definitions now use [*].
+
+  * UTF-16 surrogate pairs in string escapes are now correctly decoded.
+
+  * $ref targets outside the document directory are now rejected.
+
+* zip archive
+
+  * zip_archive::read_file_entry() now returns its content as
+    unnamed_buffer, which by default is backed by a memory-mapped
+    temporary file.  The storage type can be specified when
+    constructing a zip_archive instance.
+
+  * encrypted and multi-disk archives as well as archives that use
+    ZIP64 size markers are now explicitly rejected.
+
+  * entries with unsafe names, entries whose sizes are inconsistent with
+    the archive size, and entries whose deflate ratios exceed the
+    theoretical maximum are now rejected.
+
+* python
+
+  * orcus.csv.read() now takes delimiters and text_qualifier keyword
+    arguments, and can also read from a stream opened in binary mode.
+
+  * array formula strings are now correctly enclosed in braces.
+
+  * fixed several reference counting issues.
+
+  * errors raised from the read() and write() methods of stream objects
+    are now correctly propagated to the caller.
+
+  * the tests have been converted to pytest, which is now required to
+    run them.
+
+* tools
+
+  * added lint mode to orcus-xml to re-format XML documents, with the
+    --indent option to control the amount of indentation.
+
+  * orcus-csv now correctly handles its extra command-line options.
+
+* build
+
+  * the gnumeric import filter is now enabled in the CMake build.
+
+  * the parquet import filter can now be built against Apache Arrow
+    23.0.0.
+
+  * fixed build failures with MinGW and with MSVC.
+
+  * fixed a configure failure with autoconf 2.72 or newer.
+
+* documentation
+
+  * added new pages on the XML and JSON mapping, the low-level XML
+    parsers and dom::document_tree, as well as on the use of detect()
+    and create_filter().
 
 orcus 0.21.0
 
