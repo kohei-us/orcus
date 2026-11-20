@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 bin_PROGRAMS =
 
 EXTRA_PROGRAMS = \
+	version-test \
 	enum-stream-test \
 	orcus-xml-test \
 	orcus-env-dump
@@ -25,7 +26,8 @@ endif
 
 version_test_SOURCES = version_test.cpp
 version_test_LDADD = \
-	./test/liborcus-test.a
+	./test/liborcus-test.a \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 # enum-stream-test
 
@@ -56,6 +58,7 @@ orcus_env_dump_LDADD = \
 orcus_env_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 TESTS = \
+	version-test \
 	enum-stream-test \
 	orcus-xml-test \
 	orcus-env-dump
