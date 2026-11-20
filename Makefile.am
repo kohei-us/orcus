@@ -74,14 +74,24 @@ doc_data = \
 	doc/notes/json_map/index.rst \
 	doc/notes/xml_map/example.xml \
 	doc/notes/xml_map/index.rst \
+	doc/overview/create-filter/index.rst \
+	doc/overview/detect/index.rst \
 	doc/overview/doc-orcus.rst \
 	doc/overview/doc-user.rst \
 	doc/overview/index.rst \
 	doc/overview/json/doctree-direct.rst \
 	doc/overview/json/doctree.rst \
 	doc/overview/json/index.rst \
+	doc/overview/json/mapping-autodetect.rst \
+	doc/overview/json/mapping.rst \
 	doc/overview/json/parser.rst \
 	doc/overview/json/subtree.rst \
+	doc/overview/xml/dom-tree.rst \
+	doc/overview/xml/index.rst \
+	doc/overview/xml/mapping-autodetect.rst \
+	doc/overview/xml/mapping-ns.rst \
+	doc/overview/xml/mapping.rst \
+	doc/overview/xml/parsers.rst \
 	doc/overview/yaml/index.rst \
 	doc/python/index.rst \
 	doc/python/orcus/cell.rst \
@@ -115,6 +125,7 @@ bin_data = \
 	bin/gen-gfm-release-table.sh \
 	bin/gen-test-json-structure-outputs.sh \
 	bin/gen-test-xml-outputs.sh \
+	bin/normalize-sources.py \
 	bin/parse-doxygen-xml.py \
 	bin/run-bulk-tests.py \
 	bin/run-python.sh \
@@ -164,8 +175,18 @@ test_data = \
 	test/css/invalids/1.css \
 	test/css/test.css \
 	test/css/utf8-1.css \
+	test/csv/delimiters/space.csv \
+	test/csv/delimiters/tab.csv \
 	test/csv/double-quotes/check.txt \
 	test/csv/double-quotes/input.csv \
+	test/csv/linebreak/check.txt \
+	test/csv/linebreak/input.csv \
+	test/csv/multi-seperator/check-comma-semicolon.txt \
+	test/csv/multi-seperator/check-comma.txt \
+	test/csv/multi-seperator/check-dash.txt \
+	test/csv/multi-seperator/check-semicolon.txt \
+	test/csv/multi-seperator/check-single-quote.txt \
+	test/csv/multi-seperator/input.csv \
 	test/csv/normal-quotes/check.txt \
 	test/csv/normal-quotes/input.csv \
 	test/csv/quoted-with-delim/check.txt \
@@ -176,6 +197,9 @@ test_data = \
 	test/csv/split-sheet/check-2.txt \
 	test/csv/split-sheet/check-3.txt \
 	test/csv/split-sheet/input.csv \
+	test/csv/text-qualifiers/backtick.csv \
+	test/csv/text-qualifiers/pipe.csv \
+	test/csv/text-qualifiers/single-quote.csv \
 	test/gnumeric/background-color/standard.gnumeric \
 	test/gnumeric/borders/colors.gnumeric \
 	test/gnumeric/borders/directions.gnumeric \
@@ -191,6 +215,8 @@ test_data = \
 	test/gnumeric/formula-cells/check.txt \
 	test/gnumeric/formula-cells/input.gnumeric \
 	test/gnumeric/hidden-rows-columns/input.gnumeric \
+	test/gnumeric/linebreak/check.txt \
+	test/gnumeric/linebreak/input.gnumeric \
 	test/gnumeric/merged-cells/input.gnumeric \
 	test/gnumeric/named-expression-sheet-local/check.txt \
 	test/gnumeric/named-expression-sheet-local/input.gnumeric \
@@ -216,6 +242,7 @@ test_data = \
 	test/json-mapped/array-of-objects-basic/input.json \
 	test/json-mapped/array-of-objects-basic/map.json \
 	test/json-mapped/array-of-objects-header/check.txt \
+	test/json-mapped/array-of-objects-header/expected-map-def.json \
 	test/json-mapped/array-of-objects-header/input.json \
 	test/json-mapped/array-of-objects-header/map.json \
 	test/json-mapped/auto-mapping/list-of-objects-two-sheets/check.txt \
@@ -230,6 +257,7 @@ test_data = \
 	test/json-mapped/nested-repeats-2/input.json \
 	test/json-mapped/nested-repeats-2/map.json \
 	test/json-mapped/nested-repeats/check.txt \
+	test/json-mapped/nested-repeats/expected-map-def.json \
 	test/json-mapped/nested-repeats/input.json \
 	test/json-mapped/nested-repeats/map.json \
 	test/json-structure/arrays-in-object/check.txt \
@@ -677,6 +705,10 @@ test_data = \
 	test/ods/import-styles/cell-styles.xml \
 	test/ods/import-styles/standard-styles.xml \
 	test/ods/japanese.ods \
+	test/ods/linebreak-2/check.txt \
+	test/ods/linebreak-2/input.ods \
+	test/ods/linebreak/check.txt \
+	test/ods/linebreak/input.ods \
 	test/ods/named-expression-sheet-local/check.txt \
 	test/ods/named-expression-sheet-local/input.ods \
 	test/ods/named-expression/check.txt \
@@ -706,7 +738,9 @@ test_data = \
 	test/python/file_load_common.py \
 	test/python/perf/test_json.py \
 	test/python/test_csv.py \
+	test/python/test_csv_delimiters.py \
 	test/python/test_csv_export.py \
+	test/python/test_csv_text_qualifiers.py \
 	test/python/test_gnumeric.py \
 	test/python/test_json.py \
 	test/python/test_module.py \
@@ -755,6 +789,8 @@ test_data = \
 	test/xls-xml/invalid-sub-structure/input.xml \
 	test/xls-xml/leading-whitespace/check.txt \
 	test/xls-xml/leading-whitespace/input.xml \
+	test/xls-xml/linebreak/check.txt \
+	test/xls-xml/linebreak/input.xml \
 	test/xls-xml/matrix-results/input.xml \
 	test/xls-xml/merged-cells/check.txt \
 	test/xls-xml/merged-cells/input.xml \
@@ -825,6 +861,8 @@ test_data = \
 	test/xlsx/formula-with-string-results/check.txt \
 	test/xlsx/formula-with-string-results/input.xlsx \
 	test/xlsx/hidden-rows-columns/input.xlsx \
+	test/xlsx/linebreak/check.txt \
+	test/xlsx/linebreak/input.xlsx \
 	test/xlsx/matrix-results/input.xlsx \
 	test/xlsx/merged-cells/simple.xlsx \
 	test/xlsx/named-expression-relative/input.xlsx \
@@ -845,6 +883,8 @@ test_data = \
 	test/xlsx/pivot-table/two-tables-one-source.xlsx \
 	test/xlsx/raw-values-1/check.txt \
 	test/xlsx/raw-values-1/input.xlsx \
+	test/xlsx/raw-values-2/check.txt \
+	test/xlsx/raw-values-2/input.xlsx \
 	test/xlsx/revision/cell-change-basic.xlsx \
 	test/xlsx/styles/column-styles.xlsx \
 	test/xlsx/styles/direct-format.xlsx \
@@ -858,6 +898,42 @@ test_data = \
 	test/xlsx/view/cursor-per-sheet.xlsx \
 	test/xlsx/view/cursor-split-pane.xlsx \
 	test/xlsx/view/frozen-pane.xlsx \
+	test/xml-lint/attributes/input.xml \
+	test/xml-lint/attributes/output-indent0.xml \
+	test/xml-lint/attributes/output-indent2.xml \
+	test/xml-lint/attributes/output-indent4.xml \
+	test/xml-lint/comments-block/input.xml \
+	test/xml-lint/comments-block/output-indent0.xml \
+	test/xml-lint/comments-block/output-indent2.xml \
+	test/xml-lint/comments-block/output-indent4.xml \
+	test/xml-lint/comments-epilog/input.xml \
+	test/xml-lint/comments-epilog/output-indent0.xml \
+	test/xml-lint/comments-epilog/output-indent2.xml \
+	test/xml-lint/comments-epilog/output-indent4.xml \
+	test/xml-lint/comments-inline/input.xml \
+	test/xml-lint/comments-inline/output-indent0.xml \
+	test/xml-lint/comments-inline/output-indent2.xml \
+	test/xml-lint/comments-inline/output-indent4.xml \
+	test/xml-lint/comments-prolog/input.xml \
+	test/xml-lint/comments-prolog/output-indent0.xml \
+	test/xml-lint/comments-prolog/output-indent2.xml \
+	test/xml-lint/comments-prolog/output-indent4.xml \
+	test/xml-lint/namespace-basic/input.xml \
+	test/xml-lint/namespace-basic/output-indent0.xml \
+	test/xml-lint/namespace-basic/output-indent2.xml \
+	test/xml-lint/namespace-basic/output-indent4.xml \
+	test/xml-lint/namespace-multi/input.xml \
+	test/xml-lint/namespace-multi/output-indent0.xml \
+	test/xml-lint/namespace-multi/output-indent2.xml \
+	test/xml-lint/namespace-multi/output-indent4.xml \
+	test/xml-lint/namespace-xml-1/input.xml \
+	test/xml-lint/namespace-xml-1/output-indent0.xml \
+	test/xml-lint/namespace-xml-1/output-indent2.xml \
+	test/xml-lint/namespace-xml-1/output-indent4.xml \
+	test/xml-lint/nested/input.xml \
+	test/xml-lint/nested/output-indent0.xml \
+	test/xml-lint/nested/output-indent2.xml \
+	test/xml-lint/nested/output-indent4.xml \
 	test/xml-mapped/attribute-basic/check-nomap.txt \
 	test/xml-mapped/attribute-basic/check.txt \
 	test/xml-mapped/attribute-basic/input.xml \
@@ -960,10 +1036,10 @@ test_data = \
 	test/xml/encoded-char/check.txt \
 	test/xml/encoded-char/input.xml \
 	test/xml/invalids/double-boms-and-invalid-byte.xml \
+	test/xml/invalids/multi-root.xml \
 	test/xml/invalids/only-bom.xml \
 	test/xml/invalids/only-double-boms.xml \
 	test/xml/invalids/partial-attr-value-with-encoding-char.xml \
-	test/xml/invalids/multi-root.xml \
 	test/xml/invalids/partial-open-element.xml \
 	test/xml/no-decl-1/check.txt \
 	test/xml/no-decl-1/input.xml \
