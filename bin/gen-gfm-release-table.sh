@@ -4,17 +4,13 @@ PROJ_PREFIX=orcus
 PKG_PREFIX=lib$PROJ_PREFIX
 
 # Pick up the version number string from configure.ac.
-VER_MAJOR=$(cat ./configure.ac | grep -E $PROJ_PREFIX"_major_version.*[0-9]" | sed -e "s/.*\[\([0-9][0-9]*\).*/\1/g")
-VER_MINOR=$(cat ./configure.ac | grep -E $PROJ_PREFIX"_minor_version.*[0-9]" | sed -e "s/.*\[\([0-9][0-9]*\).*/\1/g")
-VER_MICRO=$(cat ./configure.ac | grep -E $PROJ_PREFIX"_micro_version.*[0-9]" | sed -e "s/.*\[\([0-9][0-9]*\).*/\1/g")
+VER_MAJOR=$(grep "m4_define.*\[orcus_version_major\]" ./configure.ac | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
+VER_MINOR=$(grep "m4_define.*\[orcus_version_minor\]" ./configure.ac | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
+VER_MICRO=$(grep "m4_define.*\[orcus_version_micro\]" ./configure.ac | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
 VER="$VER_MAJOR.$VER_MINOR.$VER_MICRO"
 
 PKGS=$(ls $PKG_PREFIX-$VER.tar.*)
 
-echo "## Release Notes"
-echo ""
-echo "* add item"
-echo ""
 echo "## Checksums for Packages"
 echo ""
 
