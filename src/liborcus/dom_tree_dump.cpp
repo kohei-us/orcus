@@ -254,7 +254,7 @@ std::string document_tree::dump(std::size_t indent) const
     {
         // ensure that the root ends on its own line before the epilog content
         // is dumped
-        auto buf = os.view();
+        std::string buf = os.str();
         if (!buf.empty() && buf.back() != '\n')
             os << '\n';
     }
