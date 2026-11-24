@@ -8,11 +8,11 @@
 #include <orcus/measurement.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/parser_global.hpp>
+#include "format.hpp"
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 
-#include <format>
 
 namespace orcus {
 
@@ -223,7 +223,7 @@ double convert(double value, length_unit_t unit_from, length_unit_t unit_to)
             ;
     }
 
-    throw general_error(std::format(
+    throw general_error(orcus::detail::format(
         "convert: unsupported unit of measurement (from {} to {}) (value={})",
         static_cast<int>(unit_from), static_cast<int>(unit_to), value));
 }

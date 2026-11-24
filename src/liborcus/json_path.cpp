@@ -6,11 +6,11 @@
  */
 
 #include "json_path.hpp"
+#include "format.hpp"
 #include <orcus/exception.hpp>
 #include <orcus/measurement.hpp>
 
 #include <cassert>
-#include <format>
 #include <iostream>
 
 namespace orcus {
@@ -163,12 +163,12 @@ void json_path_parser::bracket()
                     auto v = to_long_checked(s);
                     if (!v)
                     {
-                        throw invalid_arg_error(std::format("failed to convert to integer: '{}'", s));
+                        throw invalid_arg_error(orcus::detail::format("failed to convert to integer: '{}'", s));
                     }
 
                     if (*v < 0)
                     {
-                        throw invalid_arg_error(std::format("array index must be positive ({})", *v));
+                        throw invalid_arg_error(orcus::detail::format("array index must be positive ({})", *v));
                     }
 
                     m_parts.emplace_back(std::size_t(*v));
@@ -229,7 +229,7 @@ void json_path_parser::parse(std::string_view expression)
             }
             default:
             {
-                throw invalid_arg_error(std::format("unexpected character '{}'", *mp));
+                throw invalid_arg_error(orcus::detail::format("unexpected character '{}'", *mp));
             }
         }
     }

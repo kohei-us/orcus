@@ -8,11 +8,11 @@
 #include <orcus/xml_namespace.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/string_pool.hpp>
+#include "format.hpp"
 
 #include <unordered_map>
 #include <vector>
 #include <limits>
-#include <format>
 #include <algorithm>
 #include <cassert>
 
@@ -122,7 +122,7 @@ std::string xmlns_repository::get_short_name(xmlns_id_t ns_id) const
     if (index == INDEX_NOT_FOUND)
         return std::string("???");
 
-    return std::format("ns{}", index);
+    return orcus::detail::format("ns{}", index);
 }
 
 size_t xmlns_repository::get_index(xmlns_id_t ns_id) const
@@ -190,7 +190,7 @@ xmlns_id_t xmlns_context::push(std::string_view alias, std::string_view uri)
             return XML_BUILTIN_NS_URI;
 
         throw std::invalid_argument(
-            std::format("builtin namespace '{}' cannot be explicitly declared", XML_BUILTIN_NS_ALIAS));
+            orcus::detail::format("builtin namespace '{}' cannot be explicitly declared", XML_BUILTIN_NS_ALIAS));
     }
 
     mp_impl->m_trim_all_ns = true;
@@ -248,7 +248,7 @@ void xmlns_context::pop(std::string_view alias)
     if (it == mp_impl->m_map.end())
     {
         throw general_error(
-            std::format("alias named '{}' was attempted to be popped, but was not found in the stack", alias));
+            orcus::detail::format("alias named '{}' was attempted to be popped, but was not found in the stack", alias));
     }
 
     xmlns_list_type& nslist = it->second;

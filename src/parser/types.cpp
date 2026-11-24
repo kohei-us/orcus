@@ -9,7 +9,6 @@
 #include <orcus/parser_global.hpp>
 #include <orcus/xml_namespace.hpp>
 
-#include <format>
 #include <limits>
 #include <sstream>
 #include <string_view>
@@ -17,6 +16,7 @@
 #include <mdds/sorted_string_map.hpp>
 
 #include "ostream_utils.hpp"
+#include "format.hpp"
 
 namespace orcus {
 
@@ -76,7 +76,7 @@ std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type)
 
         }
         if (!ns_str.empty())
-            return std::format("{}:{}", ns_str, name);
+            return orcus::detail::format("{}:{}", ns_str, name);
     }
     return std::string{name};
 }
@@ -87,7 +87,7 @@ std::string xml_name_t::to_string(const xmlns_repository& repo) const
     {
         std::string ns_str = repo.get_short_name(ns);
         if (!ns_str.empty())
-            return std::format("{}:{}", ns_str, name);
+            return orcus::detail::format("{}:{}", ns_str, name);
     }
     return std::string{name};
 }
@@ -185,7 +185,7 @@ std::string length_t::to_string() const
         default:
             ;
     }
-    return std::format("{}{}", value, suffix);
+    return orcus::detail::format("{}{}", value, suffix);
 }
 
 bool length_t::operator== (const length_t& other) const noexcept

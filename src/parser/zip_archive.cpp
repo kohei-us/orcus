@@ -8,13 +8,13 @@
 #include <orcus/zip_archive.hpp>
 #include <orcus/zip_archive_stream.hpp>
 #include <orcus/string_pool.hpp>
+#include "format.hpp"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <unordered_map>
-#include <format>
 #include <string_view>
 #include <iomanip>
 
@@ -364,7 +364,7 @@ zip_file_entry_header zip_archive::impl::get_file_entry_header(std::size_t index
 
     header.filename = file_header.read_string(filename_len);
     if (is_unsafe_zip_path(header.filename))
-        throw zip_error(std::format("unsafe zip entry name: '{}'", header.filename));
+        throw zip_error(orcus::detail::format("unsafe zip entry name: '{}'", header.filename));
 
     if (extra_field_len)
         header.extra_field = file_header.read_bytes(extra_field_len);
@@ -377,7 +377,7 @@ zip_file_entry_header zip_archive::impl::get_file_entry_header(std::string_view 
     auto it = m_filenames.find(name);
     if (it == m_filenames.end())
     {
-        throw zip_error(std::format("file entry named '{}' not found", name));
+        throw zip_error(orcus::detail::format("file entry named '{}' not found", name));
     }
 
     return get_file_entry_header(it->second);
@@ -447,7 +447,7 @@ void zip_archive::impl::read_file_entries()
 
         param.filename = central_dir.read_string(param.filename_length, m_pool);
         if (is_unsafe_zip_path(param.filename))
-            throw zip_error(std::format("unsafe zip entry name: '{}'", param.filename));
+            throw zip_error(orcus::detail::format("unsafe zip entry name: '{}'", param.filename));
 
         if (param.extra_field_length)
             // Ignore extra field for now.
@@ -503,7 +503,7 @@ unnamed_buffer zip_archive::impl::read_file_entry(std::string_view entry_name) c
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
     {
-        throw zip_error(std::format("entry named '{}' not found", entry_name));
+        throw zip_error(orcus::detail::format("entry named '{}' not found", entry_name));
     }
 
 

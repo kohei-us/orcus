@@ -9,8 +9,8 @@
 #include <orcus/exception.hpp>
 
 #include "utf8.hpp"
+#include "format.hpp"
 
-#include <format>
 #include <sstream>
 #include <fstream>
 #include <tuple>
@@ -114,7 +114,7 @@ std::tuple<std::string_view, size_t, size_t> find_line_with_offset(std::string_v
     if (p_offset >= p_end)
     {
         throw std::invalid_argument(
-            std::format("offset value of {} is out-of-bound for a stream of length {}", offset, strm.size()));
+            orcus::detail::format("offset value of {} is out-of-bound for a stream of length {}", offset, strm.size()));
     }
 
     // Determine the line number.
@@ -429,7 +429,7 @@ std::size_t calc_logical_string_length(std::string_view s)
         if (!n_bytes || n_bytes > 4)
         {
             throw std::invalid_argument(
-                std::format("'{}' contains invalid character at position {}", s, std::distance(s.data(), p)));
+                orcus::detail::format("'{}' contains invalid character at position {}", s, std::distance(s.data(), p)));
         }
 
         p += n_bytes;
@@ -437,7 +437,7 @@ std::size_t calc_logical_string_length(std::string_view s)
 
     if (p != p_end)
     {
-        throw std::invalid_argument(std::format("last character of '{}' ended prematurely", s));
+        throw std::invalid_argument(orcus::detail::format("last character of '{}' ended prematurely", s));
     }
 
     return length;

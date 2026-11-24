@@ -7,13 +7,13 @@
 
 #include "gnumeric_value_format_parser.hpp"
 #include "debug_utils.hpp"
+#include "format.hpp"
 
 #include <orcus/config.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/measurement.hpp>
 
 #include <cassert>
-#include <format>
 #include <optional>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -62,7 +62,7 @@ void gnumeric_value_format_parser::segment()
                 else
                 {
                     n = std::distance(p_start, m_cur);
-                    warn(m_config, std::format("skipping invalid segment '{}'",
+                    warn(m_config, orcus::detail::format("skipping invalid segment '{}'",
                         std::string_view{p_start, numeric_cast<std::size_t>(n)}));
                 }
 
@@ -75,7 +75,7 @@ void gnumeric_value_format_parser::segment()
                 seg.type = to_gnumeric_value_format_type(s);
                 if (seg.type == gnumeric_value_format_type::unknown)
                 {
-                    throw parse_error(std::format("invalid value format type '{}'", s), get_pos());
+                    throw parse_error(orcus::detail::format("invalid value format type '{}'", s), get_pos());
                 }
 
                 p0 = nullptr;

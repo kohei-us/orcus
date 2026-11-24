@@ -20,13 +20,13 @@
 #include "factory_shared_strings.hpp"
 #include "factory_sheet.hpp"
 #include "global_settings.hpp"
+#include "format.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_tokens.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
 #include <ixion/model_context_loader.hpp>
-#include <format>
 #include <iostream>
 #include <unordered_map>
 
@@ -56,7 +56,7 @@ public:
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
-            throw orcus::invalid_arg_error(std::format("{} is not a valid cell address.", address));
+            throw orcus::invalid_arg_error(orcus::detail::format("{} is not a valid cell address.", address));
         }
 
         auto addr = std::get<ixion::address_t>(name.value);
@@ -106,7 +106,7 @@ public:
                 ;
         }
 
-        throw orcus::invalid_arg_error(std::format("'{}' is not a valid range address.", range));
+        throw orcus::invalid_arg_error(orcus::detail::format("'{}' is not a valid range address.", range));
     }
 };
 

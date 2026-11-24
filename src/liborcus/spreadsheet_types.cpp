@@ -7,9 +7,9 @@
 
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/exception.hpp>
+#include "format.hpp"
 
 #include <limits>
-#include <format>
 #include <ostream>
 
 #include <mdds/sorted_string_map.hpp>
@@ -500,7 +500,7 @@ color_rgb_t to_color_rgb(std::string_view s)
 
     if (n != 6)
     {
-        throw value_error(std::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
+        throw value_error(orcus::detail::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
     }
 
     color_rgb_t ret;
@@ -522,7 +522,7 @@ color_rgb_t to_color_rgb(std::string_view s)
             this_val = 10 + c - 'A';
         else
         {
-            throw value_error(std::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
+            throw value_error(orcus::detail::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
         }
 
         converted += this_val;

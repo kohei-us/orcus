@@ -9,9 +9,9 @@
 
 #include "utf8.hpp"
 #include "cpu_features.hpp"
+#include "format.hpp"
 
 #include <charconv>
-#include <format>
 #include <cstring>
 #include <deque>
 #include <memory>
@@ -202,7 +202,7 @@ void parser_base::expects_next(const char* p, size_t n)
             continue;
 
         throw malformed_xml_error(
-            std::format("'{}' was expected, but not found.", std::string_view(p0, n)), offset());
+            orcus::detail::format("'{}' was expected, but not found.", std::string_view(p0, n)), offset());
     }
 }
 
@@ -326,7 +326,7 @@ void parser_base::name(std::string_view& str)
     if (mp_char == p0)
     {
         throw malformed_xml_error(
-            std::format("name must begin with an alphabet, but got this instead '{}'", cur_char()), offset());
+            orcus::detail::format("name must begin with an alphabet, but got this instead '{}'", cur_char()), offset());
     }
 
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)

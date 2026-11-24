@@ -6,10 +6,10 @@
  */
 
 #include "dom_tree_impl.hpp"
+#include "format.hpp"
 #include <orcus/exception.hpp>
 
 #include <cassert>
-#include <format>
 #include <algorithm>
 #include <stdexcept>
 #include <variant>
@@ -65,7 +65,7 @@ struct const_node::impl
     detail::element& require_element(std::string_view op)
     {
         if (type != node_t::element)
-            throw std::invalid_argument(std::format("{}: node is not an element", op));
+            throw std::invalid_argument(orcus::detail::format("{}: node is not an element", op));
 
         return *std::get<detail::element*>(value);
     }
